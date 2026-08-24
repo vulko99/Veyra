@@ -1,0 +1,16 @@
+target-version = "py311"
+line-length = 100
+
+[lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+ignore = [
+    "E501",   # line length handled by formatter judgement
+    "B008",   # function calls in argument defaults (DRF/Django idiom)
+    "SIM102", # nested-if is sometimes clearer
+    "SIM108", # ternary is not always clearer than if/else
+]
+
+[lint.per-file-ignores]
+"*/migrations/*" = ["E", "F", "I", "UP", "B", "SIM"]
+"config/settings/*" = ["F401", "F403", "F405"]
+"tests/*" = ["F811", "F401"]

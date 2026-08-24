@@ -2,26 +2,29 @@
 
 import { useRouter } from "next/navigation";
 import { useApplication } from "@/hooks/useApplication";
+import { useMessages } from "@/hooks/useI18n";
 import { WizardStep } from "@/components/WizardStep";
 import { formatNumber, parseNumeric } from "@/lib/format";
 
 export default function IncomeStep() {
   const router = useRouter();
   const { draft, update } = useApplication();
+  const m = useMessages();
+  const s = m.apply.steps.income;
   const income = draft.monthly_income || "";
   const valid = !!income && parseFloat(income) >= 0;
 
   return (
     <WizardStep
       current="income"
-      title="What is your monthly income?"
-      subtitle="Your net monthly income helps us match products with published minimums."
+      title={s.title}
+      subtitle={s.subtitle}
       onNext={() => router.push("/apply/employment")}
       nextDisabled={!valid}
     >
       <div>
         <label className="field-label" htmlFor="income">
-          Net monthly income (BGN)
+          {s.inputLabel}
         </label>
         <input
           id="income"
@@ -35,8 +38,7 @@ export default function IncomeStep() {
         />
       </div>
       <p className="rounded-xl bg-slate-50 p-4 text-sm text-slate-500">
-        We use this only to check compatibility with partner criteria. It is not
-        a credit check.
+        {s.hint}
       </p>
     </WizardStep>
   );

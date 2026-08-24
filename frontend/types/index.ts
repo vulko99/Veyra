@@ -59,6 +59,12 @@ export interface ApplicationResponse {
   requested_term_months: number;
 }
 
+export interface ReasonPayload {
+  code: string;
+  params: Record<string, string | number>;
+  text: string;
+}
+
 export interface Match {
   lender_id: string;
   product_id: string;
@@ -73,7 +79,7 @@ export interface Match {
   eligible: boolean;
   score: number;
   rank: number;
-  reasons: string[];
+  reasons: ReasonPayload[];
 }
 
 export interface MatchResponse {

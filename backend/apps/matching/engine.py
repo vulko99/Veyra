@@ -40,8 +40,25 @@ def build_context(application: Application) -> dict:
     }
 
 
-def _reason(text: str, show_to_customer: bool = True) -> dict:
-    return {"text": text, "show_to_customer": show_to_customer}
+def _reason(
+    text: str,
+    show_to_customer: bool = True,
+    *,
+    code: str = "",
+    params: dict | None = None,
+) -> dict:
+    """Build a reason entry.
+
+    ``code`` is a stable, language-neutral identifier the frontend localizes
+    (with ``params`` interpolated). ``text`` is an English fallback used for
+    logging/tests and when no localized string exists for the code.
+    """
+    return {
+        "text": text,
+        "code": code,
+        "params": params or {},
+        "show_to_customer": show_to_customer,
+    }
 
 
 def evaluate_product(context: dict, product: LenderProduct) -> tuple[bool, list[dict]]:
@@ -60,10 +77,21 @@ def evaluate_product(context: dict, product: LenderProduct) -> tuple[bool, list[
             _reason(
                 f"Requested amount is outside the product range "
                 f"({product.min_amount}–{product.max_amount} {product.currency}).",
+                code="amount_out_of_range",
+                params={
+                    "min": str(product.min_amount),
+                    "max": str(product.max_amount),
+                    "currency": product.currency,
+                },
             )
         )
     else:
-        reasons.append(_reason("Requested amount fits the product range."))
+        reasons.append(
+            _reason(
+                "Requested amount fits the product range.",
+                code="amount_in_range",
+            )
+        )
 
     term = context.get("requested_term_months")
     if term is None or not (product.min_term_months <= term <= product.max_term_months):
@@ -72,20 +100,38 @@ def evaluate_product(context: dict, product: LenderProduct) -> tuple[bool, list[
             _reason(
                 f"Requested term is outside the product range "
                 f"({product.min_term_months}–{product.max_term_months} months).",
+                code="term_out_of_range",
+                params={
+                    "min": product.min_term_months,
+                    "max": product.max_term_months,
+                },
             )
         )
     else:
-        reasons.append(_reason("Requested term fits the product range."))
+        reasons.append(
+            _reason(
+                "Requested term fits the product range.",
+                code="term_in_range",
+            )
+        )
 
     income = context.get("monthly_income")
     if product.min_income:
         if income is None or Decimal(str(income)) < product.min_income:
             eligible = False
             reasons.append(
-                _reason("Stated income is below the published minimum for this product.")
+                _reason(
+                    "Stated income is below the published minimum for this product.",
+                    code="income_below_min",
+                )
             )
         else:
-            reasons.append(_reason("Your stated income meets the published minimum."))
+            reasons.append(
+                _reason(
+                    "Your stated income meets the published minimum.",
+                    code="income_meets_min",
+                )
+            )
 
     # Generic, configurable rules.
     rules = product.eligibility_rules.filter(active=True)
@@ -95,10 +141,23 @@ def evaluate_product(context: dict, product: LenderProduct) -> tuple[bool, list[
         if not passed:
             eligible = False
         if rule.reason_template:
-            text = rule.reason_template
+            # Custom lender-authored text has no generic code; shown verbatim.
+            reasons.append(
+                _reason(
+                    rule.reason_template,
+                    show_to_customer=rule.show_reason_to_customer,
+                    code="",
+                )
+            )
         else:
-            text = _default_rule_reason(rule, passed)
-        reasons.append(_reason(text, show_to_customer=rule.show_reason_to_customer))
+            reasons.append(
+                _reason(
+                    _default_rule_reason(rule, passed),
+                    show_to_customer=rule.show_reason_to_customer,
+                    code="rule_pass" if passed else "rule_fail",
+                    params={"field": rule.field},
+                )
+            )
 
     return eligible, reasons
 

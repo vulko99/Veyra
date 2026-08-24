@@ -101,6 +101,32 @@ def test_confidential_rule_reason_hidden_from_customer(product, make_rule):
     assert "secret underwriting" not in match.customer_reasons
 
 
+def test_customer_reason_payload_carries_codes(product):
+    app = _application()
+    match_application(app)
+    match = app.matches.get(product=product)
+    payload = match.customer_reason_payload
+    codes = {r["code"] for r in payload}
+    assert "amount_in_range" in codes
+    assert "term_in_range" in codes
+    # income_meets_min appears because the product has a min_income.
+    assert "income_meets_min" in codes
+    # Every payload entry is a localizable object.
+    for r in payload:
+        assert set(r.keys()) == {"code", "params", "text"}
+
+
+def test_out_of_range_reason_has_params(product):
+    app = _application(requested_amount=Decimal("100"))  # below min 500
+    match_application(app)
+    match = app.matches.get(product=product)
+    amount_reasons = [
+        r for r in match.reasons if r.get("code") == "amount_out_of_range"
+    ]
+    assert amount_reasons
+    assert amount_reasons[0]["params"]["min"] == "500.00"
+
+
 def test_rematch_replaces_prior_matches(product):
     app = _application()
     match_application(app)

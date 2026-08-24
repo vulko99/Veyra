@@ -62,15 +62,16 @@ def submit_application(application: Application, *, ip_hash: str = "") -> Applic
     )
 
     if application.email:
+        # Customer-facing email — Bulgarian-first (see frontend i18n).
         send_email(
-            subject="We received your Veyra application",
+            subject="Получихме вашето заявление във Veyra",
             to=[application.email],
             body=(
-                "Thank you for using Veyra. We are reviewing the information you "
-                f"provided (reference {application.public_reference}) and will show "
-                "you relevant options from our financial partners.\n\n"
-                "Veyra is a marketplace and does not make lending decisions. The "
-                "final decision is made by the lender."
+                "Благодарим ви, че използвате Veyra. Разглеждаме предоставената от "
+                f"вас информация (референция {application.public_reference}) и ще ви "
+                "покажем подходящи опции от нашите финансови партньори.\n\n"
+                "Veyra е маркетплейс и не взема решения за кредитиране. Крайното "
+                "решение се взема от кредитора."
             ),
         )
 

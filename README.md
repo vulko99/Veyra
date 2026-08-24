@@ -219,6 +219,22 @@ npm run typecheck
 npm run build
 ```
 
+## Internationalization (Bulgarian-first)
+
+The frontend is **Bulgarian-first** and structured for i18n from day one.
+All customer-facing text — pages, the application wizard, validation, consent,
+results, FAQ, and legal placeholders — comes from typed message catalogs in
+`frontend/i18n/dictionaries/` (`bg.ts` is the default and source of truth;
+`en.ts` is fully prepared and type-checked against the same shape). Components
+read the active catalog via `useMessages()` / `useI18n()`
+(`frontend/hooks/useI18n.tsx`); the active locale persists per visitor and can
+be switched to `en` in future without touching components.
+
+The matching engine stays language-neutral: it emits stable **reason codes**
+(e.g. `amount_in_range`) with parameters, which the frontend localizes — so the
+API is not tied to any language and the English fallback keeps backend tests
+stable. Customer-facing emails are Bulgarian.
+
 ## Security & privacy
 
 - UUID public references — sequential DB IDs are never exposed.

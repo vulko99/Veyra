@@ -5,10 +5,13 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { getMatches, routeToPartner } from "@/lib/api";
 import { formatCurrency } from "@/lib/format";
+import { useI18n } from "@/hooks/useI18n";
 import type { Match } from "@/types";
 
 function ResultsInner() {
   const params = useSearchParams();
+  const { m, t } = useI18n();
+  const r = m.results;
   const applicationId = params.get("application");
   const [matches, setMatches] = useState<Match[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -16,13 +19,13 @@ function ResultsInner() {
 
   useEffect(() => {
     if (!applicationId) {
-      setError("No application reference was provided.");
+      setError(r.noReference);
       return;
     }
     getMatches(applicationId)
       .then((res) => setMatches(res.matches))
-      .catch(() => setError("We could not load your options. Please try again."));
-  }, [applicationId]);
+      .catch(() => setError(r.loadError));
+  }, [applicationId, r.noReference, r.loadError]);
 
   async function handleContinue(match: Match) {
     if (!applicationId) return;
@@ -31,22 +34,32 @@ function ResultsInner() {
       const res = await routeToPartner(applicationId, match.product_id);
       window.location.href = res.outbound_url;
     } catch {
-      setError("We could not open the partner link. Please try again.");
+      setError(r.routeError);
       setRouting(null);
     }
+  }
+
+  function productTypeLabel(productType: string): string {
+    return (
+      (r.productTypes as Record<string, string>)[productType] ??
+      productType.replace(/_/g, " ")
+    );
+  }
+
+  function reasonText(reason: Match["reasons"][number]): string {
+    const template = (r.reasons as Record<string, string>)[reason.code];
+    if (template) return t(template, reason.params);
+    return reason.text; // fallback to the backend-provided text
   }
 
   return (
     <div className="container-x py-14">
       <div className="mx-auto max-w-3xl">
-        <p className="text-sm font-medium text-accent-600">Your options</p>
+        <p className="text-sm font-medium text-accent-600">{r.eyebrow}</p>
         <h1 className="mt-2 text-3xl font-bold tracking-tight text-navy-900">
-          Potentially relevant options
+          {r.title}
         </h1>
-        <p className="mt-3 text-slate-600">
-          These options match the information you provided. Veyra is a
-          marketplace — the final decision is made by the lender, not by Veyra.
-        </p>
+        <p className="mt-3 text-slate-600">{r.intro}</p>
 
         {error && (
           <p className="mt-8 rounded-xl bg-red-50 p-4 text-sm text-red-700">
@@ -65,15 +78,12 @@ function ResultsInner() {
         {matches && matches.length === 0 && (
           <div className="mt-10 card p-8 text-center">
             <h2 className="text-lg font-semibold text-navy-900">
-              No relevant options right now
+              {r.emptyTitle}
             </h2>
-            <p className="mt-2 text-sm text-slate-600">
-              Based on what you told us, we did not find a relevant partner
-              product at this time. You can adjust your request and try again.
-            </p>
+            <p className="mt-2 text-sm text-slate-600">{r.emptyBody}</p>
             <div className="mt-6">
               <Link href="/apply/amount" className="btn-ghost">
-                Adjust my request
+                {r.adjust}
               </Link>
             </div>
           </div>
@@ -98,34 +108,34 @@ function ResultsInner() {
                     </div>
                   </div>
                   <span className="rounded-full bg-accent-500/10 px-3 py-1 text-xs font-semibold text-accent-600">
-                    Appears relevant
+                    {r.appearsRelevant}
                   </span>
                 </div>
 
                 <div className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-3">
                   <Fact
-                    label="Amount range"
+                    label={r.amountRange}
                     value={`${formatCurrency(match.min_amount, match.currency)} – ${formatCurrency(
                       match.max_amount,
                       match.currency
                     )}`}
                   />
                   <Fact
-                    label="Term range"
-                    value={`${match.min_term_months}–${match.max_term_months} months`}
+                    label={r.termRange}
+                    value={`${match.min_term_months}–${match.max_term_months} ${r.months}`}
                   />
-                  <Fact label="Type" value={humanType(match.product_type)} />
+                  <Fact label={r.type} value={productTypeLabel(match.product_type)} />
                 </div>
 
                 {match.reasons.length > 0 && (
                   <ul className="mt-5 space-y-1.5">
-                    {match.reasons.map((r, i) => (
+                    {match.reasons.map((reason, i) => (
                       <li
                         key={i}
                         className="flex items-start gap-2 text-sm text-slate-600"
                       >
                         <span className="mt-0.5 text-accent-500">✓</span>
-                        {r}
+                        {reasonText(reason)}
                       </li>
                     ))}
                   </ul>
@@ -133,7 +143,7 @@ function ResultsInner() {
 
                 <div className="mt-6 flex items-center justify-between">
                   <p className="text-xs text-slate-400">
-                    The final decision is made by {match.lender_name}.
+                    {t(r.finalDecisionBy, { lender: match.lender_name })}
                   </p>
                   <button
                     type="button"
@@ -141,18 +151,14 @@ function ResultsInner() {
                     disabled={routing === match.product_id}
                     onClick={() => handleContinue(match)}
                   >
-                    {routing === match.product_id
-                      ? "Opening…"
-                      : "Continue to partner"}
+                    {routing === match.product_id ? r.opening : r.continueToPartner}
                   </button>
                 </div>
               </div>
             ))}
 
             <p className="pt-2 text-center text-xs text-slate-500">
-              This is not an offer of credit. &ldquo;Appears relevant&rdquo;
-              reflects compatibility with published criteria, not a probability
-              of approval.
+              {r.disclaimer}
             </p>
           </div>
         )}
@@ -170,18 +176,15 @@ function Fact({ label, value }: { label: string; value: string }) {
   );
 }
 
-function humanType(t: string): string {
-  return t
-    .toLowerCase()
-    .split("_")
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-    .join(" ");
-}
-
 export default function ResultsPage() {
   return (
-    <Suspense fallback={<div className="container-x py-14">Loading…</div>}>
+    <Suspense fallback={<ResultsFallback />}>
       <ResultsInner />
     </Suspense>
   );
+}
+
+function ResultsFallback() {
+  const { m } = useI18n();
+  return <div className="container-x py-14">{m.results.loading}</div>;
 }

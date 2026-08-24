@@ -1,17 +1,16 @@
-import { PageShell, Section } from "@/components/PageShell";
+"use client";
 
-export const metadata = { title: "Contact — Veyra" };
+import { PageShell, Section } from "@/components/PageShell";
+import { useMessages } from "@/hooks/useI18n";
 
 export default function ContactPage() {
+  const m = useMessages();
   return (
-    <PageShell
-      title="Contact us"
-      intro="We are happy to help with questions about how Veyra works or about your data."
-    >
+    <PageShell title={m.contact.title} intro={m.contact.intro}>
       <div className="card p-6">
-        <Section heading="General enquiries">
+        <Section heading={m.contact.generalTitle}>
           <p>
-            Email:{" "}
+            {m.contact.emailLabel}{" "}
             <a
               className="font-medium text-accent-600 hover:underline"
               href="mailto:hello@veyra.example"
@@ -21,9 +20,9 @@ export default function ContactPage() {
           </p>
         </Section>
         <div className="mt-6">
-          <Section heading="Data & privacy requests">
+          <Section heading={m.contact.dataTitle}>
             <p>
-              Email:{" "}
+              {m.contact.emailLabel}{" "}
               <a
                 className="font-medium text-accent-600 hover:underline"
                 href="mailto:privacy@veyra.example"
@@ -34,10 +33,7 @@ export default function ContactPage() {
           </Section>
         </div>
       </div>
-      <p className="text-sm text-slate-500">
-        Contact addresses are placeholders for the MVP and will be finalised
-        before launch.
-      </p>
+      <p className="text-sm text-slate-500">{m.contact.note}</p>
     </PageShell>
   );
 }

@@ -1,3 +1,7 @@
+"use client";
+
+import { useEffect } from "react";
+
 export function PageShell({
   title,
   intro,
@@ -7,6 +11,13 @@ export function PageShell({
   intro?: string;
   children: React.ReactNode;
 }) {
+  // Keep the browser-tab title in sync with the localized page title.
+  useEffect(() => {
+    if (typeof document !== "undefined") {
+      document.title = `${title} — Veyra`;
+    }
+  }, [title]);
+
   return (
     <div className="container-x py-16">
       <div className="mx-auto max-w-3xl">
@@ -22,7 +33,13 @@ export function PageShell({
   );
 }
 
-export function Section({ heading, children }: { heading: string; children: React.ReactNode }) {
+export function Section({
+  heading,
+  children,
+}: {
+  heading: string;
+  children: React.ReactNode;
+}) {
   return (
     <section>
       <h2 className="text-xl font-semibold text-navy-900">{heading}</h2>

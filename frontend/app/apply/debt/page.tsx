@@ -2,25 +2,28 @@
 
 import { useRouter } from "next/navigation";
 import { useApplication } from "@/hooks/useApplication";
+import { useMessages } from "@/hooks/useI18n";
 import { WizardStep } from "@/components/WizardStep";
 import { formatNumber, parseNumeric } from "@/lib/format";
 
 export default function DebtStep() {
   const router = useRouter();
   const { draft, update } = useApplication();
+  const m = useMessages();
+  const s = m.apply.steps.debt;
   const hasLoans = draft.has_existing_loans ?? false;
 
   return (
     <WizardStep
       current="debt"
-      title="Do you have existing loans?"
-      subtitle="This helps partners assess affordability. You can skip the amounts if unsure."
+      title={s.title}
+      subtitle={s.subtitle}
       onNext={() => router.push("/apply/contact")}
     >
       <div className="flex gap-3">
         {[
-          { label: "Yes", value: true },
-          { label: "No", value: false },
+          { label: s.yes, value: true },
+          { label: s.no, value: false },
         ].map((o) => (
           <button
             key={o.label}
@@ -41,7 +44,7 @@ export default function DebtStep() {
         <div className="space-y-4">
           <div>
             <label className="field-label" htmlFor="balance">
-              Total outstanding balance (BGN)
+              {s.balanceLabel}
             </label>
             <input
               id="balance"
@@ -60,7 +63,7 @@ export default function DebtStep() {
           </div>
           <div>
             <label className="field-label" htmlFor="payments">
-              Total monthly repayments (BGN)
+              {s.paymentsLabel}
             </label>
             <input
               id="payments"

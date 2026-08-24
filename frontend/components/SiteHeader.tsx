@@ -3,22 +3,25 @@
 import Link from "next/link";
 import { useState } from "react";
 import { Logo } from "./Logo";
-
-const NAV = [
-  { href: "/how-it-works", label: "How it works" },
-  { href: "/loans", label: "Loans" },
-  { href: "/faq", label: "FAQ" },
-  { href: "/responsible-borrowing", label: "Responsible borrowing" },
-];
+import { useMessages } from "@/hooks/useI18n";
 
 export function SiteHeader() {
+  const m = useMessages();
   const [open, setOpen] = useState(false);
+
+  const nav = [
+    { href: "/how-it-works", label: m.nav.howItWorks },
+    { href: "/loans", label: m.nav.loans },
+    { href: "/faq", label: m.nav.faq },
+    { href: "/responsible-borrowing", label: m.nav.responsible },
+  ];
+
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/90 backdrop-blur">
       <div className="container-x flex h-16 items-center justify-between">
         <Logo />
         <nav className="hidden items-center gap-7 md:flex">
-          {NAV.map((item) => (
+          {nav.map((item) => (
             <Link
               key={item.href}
               href={item.href}
@@ -28,12 +31,12 @@ export function SiteHeader() {
             </Link>
           ))}
           <Link href="/apply" className="btn-accent px-5 py-2 text-sm">
-            Check your options
+            {m.common.checkOptions}
           </Link>
         </nav>
         <button
           type="button"
-          aria-label="Toggle menu"
+          aria-label={m.nav.menu}
           className="md:hidden"
           onClick={() => setOpen((v) => !v)}
         >
@@ -45,7 +48,7 @@ export function SiteHeader() {
       {open && (
         <nav className="border-t border-slate-200 bg-white px-5 py-4 md:hidden">
           <div className="flex flex-col gap-3">
-            {NAV.map((item) => (
+            {nav.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
@@ -56,7 +59,7 @@ export function SiteHeader() {
               </Link>
             ))}
             <Link href="/apply" className="btn-accent mt-2" onClick={() => setOpen(false)}>
-              Check your options
+              {m.common.checkOptions}
             </Link>
           </div>
         </nav>

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useApplication } from "@/hooks/useApplication";
+import { useMessages } from "@/hooks/useI18n";
 import { WizardStep } from "@/components/WizardStep";
 import { createApplication, runMatching, submitApplication } from "@/lib/api";
 import type { ConsentInput } from "@/types";
@@ -11,6 +12,8 @@ import type { ConsentInput } from "@/types";
 export default function ConsentStep() {
   const router = useRouter();
   const { draft, setApplicationId } = useApplication();
+  const m = useMessages();
+  const s = m.apply.steps.consent;
   const [platform, setPlatform] = useState(false);
   const [partner, setPartner] = useState(false);
   const [marketing, setMarketing] = useState(false);
@@ -33,10 +36,8 @@ export default function ConsentStep() {
       await submitApplication(app.id);
       await runMatching(app.id);
       router.push(`/results?application=${app.id}`);
-    } catch (e) {
-      const msg =
-        e instanceof Error ? e.message : "Something went wrong. Please try again.";
-      setError(msg);
+    } catch {
+      setError(s.error);
       setSubmitting(false);
     }
   }
@@ -44,44 +45,43 @@ export default function ConsentStep() {
   return (
     <WizardStep
       current="consent"
-      title="Your consent"
-      subtitle="You decide what you agree to. Nothing is shared with partners unless you choose to continue to one."
+      title={s.title}
+      subtitle={s.subtitle}
       onNext={handleSubmit}
-      nextLabel={submitting ? "Finding options…" : "See my options"}
+      nextLabel={submitting ? s.submitting : s.submit}
       nextDisabled={!canSubmit}
     >
       <ConsentRow
         checked={platform}
         onChange={setPlatform}
         required
-        label="I agree to Veyra processing my information"
-        description="So we can show you relevant options. See our privacy policy."
+        label={s.platformLabel}
+        description={s.platformDesc}
       />
       <ConsentRow
         checked={partner}
         onChange={setPartner}
         required
-        label="I agree to my data being shared with a partner I choose to continue to"
-        description="Your details are shared only with a partner you actively choose."
+        label={s.partnerLabel}
+        description={s.partnerDesc}
       />
       <ConsentRow
         checked={marketing}
         onChange={setMarketing}
-        label="I would like to receive occasional updates from Veyra (optional)"
-        description="Entirely optional. You can unsubscribe at any time."
+        label={s.marketingLabel}
+        description={s.marketingDesc}
       />
 
       <p className="text-xs text-slate-500">
-        By continuing you agree to our{" "}
+        {s.legalPrefix}{" "}
         <Link href="/terms" className="text-accent-600 hover:underline">
-          terms
+          {s.terms}
         </Link>{" "}
-        and{" "}
+        {s.and}{" "}
         <Link href="/privacy" className="text-accent-600 hover:underline">
-          privacy policy
+          {s.privacy}
         </Link>
-        . Veyra does not guarantee approval; the final decision is made by the
-        lender.
+        {s.legalSuffix}
       </p>
 
       {error && (

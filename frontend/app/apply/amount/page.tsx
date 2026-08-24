@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useApplication } from "@/hooks/useApplication";
+import { useMessages } from "@/hooks/useI18n";
 import { WizardStep } from "@/components/WizardStep";
 import { formatNumber, parseNumeric } from "@/lib/format";
 
@@ -10,20 +11,22 @@ const PRESETS = ["500", "1000", "3000", "5000"];
 export default function AmountStep() {
   const router = useRouter();
   const { draft, update } = useApplication();
+  const m = useMessages();
+  const s = m.apply.steps.amount;
   const amount = draft.requested_amount || "";
   const valid = !!amount && parseFloat(amount) > 0;
 
   return (
     <WizardStep
       current="amount"
-      title="How much would you like to borrow?"
-      subtitle="Enter an amount in BGN. You can change this later."
+      title={s.title}
+      subtitle={s.subtitle}
       onNext={() => router.push("/apply/term")}
       nextDisabled={!valid}
     >
       <div>
         <label className="field-label" htmlFor="amount">
-          Amount (BGN)
+          {s.inputLabel}
         </label>
         <input
           id="amount"
@@ -48,7 +51,7 @@ export default function AmountStep() {
             }`}
             onClick={() => update({ requested_amount: p })}
           >
-            {formatNumber(p)} BGN
+            {formatNumber(p)} лв.
           </button>
         ))}
       </div>

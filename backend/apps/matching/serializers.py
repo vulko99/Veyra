@@ -43,6 +43,7 @@ class MatchSerializer(serializers.ModelSerializer):
             "reasons",
         ]
 
-    def get_reasons(self, obj: Match) -> list[str]:
-        # Only reasons cleared for customer display are exposed via the API.
-        return obj.customer_reasons
+    def get_reasons(self, obj: Match) -> list[dict]:
+        # Only reasons cleared for customer display are exposed via the API,
+        # as localizable {code, params, text} objects.
+        return obj.customer_reason_payload

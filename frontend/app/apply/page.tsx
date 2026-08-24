@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { useEffect } from "react";
 import { useApplication } from "@/hooks/useApplication";
+import { useMessages } from "@/hooks/useI18n";
 
 export default function ApplyIntroPage() {
   const { update } = useApplication();
+  const m = useMessages();
 
   // Capture tracking parameters once on entry.
   useEffect(() => {
@@ -30,18 +32,11 @@ export default function ApplyIntroPage() {
     <div className="container-x py-16">
       <div className="mx-auto max-w-xl text-center">
         <h1 className="text-3xl font-bold tracking-tight text-navy-900 sm:text-4xl">
-          Let&apos;s find options that fit you
+          {m.apply.intro.h1}
         </h1>
-        <p className="mt-4 text-lg text-slate-600">
-          This takes a few minutes. There is no account to create and no
-          obligation to continue with any partner.
-        </p>
+        <p className="mt-4 text-lg text-slate-600">{m.apply.intro.sub}</p>
         <ul className="mx-auto mt-8 max-w-md space-y-3 text-left">
-          {[
-            "One short application",
-            "Relevant options based on what you tell us",
-            "You decide whether to continue to a partner",
-          ].map((item) => (
+          {m.apply.intro.bullets.map((item) => (
             <li key={item} className="flex items-start gap-3">
               <span className="mt-0.5 flex h-5 w-5 flex-none items-center justify-center rounded-full bg-accent-500/15 text-accent-600">
                 ✓
@@ -52,13 +47,10 @@ export default function ApplyIntroPage() {
         </ul>
         <div className="mt-10">
           <Link href="/apply/amount" className="btn-accent">
-            Start
+            {m.common.start}
           </Link>
         </div>
-        <p className="mt-4 text-xs text-slate-500">
-          Veyra does not guarantee approval. The final decision is made by the
-          lender.
-        </p>
+        <p className="mt-4 text-xs text-slate-500">{m.common.noGuarantee}</p>
       </div>
     </div>
   );

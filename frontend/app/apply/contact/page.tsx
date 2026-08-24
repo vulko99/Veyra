@@ -2,16 +2,21 @@
 
 import { useRouter } from "next/navigation";
 import { useApplication } from "@/hooks/useApplication";
+import { useMessages } from "@/hooks/useI18n";
 import { WizardStep } from "@/components/WizardStep";
+import type { Messages } from "@/i18n";
 
-const PURPOSES = [
-  { value: "MAJOR_PURCHASE", label: "Major purchase" },
-  { value: "HOME_IMPROVEMENT", label: "Home improvement" },
-  { value: "DEBT_CONSOLIDATION", label: "Consolidate debt" },
-  { value: "VEHICLE", label: "Vehicle" },
-  { value: "EMERGENCY", label: "Emergency" },
-  { value: "OTHER", label: "Other" },
-] as const;
+// The purposes surfaced in the funnel (a subset of the full LoanPurpose set).
+type PurposeKey = keyof Messages["apply"]["purposeOptions"];
+
+const PURPOSE_ORDER: PurposeKey[] = [
+  "MAJOR_PURCHASE",
+  "HOME_IMPROVEMENT",
+  "DEBT_CONSOLIDATION",
+  "VEHICLE",
+  "EMERGENCY",
+  "OTHER",
+];
 
 function isEmail(v: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
@@ -20,6 +25,8 @@ function isEmail(v: string): boolean {
 export default function ContactStep() {
   const router = useRouter();
   const { draft, update } = useApplication();
+  const m = useMessages();
+  const s = m.apply.steps.contact;
   const email = draft.email || "";
   const emailValid = email === "" || isEmail(email);
   const canContinue = isEmail(email);
@@ -27,28 +34,26 @@ export default function ContactStep() {
   return (
     <WizardStep
       current="contact"
-      title="Where should partners reach you?"
-      subtitle="We use this to send your options and to pass to a partner only if you choose to continue."
+      title={s.title}
+      subtitle={s.subtitle}
       onNext={() => router.push("/apply/consent")}
       nextDisabled={!canContinue}
     >
       <div>
-        <label className="field-label" htmlFor="purpose">
-          What is the loan for? (optional)
-        </label>
+        <label className="field-label">{s.purposeLabel}</label>
         <div className="grid grid-cols-2 gap-2">
-          {PURPOSES.map((p) => (
+          {PURPOSE_ORDER.map((key) => (
             <button
-              key={p.value}
+              key={key}
               type="button"
               className={`rounded-xl border px-3 py-2.5 text-sm font-medium transition ${
-                draft.purpose === p.value
+                draft.purpose === key
                   ? "border-accent-500 bg-accent-500/10 text-accent-600"
                   : "border-slate-300 text-slate-700 hover:border-slate-400"
               }`}
-              onClick={() => update({ purpose: p.value })}
+              onClick={() => update({ purpose: key })}
             >
-              {p.label}
+              {m.apply.purposeOptions[key]}
             </button>
           ))}
         </div>
@@ -56,7 +61,7 @@ export default function ContactStep() {
 
       <div>
         <label className="field-label" htmlFor="email">
-          Email
+          {s.emailLabel}
         </label>
         <input
           id="email"
@@ -67,15 +72,13 @@ export default function ContactStep() {
           onChange={(e) => update({ email: e.target.value })}
         />
         {!emailValid && (
-          <p className="mt-1.5 text-sm text-red-600">
-            Please enter a valid email address.
-          </p>
+          <p className="mt-1.5 text-sm text-red-600">{s.emailInvalid}</p>
         )}
       </div>
 
       <div>
         <label className="field-label" htmlFor="phone">
-          Phone (optional)
+          {s.phoneLabel}
         </label>
         <input
           id="phone"

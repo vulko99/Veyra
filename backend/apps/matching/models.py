@@ -41,9 +41,31 @@ class Match(UUIDTimeStampedModel):
 
     @property
     def customer_reasons(self) -> list[str]:
-        """Reasons safe to show to the consumer."""
+        """Reason texts safe to show to the consumer (English fallback)."""
         return [
             r["text"]
             for r in self.reasons
             if isinstance(r, dict) and r.get("show_to_customer", True) and r.get("text")
         ]
+
+    @property
+    def customer_reason_payload(self) -> list[dict]:
+        """Structured, localizable reasons safe to show to the consumer.
+
+        Each entry carries a stable ``code`` (localized on the client) with
+        ``params`` to interpolate, plus an English ``text`` fallback.
+        """
+        payload = []
+        for r in self.reasons:
+            if not isinstance(r, dict) or not r.get("show_to_customer", True):
+                continue
+            if not r.get("text") and not r.get("code"):
+                continue
+            payload.append(
+                {
+                    "code": r.get("code", ""),
+                    "params": r.get("params", {}),
+                    "text": r.get("text", ""),
+                }
+            )
+        return payload

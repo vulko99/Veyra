@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useApplication } from "@/hooks/useApplication";
+import { useMessages } from "@/hooks/useI18n";
 import { WizardStep } from "@/components/WizardStep";
 
 const TERMS = [3, 6, 12, 24, 36, 48];
@@ -9,39 +10,41 @@ const TERMS = [3, 6, 12, 24, 36, 48];
 export default function TermStep() {
   const router = useRouter();
   const { draft, update } = useApplication();
+  const m = useMessages();
+  const s = m.apply.steps.term;
   const term = draft.requested_term_months;
   const valid = !!term && term > 0;
 
   return (
     <WizardStep
       current="term"
-      title="Over how long?"
-      subtitle="Choose the repayment period you are considering."
+      title={s.title}
+      subtitle={s.subtitle}
       onNext={() => router.push("/apply/income")}
       nextDisabled={!valid}
     >
       <div className="grid grid-cols-3 gap-3">
-        {TERMS.map((t) => (
+        {TERMS.map((tm) => (
           <button
-            key={t}
+            key={tm}
             type="button"
             className={`rounded-xl border px-4 py-4 text-center transition ${
-              term === t
+              term === tm
                 ? "border-accent-500 bg-accent-500/10"
                 : "border-slate-300 hover:border-slate-400"
             }`}
-            onClick={() => update({ requested_term_months: t })}
+            onClick={() => update({ requested_term_months: tm })}
           >
             <span className="block text-lg font-semibold text-navy-900">
-              {t}
+              {tm}
             </span>
-            <span className="text-xs text-slate-500">months</span>
+            <span className="text-xs text-slate-500">{s.months}</span>
           </button>
         ))}
       </div>
       <div>
         <label className="field-label" htmlFor="customterm">
-          Or enter a custom number of months
+          {s.customLabel}
         </label>
         <input
           id="customterm"

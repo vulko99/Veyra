@@ -2,15 +2,19 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ApplicationProvider } from "@/hooks/useApplication";
+import { I18nProvider } from "@/hooks/useI18n";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import { defaultLocale } from "@/i18n/config";
+import { getMessages } from "@/i18n";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const inter = Inter({ subsets: ["latin", "cyrillic"], variable: "--font-inter" });
+
+const messages = getMessages(defaultLocale);
 
 export const metadata: Metadata = {
-  title: "Veyra — Find financial options that fit you",
-  description:
-    "Tell us what you need and explore relevant options from our financial partners through one simple application. Veyra is a marketplace and does not lend money itself.",
+  title: messages.meta.title,
+  description: messages.meta.description,
 };
 
 export default function RootLayout({
@@ -19,13 +23,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang={defaultLocale} className={inter.variable}>
       <body className="flex min-h-screen flex-col">
-        <ApplicationProvider>
-          <SiteHeader />
-          <main className="flex-1">{children}</main>
-          <SiteFooter />
-        </ApplicationProvider>
+        <I18nProvider initialLocale={defaultLocale}>
+          <ApplicationProvider>
+            <SiteHeader />
+            <main className="flex-1">{children}</main>
+            <SiteFooter />
+          </ApplicationProvider>
+        </I18nProvider>
       </body>
     </html>
   );

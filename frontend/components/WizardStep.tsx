@@ -3,18 +3,21 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { WIZARD_STEPS, prevStep, stepIndex } from "@/lib/wizard";
+import { useI18n } from "@/hooks/useI18n";
+
+type StepSlug = keyof ReturnType<typeof useI18n>["m"]["apply"]["steps"];
 
 export function WizardProgress({ current }: { current: string }) {
+  const { m, t } = useI18n();
   const idx = stepIndex(current);
+  const label = m.apply.steps[current as StepSlug]?.label ?? "";
   return (
     <div className="mb-8">
       <div className="flex items-center justify-between">
         <p className="text-sm font-medium text-slate-500">
-          Step {idx + 1} of {WIZARD_STEPS.length}
+          {t(m.apply.progress, { current: idx + 1, total: WIZARD_STEPS.length })}
         </p>
-        <p className="text-sm font-medium text-navy-800">
-          {WIZARD_STEPS[idx]?.label}
-        </p>
+        <p className="text-sm font-medium text-navy-800">{label}</p>
       </div>
       <div className="mt-3 flex gap-1.5" aria-hidden>
         {WIZARD_STEPS.map((s, i) => (
@@ -35,7 +38,7 @@ export function WizardStep({
   title,
   subtitle,
   onNext,
-  nextLabel = "Continue",
+  nextLabel,
   nextDisabled = false,
   children,
 }: {
@@ -48,6 +51,7 @@ export function WizardStep({
   children: React.ReactNode;
 }) {
   const router = useRouter();
+  const { m } = useI18n();
   const back = prevStep(current);
 
   return (
@@ -74,11 +78,11 @@ export function WizardStep({
                   className="btn-ghost px-5 py-2.5 text-sm"
                   onClick={() => router.push(back.path)}
                 >
-                  Back
+                  {m.common.back}
                 </button>
               ) : (
                 <Link href="/apply" className="btn-ghost px-5 py-2.5 text-sm">
-                  Back
+                  {m.common.back}
                 </Link>
               )}
               <button
@@ -86,13 +90,13 @@ export function WizardStep({
                 className="btn-accent px-6 py-2.5 text-sm"
                 disabled={nextDisabled}
               >
-                {nextLabel}
+                {nextLabel ?? m.common.continue}
               </button>
             </div>
           </form>
         </div>
         <p className="mt-5 text-center text-xs text-slate-500">
-          Veyra is a marketplace and does not make lending decisions.
+          {m.common.marketplaceShort}
         </p>
       </div>
     </div>

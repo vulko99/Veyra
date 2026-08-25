@@ -73,32 +73,92 @@ body {
     @apply border-mint bg-mint-50 ring-1 ring-mint/40;
   }
 
-  /* ---- App flow (dark product experience) — scoped, does not touch marketing ---- */
+  /* ---- App flow (dark product experience) — scoped, does not touch marketing ----
+     Authored as plain CSS (no @apply of custom colors) so it compiles reliably
+     regardless of Tailwind config-reload state. Palette:
+     ink #071426/#0B172A, surface #0F2035, border #26364B, selected #0E3A38,
+     white #F8FAFC, muted #94A3B8, mint #21C7A8 (mint-400 #3DD6BA). */
   .app-shell {
-    @apply min-h-screen text-appwhite;
+    min-height: 100vh;
+    color: #f8fafc;
     background:
       radial-gradient(1200px 600px at 80% -10%, rgba(108, 99, 255, 0.14), transparent 60%),
       radial-gradient(1000px 500px at -10% 110%, rgba(33, 199, 168, 0.12), transparent 55%),
       linear-gradient(180deg, #071426 0%, #0b172a 100%);
   }
   .a-eyebrow {
-    @apply inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-mint-400;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: #3dd6ba;
   }
   .a-label {
-    @apply mb-2 block text-sm font-medium text-appmuted;
+    margin-bottom: 0.5rem;
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #94a3b8;
   }
   .a-input {
-    @apply w-full rounded-xl border border-appborder bg-appsurface px-4 py-3.5 text-appwhite outline-none transition placeholder:text-slate-500 focus:border-mint focus:ring-4 focus:ring-mint/15;
+    width: 100%;
+    border-radius: 0.75rem;
+    border: 1px solid #26364b;
+    background: #0f2035;
+    padding: 0.875rem 1rem;
+    color: #f8fafc;
+    outline: none;
+    transition: all 0.15s ease;
+  }
+  .a-input::placeholder {
+    color: #64748b;
+  }
+  .a-input:focus {
+    border-color: #21c7a8;
+    box-shadow: 0 0 0 4px rgba(33, 199, 168, 0.15);
   }
   /* Selectable dark card (employment, purpose, yes/no, consent). */
   .a-card {
-    @apply relative rounded-xl border border-appborder bg-appsurface text-appwhite transition-all duration-200 hover:border-slate-500;
+    position: relative;
+    border-radius: 0.75rem;
+    border: 1px solid #26364b;
+    background: #0f2035;
+    color: #f8fafc;
+    transition: all 0.2s ease;
   }
-  .a-card-active {
-    @apply border-mint bg-appselect ring-1 ring-mint/40 hover:border-mint;
+  .a-card:hover {
+    border-color: #64748b;
+  }
+  .a-card-active,
+  .a-card-active:hover {
+    border-color: #21c7a8;
+    background: #0e3a38;
+    box-shadow: 0 0 0 1px rgba(33, 199, 168, 0.4);
   }
   .a-btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-appwhite ring-1 ring-inset ring-white/15 transition hover:bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-mint;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 9999px;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #f8fafc;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+    transition: all 0.15s ease;
+    cursor: pointer;
+  }
+  .a-btn-ghost:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+  .a-btn-ghost:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.15), 0 0 0 2px #21c7a8;
   }
 
   /* Staggered entrance for step content / result cards. */

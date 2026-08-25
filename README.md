@@ -105,6 +105,23 @@ docker compose exec backend python manage.py createsuperuser
 
 Then visit the Django admin at http://localhost:8000/admin/.
 
+## Run in the browser (GitHub Codespaces)
+
+No local setup or editor required:
+
+1. On GitHub, open the repo and select this branch.
+2. Click **Code → Codespaces → Create codespace on this branch**.
+3. Wait for the one-time setup (installs deps, migrates, seeds demo data), then
+   the servers start automatically. Open the forwarded **port 3000** from the
+   **Ports** tab (a preview usually pops up on its own).
+
+The devcontainer (`.devcontainer/`) runs Django (SQLite, eager Celery — no extra
+containers) and Next.js, and the frontend proxies `/api/*` to the backend so the
+browser only ever uses one forwarded origin (avoids cross-origin/port-auth
+issues). Admin: forwarded **port 8000** `/admin` — `admin@veyra.example` /
+`veyra-demo-pass`. Re-run `bash .devcontainer/start.sh` if you need to restart
+the servers.
+
 ## Local development (without Docker)
 
 ### Backend

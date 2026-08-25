@@ -66,7 +66,7 @@ export default function HomePage() {
         <div className="max-w-2xl">
           <span className="eyebrow">{m.home.featuresTitle}</span>
           <h2 className="mt-4 text-3xl font-bold tracking-tight text-ink sm:text-[2.6rem]">
-            {m.home.stepsIntro}
+            {m.home.featuresIntro}
           </h2>
         </div>
         <div className="mt-14 grid gap-x-10 gap-y-12 sm:grid-cols-3">
@@ -85,30 +85,28 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Steps */}
-      <section className="bg-white py-24">
-        <div className="container-x">
+      {/* Steps — dark dual-surface panel (product moment inside marketing) */}
+      <section className="container-x py-20">
+        <div className="surface-dark relative overflow-hidden rounded-[2rem] px-6 py-14 sm:px-12 sm:py-16">
           <div className="max-w-2xl">
-            <span className="eyebrow">{m.home.stepsTitle}</span>
-            <h2 className="mt-4 text-3xl font-bold tracking-tight text-ink sm:text-[2.6rem]">
-              {m.home.stepsTitle}
-            </h2>
+            <span className="a-eyebrow">{m.home.stepsTitle}</span>
+            <h2 className="t-h2 mt-4 text-appwhite">{m.home.stepsIntro}</h2>
           </div>
-          <div className="mt-14 grid gap-8 md:grid-cols-3">
+          <div className="mt-12 grid gap-6 md:grid-cols-3">
             {m.home.steps.map((step, i) => (
-              <div key={step.title} className="relative">
+              <div key={step.title} className="card-navy relative p-6">
                 <div className="flex items-center gap-3">
-                  <span className="grid h-11 w-11 place-items-center rounded-xl bg-ink font-display text-lg font-bold text-white">
+                  <span
+                    className="brand-gradient grid h-10 w-10 place-items-center rounded-xl font-display text-base font-bold text-white"
+                  >
                     {i + 1}
                   </span>
                   {i < m.home.steps.length - 1 && (
-                    <span className="hidden h-px flex-1 bg-slate-200 md:block" />
+                    <span className="hidden h-px flex-1 bg-gradient-to-r from-mint/50 to-transparent md:block" />
                   )}
                 </div>
-                <h3 className="mt-5 text-lg font-bold tracking-tight text-ink">
-                  {step.title}
-                </h3>
-                <p className="mt-2 leading-relaxed text-muted">{step.body}</p>
+                <h3 className="t-h3 mt-5 text-appwhite">{step.title}</h3>
+                <p className="mt-2 t-small text-appmuted">{step.body}</p>
               </div>
             ))}
           </div>
@@ -116,14 +114,12 @@ export default function HomePage() {
       </section>
 
       {/* CTA */}
-      <section className="container-x pt-24">
-        <div className="relative overflow-hidden rounded-[2rem] bg-ink px-8 py-16 text-center sm:px-16">
-          <div className="pointer-events-none absolute -left-20 -top-20 h-72 w-72 rounded-full bg-electric/25 blur-3xl" />
-          <div className="pointer-events-none absolute -bottom-24 -right-16 h-80 w-80 rounded-full bg-mint/25 blur-3xl" />
-          <h2 className="relative mx-auto max-w-2xl text-3xl font-bold tracking-tight text-white sm:text-4xl">
+      <section className="container-x pb-4">
+        <div className="surface-dark relative overflow-hidden rounded-[2rem] px-8 py-16 text-center sm:px-16">
+          <h2 className="relative mx-auto max-w-2xl t-h1 text-white">
             {m.home.ctaTitle}
           </h2>
-          <p className="relative mx-auto mt-4 max-w-xl text-slate-300">
+          <p className="relative mx-auto mt-4 max-w-xl text-appmuted">
             {m.home.ctaBody}
           </p>
           <div className="relative mt-9">

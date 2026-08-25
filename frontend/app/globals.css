@@ -73,6 +73,75 @@ body {
     @apply border-mint bg-mint-50 ring-1 ring-mint/40;
   }
 
+  /* ---- Veyra design system: dual-surface (light + dark) ---- */
+
+  /* Type scale — one consistent hierarchy across the whole product. */
+  .t-display { @apply font-display font-extrabold tracking-tightest; font-size: clamp(2.6rem, 6vw, 4rem); line-height: 1.02; }
+  .t-h1 { @apply font-display font-bold tracking-tighter; font-size: clamp(2rem, 4vw, 3rem); line-height: 1.06; }
+  .t-h2 { @apply font-display font-bold tracking-tight; font-size: clamp(1.5rem, 3vw, 2.25rem); line-height: 1.12; }
+  .t-h3 { @apply font-display font-bold tracking-tight; font-size: 1.2rem; line-height: 1.25; }
+  .t-body { font-size: 1rem; line-height: 1.7; }
+  .t-small { font-size: 0.9rem; line-height: 1.6; }
+  .t-caption { font-size: 0.75rem; line-height: 1.4; letter-spacing: 0.02em; }
+
+  /* Dark navy surface (feature panels, CTAs, responsible-lending hero, product
+     moments). Same brand language as the application flow. */
+  .surface-dark {
+    position: relative;
+    color: #f8fafc;
+    background:
+      radial-gradient(900px 480px at 82% -20%, rgba(108, 99, 255, 0.16), transparent 60%),
+      radial-gradient(760px 420px at -10% 120%, rgba(33, 199, 168, 0.13), transparent 55%),
+      linear-gradient(180deg, #071426 0%, #0b172a 100%);
+  }
+  .surface-dark-flat {
+    color: #f8fafc;
+    background: #0b172a;
+  }
+
+  /* Outlined card: white surface, subtle navy border, soft shadow, mint hover. */
+  .card-outline {
+    border-radius: 1rem;
+    background: #ffffff;
+    border: 1px solid rgba(11, 23, 42, 0.08);
+    box-shadow: 0 1px 2px rgba(11, 23, 42, 0.04);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  }
+  .card-outline:hover {
+    border-color: rgba(33, 199, 168, 0.55);
+    box-shadow: 0 2px 6px rgba(11, 23, 42, 0.06), 0 24px 48px -28px rgba(11, 23, 42, 0.28);
+  }
+
+  /* Dark card on a dark surface (navy panels). */
+  .card-navy {
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: border-color 0.2s ease, background 0.2s ease;
+  }
+  .card-navy:hover {
+    border-color: rgba(33, 199, 168, 0.4);
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  /* Brand gradient — teal → blue → violet. Used sparingly for brand moments. */
+  .brand-gradient {
+    background-image: linear-gradient(100deg, #21c7a8 0%, #2563eb 52%, #6c63ff 100%);
+  }
+  .brand-gradient-text {
+    background-image: linear-gradient(100deg, #21c7a8 0%, #2563eb 52%, #6c63ff 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Subtle atmospheric wash for light sections. */
+  .atmos-light {
+    background:
+      radial-gradient(760px 380px at 88% -8%, rgba(33, 199, 168, 0.08), transparent 60%),
+      radial-gradient(680px 360px at -6% 8%, rgba(108, 99, 255, 0.07), transparent 55%);
+  }
+
   /* ---- App flow (dark product experience) — scoped, does not touch marketing ----
      Authored as plain CSS (no @apply of custom colors) so it compiles reliably
      regardless of Tailwind config-reload state. Palette:

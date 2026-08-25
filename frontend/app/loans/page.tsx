@@ -10,9 +10,9 @@ export default function LoansPage() {
     <PageShell title={m.loans.title} intro={m.loans.intro}>
       <div className="grid gap-5 sm:grid-cols-2">
         {m.loans.products.map((p) => (
-          <div key={p.name} className="surface p-6">
-            <h3 className="font-display text-lg font-bold text-ink">{p.name}</h3>
-            <p className="mt-2 text-sm leading-relaxed text-muted">{p.body}</p>
+          <div key={p.name} className="card-outline p-6">
+            <h3 className="t-h3 text-ink">{p.name}</h3>
+            <p className="mt-2 t-small text-muted">{p.body}</p>
           </div>
         ))}
       </div>

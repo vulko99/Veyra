@@ -68,6 +68,7 @@ const en: Messages = {
       { stat: "€0", label: "fee for you" },
     ],
     featuresTitle: "Why Veyra",
+    featuresIntro: "A transparent choice — no legwork, no surprises.",
     features: [
       {
         title: "One application",
@@ -186,6 +187,28 @@ const en: Messages = {
     title: "Responsible borrowing",
     intro:
       "Borrowing has real costs. We want you to make a decision that is right for you.",
+    heroA: "Credit is a tool.",
+    heroB: "Not the answer to every problem.",
+    heroSub: "A few things to weigh before taking on new borrowing.",
+    calloutsTitle: "What to consider",
+    callouts: [
+      {
+        label: "Total cost",
+        body: "See what you pay over the whole term, not just the monthly payment.",
+      },
+      {
+        label: "Monthly payment",
+        body: "Make sure the payment fits comfortably within your budget.",
+      },
+      {
+        label: "Existing obligations",
+        body: "Account for your current credit before taking on more.",
+      },
+      {
+        label: "Partner terms",
+        body: "Read the interest, fees, and conditions of the specific partner.",
+      },
+    ],
     sections: [
       {
         heading: "Borrow only what you need",

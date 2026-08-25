@@ -1,68 +1,59 @@
+"use client";
+
 import Link from "next/link";
+import { useId } from "react";
+
+type Tone = "gradient" | "dark" | "white";
 
 /**
- * Veyra monogram — two paths (ink + mint) converging through a single node
- * into one onward route. Reads as a "V" and as intelligent routing.
+ * Veyra brand mark — a geometric "V" chevron: two converging paths reading as
+ * comparison / opportunity / direction. Recognisable without the wordmark and
+ * legible at favicon size. The primary mark uses a restrained teal→blue→violet
+ * gradient; monochrome variants for dark/light contexts.
  */
 export function VeyraMark({
-  className = "",
   size = 32,
+  tone = "gradient",
+  className = "",
 }: {
-  className?: string;
   size?: number;
+  tone?: Tone;
+  className?: string;
 }) {
+  const id = useId();
+  const gid = `veyra-${id}`;
+  const fill =
+    tone === "gradient" ? `url(#${gid})` : tone === "white" ? "#FFFFFF" : "#0B172A";
   return (
     <svg
-      viewBox="0 0 32 32"
+      viewBox="0 0 48 48"
       width={size}
       height={size}
       className={className}
-      fill="none"
-      aria-hidden="true"
+      role="img"
+      aria-label="Veyra"
     >
-      <path
-        d="M6 6.5 L15 19"
-        stroke="currentColor"
-        strokeWidth="3"
-        strokeLinecap="round"
-        className="text-ink"
-      />
-      <path
-        d="M26 6.5 L17 19"
-        stroke="#21C7A8"
-        strokeWidth="3"
-        strokeLinecap="round"
-      />
-      {/* converge node */}
-      <circle cx="16" cy="20.4" r="3" fill="#6C63FF" />
-      {/* single onward route */}
-      <path
-        d="M16 22.6 L16 27"
-        stroke="currentColor"
-        strokeWidth="3"
-        strokeLinecap="round"
-        className="text-ink"
-      />
+      {tone === "gradient" && (
+        <defs>
+          <linearGradient id={gid} x1="4" y1="8" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="#21C7A8" />
+            <stop offset="52%" stopColor="#2563EB" />
+            <stop offset="100%" stopColor="#6C63FF" />
+          </linearGradient>
+        </defs>
+      )}
+      {/* solid chevron V (thick, geometric) */}
+      <path d="M7 11 L17 11 L24 27 L31 11 L41 11 L24 41 Z" fill={fill} />
     </svg>
   );
 }
 
 export function Logo({ light = false }: { light?: boolean }) {
   return (
-    <Link
-      href="/"
-      className="inline-flex items-center gap-2.5"
-      aria-label="Veyra"
-    >
+    <Link href="/" className="inline-flex items-center gap-2.5" aria-label="Veyra">
+      <VeyraMark size={30} tone={light ? "white" : "gradient"} />
       <span
-        className={`grid h-9 w-9 place-items-center rounded-xl ${
-          light ? "bg-white/10" : "bg-white shadow-card ring-1 ring-slate-200/70"
-        }`}
-      >
-        <VeyraMark size={24} className={light ? "text-white" : "text-ink"} />
-      </span>
-      <span
-        className={`font-display text-[1.35rem] font-extrabold tracking-tighter ${
+        className={`font-display text-[1.4rem] font-extrabold tracking-tighter ${
           light ? "text-white" : "text-ink"
         }`}
       >

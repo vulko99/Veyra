@@ -1,7 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
-  <rect width="32" height="32" rx="8" fill="#0B172A"/>
-  <path d="M8 8.5 L15 18.5" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round"/>
-  <path d="M24 8.5 L17 18.5" stroke="#21C7A8" stroke-width="2.6" stroke-linecap="round"/>
-  <circle cx="16" cy="19.6" r="2.7" fill="#6C63FF"/>
-  <path d="M16 21.6 L16 25.5" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <defs>
+    <linearGradient id="g" x1="6" y1="8" x2="42" y2="44" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#21C7A8"/>
+      <stop offset="52%" stop-color="#2563EB"/>
+      <stop offset="100%" stop-color="#6C63FF"/>
+    </linearGradient>
+  </defs>
+  <rect width="48" height="48" rx="11" fill="#0B172A"/>
+  <path d="M10 13 L19 13 L24 26 L29 13 L38 13 L24 39 Z" fill="url(#g)"/>
 </svg>

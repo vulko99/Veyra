@@ -26,6 +26,7 @@ const config: Config = {
           600: "#12A98D",
           700: "#0E8871",
         },
+        // Brand violet (a.k.a. electric).
         electric: {
           DEFAULT: "#6C63FF",
           50: "#EEEDFF",
@@ -34,7 +35,19 @@ const config: Config = {
           500: "#6C63FF",
           600: "#564CE6",
         },
-        canvas: "#F6F8FA",
+        violet: {
+          DEFAULT: "#6C63FF",
+          400: "#8A83FF",
+          500: "#6C63FF",
+        },
+        // Brand blue.
+        brand: {
+          DEFAULT: "#2563EB",
+          400: "#5b8bf5",
+          500: "#2563EB",
+          600: "#1d50c4",
+        },
+        canvas: "#F5F7FA",
         muted: "#64748B",
         // App-flow (dark product experience) tokens.
         midnight: "#071426",

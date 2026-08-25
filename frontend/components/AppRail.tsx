@@ -38,7 +38,7 @@ export function AppRail({ current }: { current: string }) {
       <div className="sticky top-0 flex h-screen flex-col px-8 py-8">
         <div className="flex items-center gap-2.5">
           <span className="grid h-9 w-9 place-items-center rounded-xl bg-white/5 ring-1 ring-white/10">
-            <VeyraMark size={22} className="text-appwhite" />
+            <VeyraMark size={22} tone="white" />
           </span>
           <span className="font-display text-lg font-extrabold tracking-tighter text-appwhite">
             Veyra

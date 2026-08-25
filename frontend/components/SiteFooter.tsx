@@ -48,7 +48,7 @@ export function SiteFooter() {
         <div>
           <div className="flex items-center gap-2.5">
             <span className="grid h-9 w-9 place-items-center rounded-xl bg-white/10">
-              <VeyraMark size={22} className="text-white" />
+              <VeyraMark size={22} tone="white" />
             </span>
             <span className="font-display text-xl font-extrabold tracking-tighter text-white">
               Veyra

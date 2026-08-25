@@ -330,6 +330,7 @@ const en: Messages = {
       ],
     },
     progress: "Step {current} of {total}",
+    resultsLabel: "Results",
     steps: {
       amount: {
         label: "Amount",
@@ -377,14 +378,15 @@ const en: Messages = {
       },
       consent: {
         label: "Consent",
-        title: "Your consent",
+        title: "You decide what you share.",
         subtitle:
-          "You decide what you agree to. Nothing is shared with partners unless you continue to one.",
+          "To show you relevant options, we need to process the information you provide.",
         platformLabel: "I agree to Veyra processing my information",
-        platformDesc: "So we can show you relevant options.",
+        platformDesc: "Required so we can process your request.",
         partnerLabel:
-          "I agree to my data being shared with a partner I continue to",
-        partnerDesc: "Data is shared only with a partner you actively choose.",
+          "I agree to my data being shared with the partner I choose to continue to",
+        partnerDesc:
+          "Data is shared only with a partner you choose, and in line with the applicable processing information.",
         marketingLabel: "I want to receive useful updates from Veyra",
         marketingDesc: "Optional. You can unsubscribe at any time.",
         legalPrefix: "By continuing you accept our",
@@ -413,10 +415,10 @@ const en: Messages = {
   },
   results: {
     eyebrow: "Results",
-    title: "We found potentially relevant options",
+    title: "We found relevant options.",
     subhead: "Based on the information you provided.",
-    topMatch: "Strongest match",
-    suitable: "Suitable for the profile you provided",
+    topMatch: "Best match for your entered criteria",
+    suitable: "Matches the criteria you entered",
     amountRange: "Amount",
     termRange: "Term",
     months: "months",

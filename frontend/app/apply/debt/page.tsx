@@ -32,15 +32,13 @@ export default function DebtStep() {
               type="button"
               onClick={() => update({ has_existing_loans: o.value })}
               aria-pressed={active}
-              className={`flex h-28 flex-col items-center justify-center gap-2 rounded-2xl border text-lg font-bold transition-all ${
-                active
-                  ? "border-mint bg-mint-50 text-ink ring-1 ring-mint/40"
-                  : "border-slate-200 bg-white text-ink hover:border-slate-300 hover:shadow-card"
+              className={`flex h-28 flex-col items-center justify-center gap-2 text-lg font-bold a-card ${
+                active ? "a-card-active" : ""
               }`}
             >
               <span
                 className={`grid h-8 w-8 place-items-center rounded-full text-sm ${
-                  active ? "bg-ink text-mint" : "bg-slate-100 text-muted"
+                  active ? "bg-mint text-ink" : "bg-white/5 text-appmuted"
                 }`}
               >
                 {o.value ? "✓" : "—"}
@@ -53,11 +51,11 @@ export default function DebtStep() {
 
       {has === true && (
         <div className="reveal mt-8">
-          <label htmlFor="payment" className="field-label">
+          <label htmlFor="payment" className="a-label">
             {s.paymentLabel}
           </label>
-          <div className="flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-4 focus-within:border-mint focus-within:ring-4 focus-within:ring-mint/15">
-            <span className="font-display text-2xl font-bold text-muted">€</span>
+          <div className="flex items-center gap-1 rounded-xl border border-appborder bg-appsurface px-4 focus-within:border-mint focus-within:ring-4 focus-within:ring-mint/15">
+            <span className="font-display text-2xl font-bold text-appmuted">€</span>
             <input
               id="payment"
               inputMode="numeric"
@@ -70,7 +68,7 @@ export default function DebtStep() {
               onChange={(e) =>
                 update({ existing_monthly_payments: parseNumeric(e.target.value) })
               }
-              className="w-full bg-transparent py-3.5 text-xl font-semibold text-ink outline-none tabular-nums placeholder:text-slate-300"
+              className="w-full bg-transparent py-3.5 text-xl font-semibold text-appwhite outline-none tabular-nums placeholder:text-slate-600"
             />
           </div>
         </div>

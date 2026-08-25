@@ -1,12 +1,19 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Logo } from "./Logo";
 import { useMessages } from "@/hooks/useI18n";
 
+// The application flow is a distinct dark product experience with its own chrome.
+function isAppFlow(pathname: string | null): boolean {
+  return !!pathname && (pathname.startsWith("/apply") || pathname.startsWith("/results"));
+}
+
 export function SiteHeader() {
   const m = useMessages();
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -23,6 +30,8 @@ export function SiteHeader() {
     { href: "/faq", label: m.nav.faq },
     { href: "/responsible-borrowing", label: m.nav.responsible },
   ];
+
+  if (isAppFlow(pathname)) return null;
 
   return (
     <header

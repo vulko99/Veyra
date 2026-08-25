@@ -73,6 +73,34 @@ body {
     @apply border-mint bg-mint-50 ring-1 ring-mint/40;
   }
 
+  /* ---- App flow (dark product experience) — scoped, does not touch marketing ---- */
+  .app-shell {
+    @apply min-h-screen text-appwhite;
+    background:
+      radial-gradient(1200px 600px at 80% -10%, rgba(108, 99, 255, 0.14), transparent 60%),
+      radial-gradient(1000px 500px at -10% 110%, rgba(33, 199, 168, 0.12), transparent 55%),
+      linear-gradient(180deg, #071426 0%, #0b172a 100%);
+  }
+  .a-eyebrow {
+    @apply inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-mint-400;
+  }
+  .a-label {
+    @apply mb-2 block text-sm font-medium text-appmuted;
+  }
+  .a-input {
+    @apply w-full rounded-xl border border-appborder bg-appsurface px-4 py-3.5 text-appwhite outline-none transition placeholder:text-slate-500 focus:border-mint focus:ring-4 focus:ring-mint/15;
+  }
+  /* Selectable dark card (employment, purpose, yes/no, consent). */
+  .a-card {
+    @apply relative rounded-xl border border-appborder bg-appsurface text-appwhite transition-all duration-200 hover:border-slate-500;
+  }
+  .a-card-active {
+    @apply border-mint bg-appselect ring-1 ring-mint/40 hover:border-mint;
+  }
+  .a-btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-appwhite ring-1 ring-inset ring-white/15 transition hover:bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-mint;
+  }
+
   /* Staggered entrance for step content / result cards. */
   .reveal > * {
     animation: fade-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;

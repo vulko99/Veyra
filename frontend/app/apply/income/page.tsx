@@ -33,8 +33,8 @@ export default function IncomeStep() {
       <label htmlFor="income" className="sr-only">
         {s.inputLabel}
       </label>
-      <div className="flex items-center justify-center gap-1 border-b-2 border-slate-200 pb-3 focus-within:border-mint">
-        <span className="font-display text-5xl font-extrabold text-muted sm:text-6xl">
+      <div className="flex items-center justify-center gap-1 border-b-2 border-appborder pb-3 focus-within:border-mint">
+        <span className="font-display text-5xl font-extrabold text-appmuted sm:text-6xl">
           €
         </span>
         <input
@@ -43,7 +43,7 @@ export default function IncomeStep() {
           placeholder="2000"
           value={raw ? formatNumber(raw) : ""}
           onChange={(e) => update({ monthly_income: parseNumeric(e.target.value) })}
-          className="w-full max-w-[7ch] bg-transparent text-center font-display text-6xl font-extrabold tracking-tightest text-ink outline-none tabular-nums placeholder:text-slate-300 sm:text-7xl"
+          className="w-full max-w-[7ch] bg-transparent text-center font-display text-6xl font-extrabold tracking-tightest text-appwhite outline-none tabular-nums placeholder:text-slate-600 sm:text-7xl"
         />
       </div>
 
@@ -64,12 +64,12 @@ export default function IncomeStep() {
             [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:rounded-full
             [&::-moz-range-thumb]:border-4 [&::-moz-range-thumb]:border-mint [&::-moz-range-thumb]:bg-white"
           style={{
-            background: `linear-gradient(to right, #21C7A8 ${fillPct}%, #E2E8F0 ${fillPct}%)`,
+            background: `linear-gradient(to right, #21C7A8 ${fillPct}%, #26364B ${fillPct}%)`,
           }}
         />
       </div>
 
-      <p className="mt-8 rounded-xl bg-white p-4 text-sm text-muted ring-1 ring-slate-200/70">
+      <p className="mt-8 rounded-xl border border-appborder bg-appsurface p-4 text-sm text-appmuted">
         {s.hint}
       </p>
     </WizardStep>

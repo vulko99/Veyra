@@ -27,25 +27,25 @@ export default function ApplyIntroPage() {
   }, []);
 
   return (
-    <div className="min-h-[calc(100vh-68px)] bg-canvas">
-      <div className="container-x flex min-h-[calc(100vh-68px)] max-w-xl flex-col justify-center py-14 text-center">
+    <div className="app-shell">
+      <div className="container-x flex min-h-screen max-w-xl flex-col justify-center py-14 text-center">
         <div className="reveal">
           <div className="mx-auto flex justify-center">
-            <Logo />
+            <Logo light />
           </div>
-          <h1 className="mt-10 text-3xl font-bold tracking-tight text-ink sm:text-[2.6rem]">
+          <h1 className="mt-10 text-3xl font-bold tracking-tight text-appwhite sm:text-[2.6rem]">
             {m.apply.intro.h1}
           </h1>
-          <p className="mx-auto mt-4 max-w-md text-lg text-muted">
+          <p className="mx-auto mt-4 max-w-md text-lg text-appmuted">
             {m.apply.intro.sub}
           </p>
           <ul className="mx-auto mt-10 max-w-sm space-y-3 text-left">
             {m.apply.intro.bullets.map((item) => (
               <li key={item} className="flex items-start gap-3">
-                <span className="mt-0.5 grid h-5 w-5 flex-none place-items-center rounded-full bg-mint/15 text-xs font-bold text-mint-600">
+                <span className="mt-0.5 grid h-5 w-5 flex-none place-items-center rounded-full bg-mint/15 text-xs font-bold text-mint-400">
                   ✓
                 </span>
-                <span className="text-ink/80">{item}</span>
+                <span className="text-slate-300">{item}</span>
               </li>
             ))}
           </ul>
@@ -55,7 +55,7 @@ export default function ApplyIntroPage() {
               <span aria-hidden>→</span>
             </Link>
           </div>
-          <p className="mt-5 text-xs text-muted/80">{m.common.disclaimer}</p>
+          <p className="mt-5 text-xs text-appmuted">{m.common.disclaimer}</p>
         </div>
       </div>
     </div>

@@ -59,20 +59,22 @@ export default function ConsentStep() {
         </div>
       </div>
 
-      <p className="mt-6 text-xs leading-relaxed text-muted">
+      <p className="mt-6 text-xs leading-relaxed text-appmuted">
         {s.legalPrefix}{" "}
-        <Link href="/terms" className="font-medium text-mint-600 hover:underline">
+        <Link href="/terms" className="font-medium text-mint-400 hover:underline">
           {s.terms}
         </Link>{" "}
         {s.and}{" "}
-        <Link href="/privacy" className="font-medium text-mint-600 hover:underline">
+        <Link href="/privacy" className="font-medium text-mint-400 hover:underline">
           {s.privacy}
         </Link>
         {s.legalSuffix}
       </p>
 
       {error && (
-        <p className="mt-4 rounded-xl bg-red-50 p-3 text-sm text-red-600">{error}</p>
+        <p className="mt-4 rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-300">
+          {error}
+        </p>
       )}
     </WizardStep>
   );
@@ -96,13 +98,13 @@ function ConsentRow({
   const m = useMessages();
   return (
     <label
-      className={`flex cursor-pointer items-start gap-3.5 rounded-2xl border p-4 transition ${
-        checked ? "border-mint/50 bg-mint-50/60" : "border-slate-200 bg-white hover:border-slate-300"
+      className={`flex cursor-pointer items-start gap-3.5 p-4 a-card ${
+        checked ? "a-card-active" : ""
       }`}
     >
       <span
-        className={`mt-0.5 grid h-6 w-6 flex-none place-items-center rounded-lg border-2 transition ${
-          checked ? "border-mint bg-mint text-ink" : "border-slate-300 bg-white text-transparent"
+        className={`mt-0.5 grid h-6 w-6 flex-none place-items-center rounded-md border-2 transition ${
+          checked ? "border-mint bg-mint text-ink" : "border-white/25 bg-transparent text-transparent"
         }`}
       >
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round">
@@ -116,16 +118,16 @@ function ConsentRow({
         onChange={(e) => onChange(e.target.checked)}
       />
       <span>
-        <span className="block text-sm font-medium text-ink">
+        <span className="block text-sm font-medium text-appwhite">
           {label}
-          {required && <span className="ml-1 text-mint-600">*</span>}
+          {required && <span className="ml-1 text-mint-400">*</span>}
           {optional && (
-            <span className="ml-2 rounded-full bg-slate-100 px-2 py-0.5 text-[0.65rem] font-semibold uppercase tracking-wide text-muted">
+            <span className="ml-2 rounded-full bg-white/10 px-2 py-0.5 text-[0.65rem] font-semibold uppercase tracking-wide text-appmuted">
               {m.common.optional}
             </span>
           )}
         </span>
-        <span className="mt-0.5 block text-xs text-muted">{description}</span>
+        <span className="mt-0.5 block text-xs text-appmuted">{description}</span>
       </span>
     </label>
   );

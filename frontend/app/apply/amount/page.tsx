@@ -41,10 +41,10 @@ export default function AmountStep() {
     >
       {/* large amount display */}
       <div className="text-center">
-        <div className="font-display text-6xl font-extrabold tracking-tightest text-ink tabular-nums sm:text-7xl">
+        <div className="font-display text-6xl font-extrabold tracking-tightest text-appwhite tabular-nums sm:text-7xl">
           {formatEUR(amount)}
         </div>
-        <p className="mt-2 text-sm text-muted">
+        <p className="mt-2 text-sm text-appmuted">
           {formatEUR(MIN)} – {formatEUR(MAX)}
         </p>
       </div>
@@ -66,7 +66,7 @@ export default function AmountStep() {
             [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:rounded-full
             [&::-moz-range-thumb]:border-4 [&::-moz-range-thumb]:border-mint [&::-moz-range-thumb]:bg-white"
           style={{
-            background: `linear-gradient(to right, #21C7A8 ${fillPct}%, #E2E8F0 ${fillPct}%)`,
+            background: `linear-gradient(to right, #21C7A8 ${fillPct}%, #26364B ${fillPct}%)`,
           }}
         />
       </div>
@@ -79,8 +79,8 @@ export default function AmountStep() {
             type="button"
             className={`rounded-full border px-4 py-2 text-sm font-semibold transition ${
               amount === p
-                ? "border-mint bg-mint-50 text-mint-700"
-                : "border-slate-200 bg-white text-ink hover:border-slate-300"
+                ? "border-mint bg-appselect text-mint-400"
+                : "border-appborder bg-appsurface text-appwhite hover:border-slate-500"
             }`}
             onClick={() => setAmount(p)}
           >

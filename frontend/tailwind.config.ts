@@ -36,6 +36,13 @@ const config: Config = {
         },
         canvas: "#F6F8FA",
         muted: "#64748B",
+        // App-flow (dark product experience) tokens.
+        midnight: "#071426",
+        appsurface: "#0F2035",
+        appborder: "#26364B",
+        appselect: "#0E3A38",
+        appmuted: "#94A3B8",
+        appwhite: "#F8FAFC",
       },
       fontFamily: {
         display: ["var(--font-display)", "system-ui", "sans-serif"],

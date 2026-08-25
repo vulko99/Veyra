@@ -1,12 +1,19 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { VeyraMark } from "./Logo";
 import { useMessages } from "@/hooks/useI18n";
 
 export function SiteFooter() {
   const m = useMessages();
+  const pathname = usePathname();
   const f = m.footer;
+
+  // Hidden on the dark application flow (it has its own chrome).
+  if (pathname && (pathname.startsWith("/apply") || pathname.startsWith("/results"))) {
+    return null;
+  }
 
   const columns = [
     {

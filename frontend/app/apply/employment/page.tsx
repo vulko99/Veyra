@@ -72,15 +72,13 @@ export default function EmploymentStep() {
               type="button"
               onClick={() => update({ employment_type: key })}
               aria-pressed={active}
-              className={`group flex flex-col items-start gap-4 rounded-2xl border p-5 text-left transition-all duration-150 ${
-                active
-                  ? "border-mint bg-mint-50 ring-1 ring-mint/40"
-                  : "border-slate-200 bg-white hover:border-slate-300 hover:shadow-card"
+              className={`group flex flex-col items-start gap-4 p-5 text-left a-card ${
+                active ? "a-card-active" : ""
               } ${isLast && ORDER.length % 2 === 1 ? "col-span-2" : ""}`}
             >
               <span
                 className={`grid h-11 w-11 place-items-center rounded-xl transition ${
-                  active ? "bg-ink text-mint" : "bg-slate-100 text-ink"
+                  active ? "bg-mint text-ink" : "bg-white/5 text-appwhite"
                 }`}
               >
                 <svg
@@ -96,7 +94,7 @@ export default function EmploymentStep() {
                   {ICON[key]}
                 </svg>
               </span>
-              <span className="text-[0.95rem] font-semibold text-ink">
+              <span className="text-[0.95rem] font-semibold text-appwhite">
                 {m.apply.employmentOptions[key]}
               </span>
             </button>

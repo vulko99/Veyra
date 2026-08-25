@@ -34,15 +34,15 @@ export default function TermStep() {
     >
       {/* selected value */}
       <div className="text-center">
-        <span className="font-display text-6xl font-extrabold tracking-tightest text-ink tabular-nums">
+        <span className="font-display text-6xl font-extrabold tracking-tightest text-appwhite tabular-nums">
           {term}
         </span>
-        <span className="ml-2 text-xl font-semibold text-muted">{s.months}</span>
+        <span className="ml-2 text-xl font-semibold text-appmuted">{s.months}</span>
       </div>
 
       {/* timeline */}
       <div className="relative mt-12 px-1">
-        <div className="absolute left-0 right-0 top-[7px] h-0.5 bg-slate-200" />
+        <div className="absolute left-0 right-0 top-[7px] h-0.5 bg-white/10" />
         <div
           className="absolute left-0 top-[7px] h-0.5 bg-gradient-to-r from-electric to-mint transition-[width] duration-500"
           style={{
@@ -68,12 +68,12 @@ export default function TermStep() {
                       ? "scale-125 border-mint bg-mint shadow-glow"
                       : done
                         ? "border-mint bg-mint"
-                        : "border-slate-300 bg-white"
+                        : "border-white/25 bg-transparent"
                   }`}
                 />
                 <span
                   className={`text-sm font-semibold tabular-nums transition ${
-                    active ? "text-ink" : "text-muted"
+                    active ? "text-appwhite" : "text-appmuted"
                   }`}
                 >
                   {tm}
@@ -82,7 +82,7 @@ export default function TermStep() {
             );
           })}
         </div>
-        <p className="mt-6 text-center text-xs uppercase tracking-[0.16em] text-muted">
+        <p className="mt-6 text-center text-xs uppercase tracking-[0.16em] text-appmuted">
           {s.months}
         </p>
       </div>

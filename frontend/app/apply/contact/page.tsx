@@ -30,12 +30,12 @@ export default function ContactStep() {
     >
       <div className="space-y-5">
         <div>
-          <label className="field-label" htmlFor="name">
+          <label className="a-label" htmlFor="name">
             {s.nameLabel}
           </label>
           <input
             id="name"
-            className="field-input"
+            className="a-input"
             placeholder={s.namePlaceholder}
             autoComplete="name"
             value={name}
@@ -44,14 +44,14 @@ export default function ContactStep() {
         </div>
 
         <div>
-          <label className="field-label" htmlFor="phone">
+          <label className="a-label" htmlFor="phone">
             {s.phoneLabel}
           </label>
           <input
             id="phone"
             type="tel"
             inputMode="tel"
-            className="field-input"
+            className="a-input"
             placeholder="+359 ..."
             autoComplete="tel"
             value={draft.phone || ""}
@@ -60,13 +60,13 @@ export default function ContactStep() {
         </div>
 
         <div>
-          <label className="field-label" htmlFor="email">
+          <label className="a-label" htmlFor="email">
             {s.emailLabel}
           </label>
           <input
             id="email"
             type="email"
-            className="field-input"
+            className="a-input"
             placeholder="you@example.com"
             autoComplete="email"
             value={email}

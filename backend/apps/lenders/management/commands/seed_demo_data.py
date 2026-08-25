@@ -102,7 +102,7 @@ class Command(BaseCommand):
                     "product_type": p["product_type"],
                     "min_amount": p["min_amount"],
                     "max_amount": p["max_amount"],
-                    "currency": "BGN",
+                    "currency": "EUR",
                     "min_term_months": p["min_term_months"],
                     "max_term_months": p["max_term_months"],
                     "min_income": p["min_income"],

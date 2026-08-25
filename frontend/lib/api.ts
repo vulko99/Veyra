@@ -51,9 +51,16 @@ export function createApplication(
   draft: ApplicationDraft,
   consents: ConsentInput[]
 ): Promise<ApplicationResponse> {
+  // Customer-facing amounts are always EUR.
+  const payload = {
+    ...draft,
+    requested_currency: "EUR",
+    income_currency: "EUR",
+    consents,
+  };
   return request<ApplicationResponse>("/applications/", {
     method: "POST",
-    body: JSON.stringify({ ...draft, consents }),
+    body: JSON.stringify(payload),
   });
 }
 

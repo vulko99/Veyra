@@ -4,64 +4,104 @@ import { useRouter } from "next/navigation";
 import { useApplication } from "@/hooks/useApplication";
 import { useMessages } from "@/hooks/useI18n";
 import { WizardStep } from "@/components/WizardStep";
-import type { EmploymentType } from "@/types";
+import type { Messages } from "@/i18n";
 
-const ORDER: EmploymentType[] = [
+type EmpKey = keyof Messages["apply"]["employmentOptions"];
+
+const ORDER: EmpKey[] = [
   "FULL_TIME",
-  "PART_TIME",
   "SELF_EMPLOYED",
   "CONTRACT",
   "RETIRED",
-  "STUDENT",
-  "UNEMPLOYED",
   "OTHER",
 ];
+
+const ICON: Record<EmpKey, JSX.Element> = {
+  FULL_TIME: (
+    <path d="M7 4h7l4 4v12H7zM14 4v4h4M9.5 13h5M9.5 16h5" />
+  ),
+  SELF_EMPLOYED: (
+    <>
+      <circle cx="12" cy="8" r="3.2" />
+      <path d="M6 19c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5" />
+    </>
+  ),
+  CONTRACT: (
+    <>
+      <rect x="4" y="8" width="16" height="11" rx="2" />
+      <path d="M9 8V6.5A1.5 1.5 0 0 1 10.5 5h3A1.5 1.5 0 0 1 15 6.5V8" />
+    </>
+  ),
+  RETIRED: (
+    <>
+      <circle cx="12" cy="12" r="3.5" />
+      <path d="M12 4v2M12 18v2M4 12h2M18 12h2M6.5 6.5l1.4 1.4M16.1 16.1l1.4 1.4M17.5 6.5l-1.4 1.4M7.9 16.1l-1.4 1.4" />
+    </>
+  ),
+  OTHER: (
+    <>
+      <circle cx="7" cy="12" r="1.4" />
+      <circle cx="12" cy="12" r="1.4" />
+      <circle cx="17" cy="12" r="1.4" />
+    </>
+  ),
+};
 
 export default function EmploymentStep() {
   const router = useRouter();
   const { draft, update } = useApplication();
   const m = useMessages();
   const s = m.apply.steps.employment;
-  const value = draft.employment_type;
+  const value = draft.employment_type as EmpKey | undefined;
 
   return (
     <WizardStep
       current="employment"
       title={s.title}
+      subtitle={s.subtitle}
       onNext={() => router.push("/apply/debt")}
       nextDisabled={!value}
     >
       <div className="grid grid-cols-2 gap-3">
-        {ORDER.map((key) => (
-          <button
-            key={key}
-            type="button"
-            className={`rounded-xl border px-4 py-3 text-left text-sm font-medium transition ${
-              value === key
-                ? "border-accent-500 bg-accent-500/10 text-accent-600"
-                : "border-slate-300 text-slate-700 hover:border-slate-400"
-            }`}
-            onClick={() => update({ employment_type: key })}
-          >
-            {m.apply.employmentOptions[key]}
-          </button>
-        ))}
-      </div>
-      <div>
-        <label className="field-label" htmlFor="months">
-          {s.monthsLabel}
-        </label>
-        <input
-          id="months"
-          inputMode="numeric"
-          className="field-input"
-          placeholder="24"
-          value={draft.employment_months ?? ""}
-          onChange={(e) => {
-            const n = parseInt(e.target.value.replace(/\D/g, ""), 10);
-            update({ employment_months: Number.isNaN(n) ? undefined : n });
-          }}
-        />
+        {ORDER.map((key, i) => {
+          const active = value === key;
+          const isLast = i === ORDER.length - 1;
+          return (
+            <button
+              key={key}
+              type="button"
+              onClick={() => update({ employment_type: key })}
+              aria-pressed={active}
+              className={`group flex flex-col items-start gap-4 rounded-2xl border p-5 text-left transition-all duration-150 ${
+                active
+                  ? "border-mint bg-mint-50 ring-1 ring-mint/40"
+                  : "border-slate-200 bg-white hover:border-slate-300 hover:shadow-card"
+              } ${isLast && ORDER.length % 2 === 1 ? "col-span-2" : ""}`}
+            >
+              <span
+                className={`grid h-11 w-11 place-items-center rounded-xl transition ${
+                  active ? "bg-ink text-mint" : "bg-slate-100 text-ink"
+                }`}
+              >
+                <svg
+                  width="22"
+                  height="22"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  {ICON[key]}
+                </svg>
+              </span>
+              <span className="text-[0.95rem] font-semibold text-ink">
+                {m.apply.employmentOptions[key]}
+              </span>
+            </button>
+          );
+        })}
       </div>
     </WizardStep>
   );

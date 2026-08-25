@@ -10,11 +10,9 @@ export default function LoansPage() {
     <PageShell title={m.loans.title} intro={m.loans.intro}>
       <div className="grid gap-5 sm:grid-cols-2">
         {m.loans.products.map((p) => (
-          <div key={p.name} className="card p-6">
-            <h3 className="text-lg font-semibold text-navy-900">{p.name}</h3>
-            <p className="mt-2 text-sm leading-relaxed text-slate-600">
-              {p.body}
-            </p>
+          <div key={p.name} className="surface p-6">
+            <h3 className="font-display text-lg font-bold text-ink">{p.name}</h3>
+            <p className="mt-2 text-sm leading-relaxed text-muted">{p.body}</p>
           </div>
         ))}
       </div>
@@ -26,8 +24,9 @@ export default function LoansPage() {
         </ul>
       </Section>
       <div className="pt-2">
-        <Link href="/apply" className="btn-accent">
-          {m.common.checkOptions}
+        <Link href="/apply" className="btn-mint">
+          {m.common.startCta}
+          <span aria-hidden>→</span>
         </Link>
       </div>
     </PageShell>

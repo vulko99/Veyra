@@ -31,8 +31,11 @@ export interface ApplicationDraft {
   purpose?: LoanPurpose;
   city?: string;
   age_range?: string;
+  full_name?: string;
   email?: string;
   phone?: string;
+  requested_currency?: string;
+  income_currency?: string;
   // tracking
   utm_source?: string;
   utm_medium?: string;

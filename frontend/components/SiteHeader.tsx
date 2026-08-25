@@ -1,13 +1,21 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Logo } from "./Logo";
 import { useMessages } from "@/hooks/useI18n";
 
 export function SiteHeader() {
   const m = useMessages();
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const nav = [
     { href: "/how-it-works", label: m.nav.howItWorks },
@@ -17,49 +25,61 @@ export function SiteHeader() {
   ];
 
   return (
-    <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/90 backdrop-blur">
-      <div className="container-x flex h-16 items-center justify-between">
+    <header
+      className={`sticky top-0 z-50 transition-colors duration-300 ${
+        scrolled
+          ? "border-b border-slate-200/70 bg-canvas/85 backdrop-blur-xl"
+          : "border-b border-transparent bg-transparent"
+      }`}
+    >
+      <div className="container-x flex h-[68px] items-center justify-between">
         <Logo />
-        <nav className="hidden items-center gap-7 md:flex">
+        <nav className="hidden items-center gap-1 md:flex">
           {nav.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="text-sm font-medium text-slate-600 transition hover:text-navy-900"
+              className="rounded-full px-3.5 py-2 text-sm font-medium text-ink/70 transition hover:bg-white hover:text-ink"
             >
               {item.label}
             </Link>
           ))}
-          <Link href="/apply" className="btn-accent px-5 py-2 text-sm">
-            {m.common.checkOptions}
+          <Link href="/apply" className="btn-mint ml-2 px-5 py-2.5 text-sm">
+            {m.common.startShort}
           </Link>
         </nav>
         <button
           type="button"
           aria-label={m.nav.menu}
-          className="md:hidden"
+          aria-expanded={open}
+          className="grid h-10 w-10 place-items-center rounded-xl text-ink md:hidden"
           onClick={() => setOpen((v) => !v)}
         >
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M4 6h16M4 12h16M4 18h16" strokeLinecap="round" />
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            {open ? (
+              <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
+            ) : (
+              <path d="M4 7h16M4 12h16M4 17h16" strokeLinecap="round" />
+            )}
           </svg>
         </button>
       </div>
+
       {open && (
-        <nav className="border-t border-slate-200 bg-white px-5 py-4 md:hidden">
-          <div className="flex flex-col gap-3">
+        <nav className="border-t border-slate-200/70 bg-canvas px-5 py-4 md:hidden">
+          <div className="flex flex-col gap-1">
             {nav.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className="text-base font-medium text-slate-700"
+                className="rounded-xl px-3 py-2.5 text-base font-medium text-ink"
                 onClick={() => setOpen(false)}
               >
                 {item.label}
               </Link>
             ))}
-            <Link href="/apply" className="btn-accent mt-2" onClick={() => setOpen(false)}>
-              {m.common.checkOptions}
+            <Link href="/apply" className="btn-mint mt-2" onClick={() => setOpen(false)}>
+              {m.common.startShort}
             </Link>
           </div>
         </nav>

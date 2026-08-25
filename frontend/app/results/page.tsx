@@ -4,7 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { getMatches, routeToPartner } from "@/lib/api";
-import { formatCurrency } from "@/lib/format";
+import { formatEUR } from "@/lib/format";
 import { useI18n } from "@/hooks/useI18n";
 import type { Match } from "@/types";
 
@@ -39,30 +39,26 @@ function ResultsInner() {
     }
   }
 
-  function productTypeLabel(productType: string): string {
-    return (
-      (r.productTypes as Record<string, string>)[productType] ??
-      productType.replace(/_/g, " ")
-    );
-  }
-
-  function reasonText(reason: Match["reasons"][number]): string {
-    const template = (r.reasons as Record<string, string>)[reason.code];
-    if (template) return t(template, reason.params);
-    return reason.text; // fallback to the backend-provided text
-  }
+  const productTypeLabel = (pt: string) =>
+    (r.productTypes as Record<string, string>)[pt] ?? pt.replace(/_/g, " ");
+  const reasonText = (reason: Match["reasons"][number]) => {
+    const tpl = (r.reasons as Record<string, string>)[reason.code];
+    return tpl ? t(tpl, reason.params) : reason.text;
+  };
 
   return (
-    <div className="container-x py-14">
-      <div className="mx-auto max-w-3xl">
-        <p className="text-sm font-medium text-accent-600">{r.eyebrow}</p>
-        <h1 className="mt-2 text-3xl font-bold tracking-tight text-navy-900">
-          {r.title}
-        </h1>
-        <p className="mt-3 text-slate-600">{r.intro}</p>
+    <div className="min-h-[calc(100vh-68px)] bg-canvas">
+      <div className="container-x max-w-3xl py-14">
+        <div className="reveal">
+          <span className="eyebrow">{r.eyebrow}</span>
+          <h1 className="mt-4 text-3xl font-bold leading-tight tracking-tight text-ink sm:text-[2.5rem]">
+            {r.title}
+          </h1>
+          <p className="mt-3 text-muted">{r.subhead}</p>
+        </div>
 
         {error && (
-          <p className="mt-8 rounded-xl bg-red-50 p-4 text-sm text-red-700">
+          <p className="mt-10 rounded-2xl bg-red-50 p-4 text-sm text-red-600">
             {error}
           </p>
         )}
@@ -70,18 +66,16 @@ function ResultsInner() {
         {!error && matches === null && (
           <div className="mt-10 space-y-4">
             {[0, 1, 2].map((i) => (
-              <div key={i} className="card h-40 animate-pulse bg-slate-100" />
+              <div key={i} className="h-44 animate-pulse rounded-2xl bg-white ring-1 ring-slate-200/70" />
             ))}
           </div>
         )}
 
         {matches && matches.length === 0 && (
-          <div className="mt-10 card p-8 text-center">
-            <h2 className="text-lg font-semibold text-navy-900">
-              {r.emptyTitle}
-            </h2>
-            <p className="mt-2 text-sm text-slate-600">{r.emptyBody}</p>
-            <div className="mt-6">
+          <div className="mt-10 rounded-2xl bg-white p-10 text-center shadow-card">
+            <h2 className="text-xl font-bold text-ink">{r.emptyTitle}</h2>
+            <p className="mx-auto mt-2 max-w-md text-sm text-muted">{r.emptyBody}</p>
+            <div className="mt-7">
               <Link href="/apply/amount" className="btn-ghost">
                 {r.adjust}
               </Link>
@@ -90,76 +84,78 @@ function ResultsInner() {
         )}
 
         {matches && matches.length > 0 && (
-          <div className="mt-10 space-y-5">
-            {matches.map((match) => (
-              <div key={match.product_id} className="card p-6 sm:p-7">
-                <div className="flex flex-wrap items-start justify-between gap-4">
-                  <div className="flex items-start gap-4">
-                    <div className="flex h-12 w-12 flex-none items-center justify-center rounded-xl bg-slate-100 text-lg font-bold text-navy-700">
-                      {match.lender_name.charAt(0)}
+          <div className="reveal mt-10 space-y-5">
+            {matches.map((match, i) => {
+              const top = i === 0;
+              return (
+                <article
+                  key={match.product_id}
+                  className={`relative overflow-hidden rounded-2xl bg-white shadow-card transition ${
+                    top ? "ring-2 ring-mint/45" : "ring-1 ring-slate-200/70"
+                  }`}
+                >
+                  {top && (
+                    <div className="flex items-center gap-1.5 bg-ink px-6 py-2 text-xs font-semibold text-mint">
+                      <span aria-hidden>★</span> {r.topMatch}
                     </div>
-                    <div>
-                      <h2 className="text-lg font-semibold text-navy-900">
-                        {match.lender_name}
-                      </h2>
-                      <p className="text-sm text-slate-500">
-                        {match.product_name}
-                      </p>
+                  )}
+                  <div className="p-6 sm:p-7">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex items-center gap-4">
+                        {/* text-based partner placeholder (no fabricated logos) */}
+                        <span className="grid h-12 w-12 flex-none place-items-center rounded-xl bg-gradient-to-br from-ink to-ink-600 font-display text-lg font-extrabold text-white">
+                          {match.lender_name.charAt(0)}
+                        </span>
+                        <div>
+                          <h2 className="font-display text-lg font-bold text-ink">
+                            {match.lender_name}
+                          </h2>
+                          <p className="text-sm text-muted">
+                            {productTypeLabel(match.product_type)}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* key figures — lines, not nested cards */}
+                    <div className="mt-6 grid grid-cols-2 gap-x-6 gap-y-4 border-t border-slate-100 pt-5">
+                      <Figure
+                        label={r.amountRange}
+                        value={`${formatEUR(match.min_amount)} – ${formatEUR(match.max_amount)}`}
+                      />
+                      <Figure
+                        label={r.termRange}
+                        value={`${match.min_term_months}–${match.max_term_months} ${r.months}`}
+                      />
+                    </div>
+
+                    <p className="mt-5 flex items-center gap-2 text-sm font-medium text-mint-700">
+                      <span className="grid h-5 w-5 place-items-center rounded-full bg-mint/15 text-xs">
+                        ✓
+                      </span>
+                      {r.suitable}
+                    </p>
+
+                    <div className="mt-6 flex items-center justify-between gap-4">
+                      <span className="text-xs text-muted">
+                        {productTypeLabel(match.product_type)}
+                      </span>
+                      <button
+                        type="button"
+                        className={top ? "btn-mint px-5 py-2.5 text-sm" : "btn-primary px-5 py-2.5 text-sm"}
+                        disabled={routing === match.product_id}
+                        onClick={() => handleContinue(match)}
+                      >
+                        {routing === match.product_id ? r.opening : r.continueToPartner}
+                        <span aria-hidden>→</span>
+                      </button>
                     </div>
                   </div>
-                  <span className="rounded-full bg-accent-500/10 px-3 py-1 text-xs font-semibold text-accent-600">
-                    {r.appearsRelevant}
-                  </span>
-                </div>
+                </article>
+              );
+            })}
 
-                <div className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-3">
-                  <Fact
-                    label={r.amountRange}
-                    value={`${formatCurrency(match.min_amount, match.currency)} – ${formatCurrency(
-                      match.max_amount,
-                      match.currency
-                    )}`}
-                  />
-                  <Fact
-                    label={r.termRange}
-                    value={`${match.min_term_months}–${match.max_term_months} ${r.months}`}
-                  />
-                  <Fact label={r.type} value={productTypeLabel(match.product_type)} />
-                </div>
-
-                {match.reasons.length > 0 && (
-                  <ul className="mt-5 space-y-1.5">
-                    {match.reasons.map((reason, i) => (
-                      <li
-                        key={i}
-                        className="flex items-start gap-2 text-sm text-slate-600"
-                      >
-                        <span className="mt-0.5 text-accent-500">✓</span>
-                        {reasonText(reason)}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-
-                <div className="mt-6 flex items-center justify-between">
-                  <p className="text-xs text-slate-400">
-                    {t(r.finalDecisionBy, { lender: match.lender_name })}
-                  </p>
-                  <button
-                    type="button"
-                    className="btn-accent px-5 py-2.5 text-sm"
-                    disabled={routing === match.product_id}
-                    onClick={() => handleContinue(match)}
-                  >
-                    {routing === match.product_id ? r.opening : r.continueToPartner}
-                  </button>
-                </div>
-              </div>
-            ))}
-
-            <p className="pt-2 text-center text-xs text-slate-500">
-              {r.disclaimer}
-            </p>
+            <p className="pt-3 text-center text-xs text-muted">{r.disclaimer}</p>
           </div>
         )}
       </div>
@@ -167,11 +163,11 @@ function ResultsInner() {
   );
 }
 
-function Fact({ label, value }: { label: string; value: string }) {
+function Figure({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-xl bg-slate-50 p-3">
-      <p className="text-xs text-slate-500">{label}</p>
-      <p className="mt-0.5 text-sm font-semibold text-navy-900">{value}</p>
+    <div>
+      <p className="text-xs uppercase tracking-[0.12em] text-muted">{label}</p>
+      <p className="mt-1 font-display text-base font-bold text-ink tabular-nums">{value}</p>
     </div>
   );
 }
@@ -186,5 +182,5 @@ export default function ResultsPage() {
 
 function ResultsFallback() {
   const { m } = useI18n();
-  return <div className="container-x py-14">{m.results.loading}</div>;
+  return <div className="container-x py-14 text-muted">{m.results.loading}</div>;
 }

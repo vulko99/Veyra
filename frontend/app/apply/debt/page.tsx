@@ -11,64 +11,56 @@ export default function DebtStep() {
   const { draft, update } = useApplication();
   const m = useMessages();
   const s = m.apply.steps.debt;
-  const hasLoans = draft.has_existing_loans ?? false;
+  const has = draft.has_existing_loans;
 
   return (
     <WizardStep
       current="debt"
       title={s.title}
-      subtitle={s.subtitle}
       onNext={() => router.push("/apply/contact")}
+      nextDisabled={has === undefined}
     >
-      <div className="flex gap-3">
+      <div className="grid grid-cols-2 gap-4">
         {[
-          { label: s.yes, value: true },
           { label: s.no, value: false },
-        ].map((o) => (
-          <button
-            key={o.label}
-            type="button"
-            className={`flex-1 rounded-xl border px-4 py-3 text-sm font-medium transition ${
-              hasLoans === o.value
-                ? "border-accent-500 bg-accent-500/10 text-accent-600"
-                : "border-slate-300 text-slate-700 hover:border-slate-400"
-            }`}
-            onClick={() => update({ has_existing_loans: o.value })}
-          >
-            {o.label}
-          </button>
-        ))}
+          { label: s.yes, value: true },
+        ].map((o) => {
+          const active = has === o.value;
+          return (
+            <button
+              key={o.label}
+              type="button"
+              onClick={() => update({ has_existing_loans: o.value })}
+              aria-pressed={active}
+              className={`flex h-28 flex-col items-center justify-center gap-2 rounded-2xl border text-lg font-bold transition-all ${
+                active
+                  ? "border-mint bg-mint-50 text-ink ring-1 ring-mint/40"
+                  : "border-slate-200 bg-white text-ink hover:border-slate-300 hover:shadow-card"
+              }`}
+            >
+              <span
+                className={`grid h-8 w-8 place-items-center rounded-full text-sm ${
+                  active ? "bg-ink text-mint" : "bg-slate-100 text-muted"
+                }`}
+              >
+                {o.value ? "✓" : "—"}
+              </span>
+              {o.label}
+            </button>
+          );
+        })}
       </div>
 
-      {hasLoans && (
-        <div className="space-y-4">
-          <div>
-            <label className="field-label" htmlFor="balance">
-              {s.balanceLabel}
-            </label>
+      {has === true && (
+        <div className="reveal mt-8">
+          <label htmlFor="payment" className="field-label">
+            {s.paymentLabel}
+          </label>
+          <div className="flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-4 focus-within:border-mint focus-within:ring-4 focus-within:ring-mint/15">
+            <span className="font-display text-2xl font-bold text-muted">€</span>
             <input
-              id="balance"
+              id="payment"
               inputMode="numeric"
-              className="field-input"
-              placeholder="1500"
-              value={
-                draft.existing_loan_balance
-                  ? formatNumber(draft.existing_loan_balance)
-                  : ""
-              }
-              onChange={(e) =>
-                update({ existing_loan_balance: parseNumeric(e.target.value) })
-              }
-            />
-          </div>
-          <div>
-            <label className="field-label" htmlFor="payments">
-              {s.paymentsLabel}
-            </label>
-            <input
-              id="payments"
-              inputMode="numeric"
-              className="field-input"
               placeholder="200"
               value={
                 draft.existing_monthly_payments
@@ -76,10 +68,9 @@ export default function DebtStep() {
                   : ""
               }
               onChange={(e) =>
-                update({
-                  existing_monthly_payments: parseNumeric(e.target.value),
-                })
+                update({ existing_monthly_payments: parseNumeric(e.target.value) })
               }
+              className="w-full bg-transparent py-3.5 text-xl font-semibold text-ink outline-none tabular-nums placeholder:text-slate-300"
             />
           </div>
         </div>

@@ -11,7 +11,6 @@ export function PageShell({
   intro?: string;
   children: React.ReactNode;
 }) {
-  // Keep the browser-tab title in sync with the localized page title.
   useEffect(() => {
     if (typeof document !== "undefined") {
       document.title = `${title} — Veyra`;
@@ -19,14 +18,19 @@ export function PageShell({
   }, [title]);
 
   return (
-    <div className="container-x py-16">
-      <div className="mx-auto max-w-3xl">
-        <h1 className="text-3xl font-bold tracking-tight text-navy-900 sm:text-4xl">
-          {title}
-        </h1>
-        {intro && <p className="mt-4 text-lg text-slate-600">{intro}</p>}
-        <div className="prose-veyra mt-10 space-y-6 text-slate-700">
-          {children}
+    <div className="relative">
+      <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-64 grid-lines mask-fade-b opacity-60" />
+      <div className="container-x max-w-3xl py-20">
+        <div className="reveal">
+          <h1 className="text-4xl font-bold leading-[1.05] tracking-tight text-ink sm:text-5xl">
+            {title}
+          </h1>
+          {intro && (
+            <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted">
+              {intro}
+            </p>
+          )}
+          <div className="mt-14 space-y-10">{children}</div>
         </div>
       </div>
     </div>
@@ -41,9 +45,11 @@ export function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section>
-      <h2 className="text-xl font-semibold text-navy-900">{heading}</h2>
-      <div className="mt-3 space-y-3 leading-relaxed">{children}</div>
+    <section className="border-t border-slate-200/70 pt-8">
+      <h2 className="font-display text-lg font-bold tracking-tight text-ink">
+        {heading}
+      </h2>
+      <div className="mt-3 leading-relaxed text-muted">{children}</div>
     </section>
   );
 }

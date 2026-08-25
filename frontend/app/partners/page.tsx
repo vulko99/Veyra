@@ -4,19 +4,18 @@ import Link from "next/link";
 import { PageShell, Section } from "@/components/PageShell";
 import { useMessages } from "@/hooks/useI18n";
 
-export default function HowItWorksPage() {
+export default function PartnersPage() {
   const m = useMessages();
   return (
-    <PageShell title={m.howItWorks.title} intro={m.howItWorks.intro}>
-      {m.howItWorks.sections.map((s) => (
+    <PageShell title={m.partners.title} intro={m.partners.intro}>
+      {m.partners.sections.map((s) => (
         <Section key={s.heading} heading={s.heading}>
           <p>{s.body}</p>
         </Section>
       ))}
-      <div className="pt-4">
-        <Link href="/apply" className="btn-mint">
-          {m.common.startCta}
-          <span aria-hidden>→</span>
+      <div className="pt-2">
+        <Link href="/contact" className="btn-primary">
+          {m.partners.cta}
         </Link>
       </div>
     </PageShell>

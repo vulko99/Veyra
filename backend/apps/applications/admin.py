@@ -3,7 +3,12 @@ from django.contrib import admin
 from apps.consents.models import Consent
 from apps.matching.models import Match
 
-from .models import Application, FinancialProfile
+from .models import (
+    Applicant,
+    Application,
+    ApplicationEvent,
+    FinancialProfile,
+)
 
 
 class ConsentInline(admin.TabularInline):
@@ -39,19 +44,68 @@ class MatchInline(admin.TabularInline):
         return False
 
 
+class ApplicationEventInline(admin.TabularInline):
+    model = ApplicationEvent
+    extra = 0
+    fields = ("event_type", "timestamp", "metadata")
+    readonly_fields = fields
+    can_delete = False
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+
+@admin.register(Applicant)
+class ApplicantAdmin(admin.ModelAdmin):
+    list_display = (
+        "__str__",
+        "email",
+        "employment_status",
+        "monthly_income_eur",
+        "created_at",
+    )
+    list_filter = ("employment_status", "created_at")
+    search_fields = ("first_name", "last_name", "email", "phone")
+    readonly_fields = ("created_at", "updated_at")
+
+
 @admin.register(Application)
 class ApplicationAdmin(admin.ModelAdmin):
     list_display = (
-        "public_reference",
+        "public_id",
         "created_at",
         "requested_amount",
         "requested_term_months",
-        "monthly_income",
         "status",
+        "current_step",
         "source",
     )
-    list_filter = ("status", "source", "employment_type", "created_at")
-    search_fields = ("public_reference",)
+    list_filter = ("status", "source", "current_step", "created_at")
+    search_fields = ("public_id", "public_reference", "applicant__email")
     date_hierarchy = "created_at"
-    readonly_fields = ("public_reference", "ip_hash", "user_agent_hash", "created_at", "updated_at")
-    inlines = [FinancialProfileInline, ConsentInline, MatchInline]
+    raw_id_fields = ("applicant",)
+    readonly_fields = (
+        "public_id",
+        "public_reference",
+        "ip_hash",
+        "user_agent_hash",
+        "created_at",
+        "updated_at",
+        "completed_at",
+    )
+    inlines = [FinancialProfileInline, ConsentInline, MatchInline, ApplicationEventInline]
+
+
+@admin.register(ApplicationEvent)
+class ApplicationEventAdmin(admin.ModelAdmin):
+    list_display = ("application", "event_type", "timestamp")
+    list_filter = ("event_type", "timestamp")
+    search_fields = ("application__public_id",)
+    date_hierarchy = "timestamp"
+    readonly_fields = ("application", "event_type", "metadata", "timestamp")
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False

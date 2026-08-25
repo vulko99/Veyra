@@ -25,7 +25,24 @@ class LeadStatus(models.TextChoices):
     EXPIRED = "EXPIRED"
 
 
+class ReferralStatus(models.TextChoices):
+    """Phase 2 partner-referral lifecycle."""
+
+    SELECTED = "selected"
+    REFERRED = "referred"
+    RECEIVED = "received"
+    PENDING = "pending"
+    APPROVED = "approved"
+    REJECTED = "rejected"
+    FUNDED = "funded"
+    FAILED = "failed"
+    UNKNOWN = "unknown"
+
+
 class Lead(UUIDTimeStampedModel):
+    """A Lead is also the Phase 2 partner referral: an application routed to a
+    specific partner product after the applicant selects it."""
+
     application = models.ForeignKey(
         Application, on_delete=models.CASCADE, related_name="leads"
     )
@@ -38,6 +55,19 @@ class Lead(UUIDTimeStampedModel):
         max_length=24, choices=LeadStatus.choices, default=LeadStatus.CREATED,
         db_index=True,
     )
+
+    # --- Phase 2 referral fields ---
+    referral_status = models.CharField(
+        max_length=16,
+        choices=ReferralStatus.choices,
+        default=ReferralStatus.SELECTED,
+        db_index=True,
+    )
+    selected_at = models.DateTimeField(null=True, blank=True)
+    referred_at = models.DateTimeField(null=True, blank=True)
+    external_reference = models.CharField(max_length=160, blank=True)
+    # Raw status text reported by a partner integration (future).
+    partner_status = models.CharField(max_length=80, blank=True)
 
     external_lead_id = models.CharField(max_length=120, blank=True)
     external_application_id = models.CharField(max_length=120, blank=True)

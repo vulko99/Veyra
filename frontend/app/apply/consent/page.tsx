@@ -6,12 +6,11 @@ import { useState } from "react";
 import { useApplication } from "@/hooks/useApplication";
 import { useMessages } from "@/hooks/useI18n";
 import { WizardStep } from "@/components/WizardStep";
-import { createApplication, runMatching, submitApplication } from "@/lib/api";
-import type { ConsentInput } from "@/types";
+import { draftToPayload, patchApplication, postConsent, runMatch } from "@/lib/api";
 
 export default function ConsentStep() {
   const router = useRouter();
-  const { draft, setApplicationId } = useApplication();
+  const { draft, ensureApplication } = useApplication();
   const m = useMessages();
   const s = m.apply.steps.consent;
   const [platform, setPlatform] = useState(false);
@@ -26,16 +25,17 @@ export default function ConsentStep() {
     setError(null);
     setSubmitting(true);
     try {
-      const consents: ConsentInput[] = [
-        { consent_type: "PLATFORM_PROCESSING", accepted: platform },
-        { consent_type: "PARTNER_DATA_TRANSFER", accepted: partner },
-        { consent_type: "MARKETING", accepted: marketing },
-      ];
-      const app = await createApplication(draft, consents);
-      setApplicationId(app.id);
-      await submitApplication(app.id);
-      await runMatching(app.id);
-      router.push(`/results?application=${app.id}`);
+      const publicId = await ensureApplication();
+      if (!publicId) throw new Error("no application");
+      // Flush the latest funnel data, record consent, then run matching.
+      await patchApplication(publicId, draftToPayload(draft, "consent"));
+      await postConsent(publicId, {
+        privacy_processing_consent: platform,
+        partner_data_sharing_consent: partner,
+        marketing_consent: marketing,
+      });
+      await runMatch(publicId);
+      router.push(`/results?application=${publicId}`);
     } catch {
       setError(s.error);
       setSubmitting(false);

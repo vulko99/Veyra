@@ -398,11 +398,11 @@ const en: Messages = {
       },
     },
     employmentOptions: {
-      FULL_TIME: "Employment contract",
-      SELF_EMPLOYED: "Self-insured",
-      CONTRACT: "Own business",
-      RETIRED: "Retired",
-      OTHER: "Other",
+      employed: "Employed",
+      self_employed: "Self-employed",
+      business_owner: "Business owner",
+      pensioner: "Pensioner",
+      other: "Other",
     },
     validation: {
       amountRequired: "Please choose an amount.",

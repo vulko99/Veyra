@@ -3,17 +3,17 @@
 import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { getMatches, routeToPartner } from "@/lib/api";
+import { getMatches, selectPartner } from "@/lib/api";
 import { formatEUR } from "@/lib/format";
 import { useI18n } from "@/hooks/useI18n";
-import type { Match } from "@/types";
+import type { Phase2Match } from "@/types";
 
 function ResultsInner() {
   const params = useSearchParams();
   const { m, t } = useI18n();
   const r = m.results;
   const applicationId = params.get("application");
-  const [matches, setMatches] = useState<Match[] | null>(null);
+  const [matches, setMatches] = useState<Phase2Match[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [routing, setRouting] = useState<string | null>(null);
 
@@ -27,11 +27,11 @@ function ResultsInner() {
       .catch(() => setError(r.loadError));
   }, [applicationId, r.noReference, r.loadError]);
 
-  async function handleContinue(match: Match) {
+  async function handleContinue(match: Phase2Match) {
     if (!applicationId) return;
     setRouting(match.product_id);
     try {
-      const res = await routeToPartner(applicationId, match.product_id);
+      const res = await selectPartner(applicationId, match.product_id);
       window.location.href = res.outbound_url;
     } catch {
       setError(r.routeError);
@@ -41,10 +41,6 @@ function ResultsInner() {
 
   const productTypeLabel = (pt: string) =>
     (r.productTypes as Record<string, string>)[pt] ?? pt.replace(/_/g, " ");
-  const reasonText = (reason: Match["reasons"][number]) => {
-    const tpl = (r.reasons as Record<string, string>)[reason.code];
-    return tpl ? t(tpl, reason.params) : reason.text;
-  };
 
   return (
     <div className="min-h-[calc(100vh-68px)] bg-canvas">
@@ -104,11 +100,11 @@ function ResultsInner() {
                       <div className="flex items-center gap-4">
                         {/* text-based partner placeholder (no fabricated logos) */}
                         <span className="grid h-12 w-12 flex-none place-items-center rounded-xl bg-gradient-to-br from-ink to-ink-600 font-display text-lg font-extrabold text-white">
-                          {match.lender_name.charAt(0)}
+                          {match.partner.charAt(0)}
                         </span>
                         <div>
                           <h2 className="font-display text-lg font-bold text-ink">
-                            {match.lender_name}
+                            {match.partner}
                           </h2>
                           <p className="text-sm text-muted">
                             {productTypeLabel(match.product_type)}
@@ -121,7 +117,7 @@ function ResultsInner() {
                     <div className="mt-6 grid grid-cols-2 gap-x-6 gap-y-4 border-t border-slate-100 pt-5">
                       <Figure
                         label={r.amountRange}
-                        value={`${formatEUR(match.min_amount)} – ${formatEUR(match.max_amount)}`}
+                        value={`${formatEUR(match.min_amount_eur)} – ${formatEUR(match.max_amount_eur)}`}
                       />
                       <Figure
                         label={r.termRange}

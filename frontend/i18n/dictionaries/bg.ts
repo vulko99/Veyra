@@ -389,11 +389,11 @@ export const bg = {
       },
     },
     employmentOptions: {
-      FULL_TIME: "Трудов договор",
-      SELF_EMPLOYED: "Самоосигуряващ се",
-      CONTRACT: "Собствен бизнес",
-      RETIRED: "Пенсионер",
-      OTHER: "Друго",
+      employed: "Трудов договор",
+      self_employed: "Самоосигуряващ се",
+      business_owner: "Собствен бизнес",
+      pensioner: "Пенсионер",
+      other: "Друго",
     },
     validation: {
       amountRequired: "Моля, избери сума.",

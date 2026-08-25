@@ -15,10 +15,30 @@ class LeadEventInline(admin.TabularInline):
 
 @admin.register(Lead)
 class LeadAdmin(admin.ModelAdmin):
-    list_display = ("application", "lender", "status", "created_at", "funded_display")
-    list_filter = ("status", "lender")
-    search_fields = ("application__public_reference", "tracking_id", "external_lead_id")
-    readonly_fields = ("tracking_id", "created_at", "updated_at", "sent_at")
+    list_display = (
+        "application",
+        "lender",
+        "referral_status",
+        "status",
+        "created_at",
+        "funded_display",
+    )
+    list_filter = ("referral_status", "status", "lender")
+    search_fields = (
+        "application__public_reference",
+        "application__public_id",
+        "tracking_id",
+        "external_lead_id",
+        "external_reference",
+    )
+    readonly_fields = (
+        "tracking_id",
+        "created_at",
+        "updated_at",
+        "sent_at",
+        "selected_at",
+        "referred_at",
+    )
     inlines = [LeadEventInline]
 
     @admin.display(description="Funded")

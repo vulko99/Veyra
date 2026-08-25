@@ -18,6 +18,16 @@ from apps.lenders.models import (
 )
 
 
+@pytest.fixture(autouse=True)
+def _clear_throttle_cache():
+    """Reset DRF throttle history between tests (LocMemCache persists in-process)."""
+    from django.core.cache import cache
+
+    cache.clear()
+    yield
+    cache.clear()
+
+
 @pytest.fixture
 def api_client():
     return APIClient()

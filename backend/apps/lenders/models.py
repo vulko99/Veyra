@@ -16,6 +16,8 @@ class Lender(UUIDTimeStampedModel):
     slug = models.SlugField(max_length=120, unique=True)
     description = models.TextField(blank=True)
     logo = models.ImageField(upload_to="lenders/logos/", blank=True, null=True)
+    # URL-based logo (Phase 2 Partner.logo_url); no fabricated partner logos.
+    logo_url = models.URLField(blank=True)
     website_url = models.URLField(blank=True)
 
     active = models.BooleanField(default=True)
@@ -23,9 +25,11 @@ class Lender(UUIDTimeStampedModel):
         default=0,
         help_text="Higher priority lenders are preferred as a tie-breaker in ranking.",
     )
+    # Presentation order in partner listings (Phase 2 Partner.display_order).
+    display_order = models.IntegerField(default=0)
 
     class Meta:
-        ordering = ("-priority", "name")
+        ordering = ("display_order", "-priority", "name")
 
     def __str__(self) -> str:
         return self.name
@@ -102,9 +106,11 @@ class LenderProduct(UUIDTimeStampedModel):
     )
 
     active = models.BooleanField(default=True)
+    # Configurable ranking priority (higher ranks first in matching results).
+    priority = models.IntegerField(default=0)
 
     class Meta:
-        ordering = ("lender", "name")
+        ordering = ("-priority", "lender", "name")
         constraints = [
             models.UniqueConstraint(
                 fields=["lender", "slug"], name="uniq_product_slug_per_lender"

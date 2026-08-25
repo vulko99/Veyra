@@ -27,7 +27,8 @@ class LenderProductInline(admin.TabularInline):
 
 @admin.register(Lender)
 class LenderAdmin(admin.ModelAdmin):
-    list_display = ("name", "product_count", "active", "priority")
+    list_display = ("name", "product_count", "active", "display_order", "priority")
+    list_editable = ("active", "display_order")
     list_filter = ("active",)
     search_fields = ("name", "slug")
     prepopulated_fields = {"slug": ("name",)}

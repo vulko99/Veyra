@@ -9,36 +9,36 @@ import type { Messages } from "@/i18n";
 type EmpKey = keyof Messages["apply"]["employmentOptions"];
 
 const ORDER: EmpKey[] = [
-  "FULL_TIME",
-  "SELF_EMPLOYED",
-  "CONTRACT",
-  "RETIRED",
-  "OTHER",
+  "employed",
+  "self_employed",
+  "business_owner",
+  "pensioner",
+  "other",
 ];
 
 const ICON: Record<EmpKey, JSX.Element> = {
-  FULL_TIME: (
+  employed: (
     <path d="M7 4h7l4 4v12H7zM14 4v4h4M9.5 13h5M9.5 16h5" />
   ),
-  SELF_EMPLOYED: (
+  self_employed: (
     <>
       <circle cx="12" cy="8" r="3.2" />
       <path d="M6 19c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5" />
     </>
   ),
-  CONTRACT: (
+  business_owner: (
     <>
       <rect x="4" y="8" width="16" height="11" rx="2" />
       <path d="M9 8V6.5A1.5 1.5 0 0 1 10.5 5h3A1.5 1.5 0 0 1 15 6.5V8" />
     </>
   ),
-  RETIRED: (
+  pensioner: (
     <>
       <circle cx="12" cy="12" r="3.5" />
       <path d="M12 4v2M12 18v2M4 12h2M18 12h2M6.5 6.5l1.4 1.4M16.1 16.1l1.4 1.4M17.5 6.5l-1.4 1.4M7.9 16.1l-1.4 1.4" />
     </>
   ),
-  OTHER: (
+  other: (
     <>
       <circle cx="7" cy="12" r="1.4" />
       <circle cx="12" cy="12" r="1.4" />

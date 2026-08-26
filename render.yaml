@@ -1,0 +1,68 @@
+# Render blueprint — FREE demo deploy for showing Veyra to a partner.
+#
+# Deploys two free web services:
+#   - veyra-backend  : Django + Gunicorn. SQLite (no external DB), Celery in
+#                      eager mode (no Redis / worker), demo data seeded on boot.
+#   - veyra-frontend : Next.js, proxying /api/* to the backend (no CORS setup).
+#
+# NOTE: this is a throwaway DEMO config, not production. SQLite is ephemeral on
+# Render's free tier (data resets when the service restarts) and free services
+# spin down after ~15 min idle, so the first request after a pause is slow
+# (~50s). Both are fine for a partner walkthrough — just open the URL a minute
+# before the call to warm it up.
+#
+# How to deploy:
+#   1. Push this file to your repo (it's on your branch).
+#   2. render.com  ->  New  ->  Blueprint  ->  pick this repo/branch.
+#   3. Render creates both services. When it asks, set API_PROXY_TARGET on the
+#      frontend to the backend's URL (https://veyra-backend.onrender.com).
+#   4. Open the frontend URL and share it with your partner.
+
+services:
+  # ---------------------------------------------------------------- backend
+  - type: web
+    name: veyra-backend
+    runtime: docker
+    plan: free
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /health/
+    startCommand: >-
+      bash entrypoint.sh gunicorn config.wsgi:application
+      --bind 0.0.0.0:$PORT --workers 2
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: config.settings.production
+      - key: DEBUG
+        value: "False"
+      # Demo-only: wildcard host so we don't have to know the URL up front.
+      - key: ALLOWED_HOSTS
+        value: "*"
+      # Run Celery tasks inline — no Redis, no worker needed for a demo.
+      - key: CELERY_TASK_ALWAYS_EAGER
+        value: "True"
+      # Seed demo data on every boot (SQLite is ephemeral on free tier).
+      - key: SEED_DEMO_DATA
+        value: "true"
+      # Render terminates TLS; the app trusts X-Forwarded-Proto. Keep the
+      # redirect off so internal health checks don't bounce.
+      - key: SECURE_SSL_REDIRECT
+        value: "False"
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: HASH_SALT
+        generateValue: true
+
+  # --------------------------------------------------------------- frontend
+  - type: web
+    name: veyra-frontend
+    runtime: node
+    plan: free
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    envVars:
+      # Point the Next.js /api/* proxy at the backend. Set this to the backend
+      # service URL after the first deploy (Render prompts because sync: false).
+      - key: API_PROXY_TARGET
+        sync: false

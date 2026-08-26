@@ -1,0 +1,27 @@
+# Netlify config — deploys ONLY the Next.js frontend (for showing the UI to a
+# partner). The Django backend is hosted separately.
+#
+# The marketing/design pages (home, how-it-works, faq, responsible-borrowing,
+# loans, about, ...) are client-rendered and need no backend, so they render
+# fully on Netlify. The /apply and /results flows call the API and will only
+# work once a backend URL is wired in (see API_PROXY_TARGET below).
+#
+# How to deploy:
+#   1. Push this file (it's on your branch).
+#   2. app.netlify.com  ->  Add new site  ->  Import from Git  ->  pick this
+#      repo/branch. Netlify reads this file; no manual settings needed.
+#   3. (Optional) Once your backend is live, set API_PROXY_TARGET in
+#      Site settings -> Environment variables to your backend origin
+#      (e.g. https://your-backend.example.com) so /api/* is proxied to it.
+
+[build]
+  base = "frontend"
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# Official Next.js runtime: handles SSR/routing for the App Router on Netlify.
+[[plugins]]
+  package = "@netlify/plugin-nextjs"

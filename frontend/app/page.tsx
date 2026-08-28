@@ -113,6 +113,59 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Marketplace — one application, several scored opportunities */}
+      <section className="container-x py-20">
+        <div className="max-w-2xl">
+          <span className="eyebrow">{m.home.marketplace.eyebrow}</span>
+          <h2 className="mt-4 text-3xl font-bold tracking-tight text-ink sm:text-[2.6rem]">
+            {m.home.marketplace.title}
+          </h2>
+          <p className="mt-4 leading-relaxed text-muted">{m.home.marketplace.body}</p>
+        </div>
+
+        <div className="mt-12 grid gap-4 md:grid-cols-3">
+          {[94, 89, 84].map((score, i) => (
+            <div
+              key={i}
+              className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-6 transition-colors hover:border-mint/50"
+            >
+              {/* left brand rail */}
+              <span className="absolute inset-y-0 left-0 w-1 brand-gradient opacity-70" />
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <span className="grid h-10 w-10 place-items-center rounded-xl border border-slate-200 bg-canvas font-display text-base font-extrabold text-ink">
+                    {String.fromCharCode(65 + i)}
+                  </span>
+                  <div>
+                    <p className="font-display text-base font-bold text-ink">
+                      {m.home.viz.partner} {String.fromCharCode(65 + i)}
+                    </p>
+                    <p className="t-caption text-muted">{m.home.marketplace.note}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-6 flex items-end justify-between">
+                <div className="flex items-baseline gap-1.5">
+                  <span className="font-display text-3xl font-extrabold brand-gradient-text">
+                    {score}%
+                  </span>
+                  <span className="text-sm text-muted">{m.home.marketplace.compatibility}</span>
+                </div>
+                <span className="inline-flex items-center gap-1 rounded-full bg-ink px-3.5 py-1.5 text-xs font-semibold text-white transition-transform group-hover:translate-x-0.5">
+                  {m.home.marketplace.cta}
+                  <span aria-hidden>→</span>
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <p className="mt-5 max-w-3xl t-small text-muted/90">
+          {m.home.marketplace.explainer}
+        </p>
+      </section>
+
       {/* CTA */}
       <section className="container-x pb-4">
         <div className="surface-dark relative overflow-hidden rounded-[2rem] px-8 py-16 text-center sm:px-16">

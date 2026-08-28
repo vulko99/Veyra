@@ -51,16 +51,17 @@ const en: Messages = {
     h1a: "One request.",
     h1b: "More options.",
     subhead:
-      "Tell us what you need. Veyra compares relevant financial options from our partners — the choice stays yours.",
-    primaryCta: "Start in 2 minutes",
-    secondaryCta: "How it works",
+      "You fill in one application. Veyra compares what you enter against partner criteria and shows you the relevant options.",
+    primaryCta: "Start application",
+    secondaryCta: "How Veyra works",
     viz: {
       request: "Your request",
-      requestValue: "€3,000 · 24 months",
+      requestValue: "€2,000 · 12 months",
       engine: "Matching engine",
       engineNote: "Compares published criteria",
       matches: "3 relevant options",
       partner: "Partner",
+      compatibility: "compatibility",
     },
     trust: [
       { stat: "1", label: "request" },
@@ -101,6 +102,16 @@ const en: Messages = {
     ],
     ctaTitle: "Ready to see your options?",
     ctaBody: "It takes two minutes. No obligation to continue with any partner.",
+    marketplace: {
+      eyebrow: "Marketplace",
+      title: "One application. Several options.",
+      body: "One application can match the criteria of more than one partner. We show you every relevant option so you decide where to continue.",
+      note: "Suitable based on the criteria you entered",
+      cta: "Continue",
+      compatibility: "compatibility",
+      explainer:
+        "Compatibility shows how well the data you entered matches the partner's configured criteria. It is not an approval probability. The final decision is made by the respective lender.",
+    },
   },
   howItWorks: {
     title: "How Veyra works",
@@ -159,7 +170,11 @@ const en: Messages = {
     items: [
       {
         q: "Is Veyra a lender?",
-        a: "No. Veyra is a marketplace. We connect you with relevant financial partners. We do not lend money and we do not make credit decisions.",
+        a: "No. Veyra does not lend money and does not make approval decisions. We compare the information you enter against partner criteria and show you relevant options.",
+      },
+      {
+        q: "Why do I see more than one option?",
+        a: "One application can match the criteria of more than one partner. Veyra shows you these options so you can decide for yourself where to continue.",
       },
       {
         q: "Does browsing options affect anything?",
@@ -187,8 +202,8 @@ const en: Messages = {
     title: "Responsible borrowing",
     intro:
       "Borrowing has real costs. We want you to make a decision that is right for you.",
-    heroA: "Credit is a tool.",
-    heroB: "Not the answer to every problem.",
+    heroA: "Credit is a decision.",
+    heroB: "Not an automatic choice.",
     heroSub: "A few things to weigh before taking on new borrowing.",
     calloutsTitle: "What to consider",
     callouts: [
@@ -439,11 +454,20 @@ const en: Messages = {
   results: {
     eyebrow: "Results",
     title: "We found relevant options.",
+    titleMultiple: "We found several relevant options.",
     subhead:
       "Based on the information you provided. Review the options and choose which partners to continue with.",
-    topMatch: "Best match for your entered criteria",
-    suitable: "Matches the criteria you entered",
+    countSuffix: "relevant options",
+    compatibilityExplainer:
+      "Compatibility shows how well the data you entered matches the partner's configured criteria. It is not an approval probability. The final decision is made by the respective lender.",
+    topMatch: "Highest compatibility with your entered criteria",
+    suitable: "Suitable based on the data you entered",
     compatibilityLabel: "Compatibility",
+    confirmTitlePrefix: "Continuing to ",
+    confirmBody:
+      "We will share the necessary information with the selected partner according to the consent you gave. You are leaving Veyra and continuing to the partner's site.",
+    confirmCtaPrefix: "Continue to ",
+    back: "Back",
     amountRange: "Amount",
     termRange: "Term",
     months: "months",

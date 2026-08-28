@@ -71,6 +71,7 @@ function ResultsInner() {
   const [matches, setMatches] = useState<Phase2Match[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [routing, setRouting] = useState<string | null>(null);
+  const [confirming, setConfirming] = useState<Phase2Match | null>(null);
 
   useEffect(() => {
     if (!applicationId) {
@@ -103,14 +104,22 @@ function ResultsInner() {
         <div className="reveal">
           <span className="a-eyebrow">{r.eyebrow}</span>
           <h1 className="mt-4 text-[2rem] font-bold leading-[1.06] tracking-tight text-appwhite sm:text-[2.6rem]">
-            {r.title}
+            {matches && matches.length > 1 ? r.titleMultiple : r.title}
           </h1>
           <p className="mt-3 text-appmuted">{r.subhead}</p>
 
           {matches && matches.length > 0 && (
-            <div className="mt-8">
-              <ResultsViz count={matches.length} />
-            </div>
+            <>
+              <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-mint/25 bg-mint/10 px-3.5 py-1.5 text-sm font-semibold text-mint-400">
+                <span className="font-display text-base font-extrabold text-appwhite">
+                  {matches.length}
+                </span>
+                {r.countSuffix}
+              </div>
+              <div className="mt-6">
+                <ResultsViz count={matches.length} />
+              </div>
+            </>
           )}
         </div>
 
@@ -208,7 +217,7 @@ function ResultsInner() {
                         type="button"
                         className="btn-mint w-full sm:w-auto"
                         disabled={routing === match.product_id}
-                        onClick={() => handleContinue(match)}
+                        onClick={() => setConfirming(match)}
                       >
                         {routing === match.product_id ? r.opening : r.continueToPartner}
                         <span aria-hidden>→</span>
@@ -219,10 +228,54 @@ function ResultsInner() {
               );
             })}
 
-            <p className="pt-3 text-center text-xs text-appmuted">{r.disclaimer}</p>
+            <p className="pt-1 text-xs leading-relaxed text-appmuted/90">
+              {r.compatibilityExplainer}
+            </p>
+            <p className="pt-2 text-center text-xs text-appmuted">{r.disclaimer}</p>
           </div>
         )}
       </div>
+
+      {/* Partner-selection confirmation — the referral is created only after
+          the user explicitly confirms (and understands they leave Veyra). */}
+      {confirming && (
+        <div
+          className="fixed inset-0 z-50 grid place-items-center bg-midnight/80 p-4 backdrop-blur-sm"
+          role="dialog"
+          aria-modal="true"
+          onClick={() => routing === null && setConfirming(null)}
+        >
+          <div
+            className="w-full max-w-md rounded-2xl border border-appborder bg-appsurface p-6 sm:p-7"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 className="font-display text-xl font-bold text-appwhite">
+              {r.confirmTitlePrefix}
+              {confirming.partner}
+            </h2>
+            <p className="mt-3 text-sm leading-relaxed text-appmuted">{r.confirmBody}</p>
+            <div className="mt-7 flex flex-col-reverse gap-3 sm:flex-row">
+              <button
+                type="button"
+                className="a-btn-ghost w-full sm:w-auto"
+                disabled={routing !== null}
+                onClick={() => setConfirming(null)}
+              >
+                {r.back}
+              </button>
+              <button
+                type="button"
+                className="btn-mint w-full flex-1 justify-center"
+                disabled={routing !== null}
+                onClick={() => handleContinue(confirming)}
+              >
+                {routing !== null ? r.opening : `${r.confirmCtaPrefix}${confirming.partner}`}
+                <span aria-hidden>→</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </AppShell>
   );
 }

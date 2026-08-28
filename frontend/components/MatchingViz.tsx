@@ -2,6 +2,9 @@
 
 import { useMessages } from "@/hooks/useI18n";
 
+// Illustrative compatibility scores for the hero demo only — never real terms.
+const DEMO_SCORES = [94, 89, 84];
+
 /**
  * The Veyra routing metaphor: a request flows through the matching engine and
  * fans out into ranked options. HTML chips carry the (Cyrillic) labels; an SVG
@@ -112,7 +115,8 @@ export function MatchingViz() {
         </div>
       </div>
 
-      {/* Match chips */}
+      {/* Match chips — one request fans out into several scored matches. The
+          percentages are illustrative demo compatibility, never real terms. */}
       {out.map((o, i) => (
         <Chip key={i} style={pct(o)} tone={i === 0 ? "mint" : "light"}>
           <div className="flex items-center gap-2">
@@ -121,10 +125,16 @@ export function MatchingViz() {
                 i === 0 ? "bg-ink text-mint" : "bg-slate-100 text-ink"
               }`}
             >
-              {i + 1}
+              {String.fromCharCode(65 + i)}
             </span>
-            <span className="text-[0.72rem] font-semibold text-ink">
-              {v.partner} {String.fromCharCode(65 + i)}
+            <span className="flex flex-col leading-tight">
+              <span className="text-[0.72rem] font-semibold text-ink">
+                {v.partner} {String.fromCharCode(65 + i)}
+              </span>
+              <span className="text-[0.64rem] font-bold text-mint-600">
+                {DEMO_SCORES[i]}%{" "}
+                <span className="font-medium text-muted">{v.compatibility}</span>
+              </span>
             </span>
           </div>
         </Chip>

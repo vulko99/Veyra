@@ -295,3 +295,44 @@ def test_demo_products_use_eur(db):
     call_command("seed_demo_data")
     assert LenderProduct.objects.exists()
     assert not LenderProduct.objects.exclude(currency="EUR").exists()
+
+
+# --------------------------------------------------------------------------
+# Viva Credit onboarding (real criteria, held PENDING)
+# --------------------------------------------------------------------------
+def test_vivacredit_onboarded_pending_and_excluded(db):
+    from django.core.management import call_command
+
+    call_command("seed_vivacredit")
+    viva = Lender.objects.get(slug="viva-credit")
+    # Held PENDING => inactive => never matched.
+    assert viva.status == PartnerStatus.PENDING
+    assert viva.active is False
+
+    product = viva.products.get(slug="viva-credit-pending")
+    assert product.active is False
+    # Real criteria that were actually provided.
+    assert product.min_age == 21
+    assert product.max_age == 75
+    rule = product.eligibility_rules.get(field=RuleField.EMPLOYMENT_TYPE)
+    assert set(rule.value) == {"employed", "pensioner"}
+
+    # Excluded from matching while pending: an otherwise-fitting applicant that
+    # only Viva Credit could serve still yields no Viva match.
+    app = _ready_application()
+    app.requested_amount = Decimal("1500")
+    app.requested_term_months = 12
+    app.save()
+    match_application_v2(app)
+    assert not Match.objects.filter(application=app, lender=viva).filter(
+        eligible=True
+    ).exists()
+
+
+def test_vivacredit_command_is_idempotent(db):
+    from django.core.management import call_command
+
+    call_command("seed_vivacredit")
+    call_command("seed_vivacredit")
+    assert Lender.objects.filter(slug="viva-credit").count() == 1
+    assert LenderProduct.objects.filter(slug="viva-credit-pending").count() == 1

@@ -20,9 +20,42 @@ const sans = Inter({
 
 const messages = getMessages(defaultLocale);
 
+// Absolute base for resolving Open Graph / Twitter image URLs. Set
+// NEXT_PUBLIC_SITE_URL to the deployed domain so shared links render the card.
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://veyra.bg";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: messages.meta.title,
   description: messages.meta.description,
+  applicationName: "Veyra",
+  icons: {
+    icon: "/icon.svg",
+    shortcut: "/icon.svg",
+    apple: "/icon.svg",
+  },
+  openGraph: {
+    type: "website",
+    siteName: "Veyra",
+    locale: "bg_BG",
+    url: siteUrl,
+    title: messages.meta.title,
+    description: messages.meta.description,
+    images: [
+      {
+        url: "/og.png",
+        width: 1200,
+        height: 630,
+        alt: "Veyra — една заявка, повече възможности",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: messages.meta.title,
+    description: messages.meta.description,
+    images: ["/og.png"],
+  },
 };
 
 export default function RootLayout({

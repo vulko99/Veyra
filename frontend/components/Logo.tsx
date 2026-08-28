@@ -21,29 +21,40 @@ export function VeyraMark({
   className?: string;
 }) {
   const id = useId();
-  const gid = `veyra-${id}`;
-  const fill =
-    tone === "gradient" ? `url(#${gid})` : tone === "white" ? "#FFFFFF" : "#0B172A";
+  const lid = `veyra-l-${id}`;
+  const rid = `veyra-r-${id}`;
+
+  // Two facets forming a folded-ribbon "V": teal→blue on the left arm,
+  // violet→blue on the right, meeting at a central crease — the brand's
+  // colour placement (teal upper-left, violet upper-right, blue at the join).
+  const leftFacet = "M7 11 L17 11 L24 27 L24 41 Z";
+  const rightFacet = "M24 27 L31 11 L41 11 L24 41 Z";
+
+  if (tone !== "gradient") {
+    const solid = tone === "white" ? "#FFFFFF" : "#0B172A";
+    return (
+      <svg viewBox="0 0 48 48" width={size} height={size} className={className} role="img" aria-label="Veyra">
+        <path d={`${leftFacet} ${rightFacet}`} fill={solid} />
+      </svg>
+    );
+  }
+
   return (
-    <svg
-      viewBox="0 0 48 48"
-      width={size}
-      height={size}
-      className={className}
-      role="img"
-      aria-label="Veyra"
-    >
-      {tone === "gradient" && (
-        <defs>
-          <linearGradient id={gid} x1="4" y1="8" x2="44" y2="44" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="#21C7A8" />
-            <stop offset="52%" stopColor="#2563EB" />
-            <stop offset="100%" stopColor="#6C63FF" />
-          </linearGradient>
-        </defs>
-      )}
-      {/* solid chevron V (thick, geometric) */}
-      <path d="M7 11 L17 11 L24 27 L31 11 L41 11 L24 41 Z" fill={fill} />
+    <svg viewBox="0 0 48 48" width={size} height={size} className={className} role="img" aria-label="Veyra">
+      <defs>
+        <linearGradient id={lid} x1="7" y1="11" x2="24" y2="41" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#21C7A8" />
+          <stop offset="100%" stopColor="#2563EB" />
+        </linearGradient>
+        <linearGradient id={rid} x1="41" y1="11" x2="24" y2="41" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#6C63FF" />
+          <stop offset="100%" stopColor="#2563EB" />
+        </linearGradient>
+      </defs>
+      <path d={leftFacet} fill={`url(#${lid})`} />
+      <path d={rightFacet} fill={`url(#${rid})`} />
+      {/* subtle central crease highlight */}
+      <path d="M24 27 L24 41" stroke="#FFFFFF" strokeOpacity="0.18" strokeWidth="0.8" />
     </svg>
   );
 }

@@ -198,6 +198,10 @@ HASH_SALT = env_str("HASH_SALT", "veyra-dev-hash-salt")
 
 # Matching engine
 MATCHING_TOP_N = int(env_str("MATCHING_TOP_N", "3"))
+# Global compatibility-score threshold (0-100). A partner product is eligible
+# for referral only when its score is >= this value. Partners may override it
+# with a higher (or lower) minimum_match_score. Never hard-code this elsewhere.
+MATCH_THRESHOLD = int(env_str("MATCH_THRESHOLD", "80"))
 
 # Current document versions surfaced to consent capture.
 PRIVACY_POLICY_VERSION = env_str("PRIVACY_POLICY_VERSION", "2026-01-01")

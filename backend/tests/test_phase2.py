@@ -206,16 +206,21 @@ def test_matches_when_eligible(api_client, partner_b):
     assert body["matches"][0]["partner"] == "Demo Partner B"
 
 
-def test_ranking_by_priority_multiple_partners(api_client, partner_a, partner_b):
+def test_ranking_by_score_multiple_partners(api_client, partner_a, partner_b):
     # amount 2000, term 12, income 2000, employed → both A and B eligible.
+    # Multi-partner model: ALL eligible partners are returned, sorted by score
+    # descending (priority only breaks ties).
     data = _create_application(api_client, desired_amount_eur="2000", desired_term_months=12)
     _fill_profile(api_client, data["id"], monthly_income_eur="2000", employment_status="employed")
     _grant_consent(api_client, data["id"])
     body = api_client.post(reverse("p2-application-match", args=[data["id"]]), {}, format="json").json()
-    partners = [m["partner"] for m in body["matches"]]
-    # B priority 90 ranks before A priority 80.
-    assert partners == ["Demo Partner B", "Demo Partner A"]
-    assert body["matches"][0]["ranking"] == 1
+    matches = body["matches"]
+    assert len(matches) == 2
+    # Scores are non-increasing across the list.
+    scores = [m["match_score"] for m in matches]
+    assert scores == sorted(scores, reverse=True)
+    assert matches[0]["ranking"] == 1
+    assert matches[0]["eligible"] is True
 
 
 def test_amount_below_minimum_excluded(api_client, partner_b):

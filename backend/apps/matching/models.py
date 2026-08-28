@@ -38,6 +38,14 @@ class Match(UUIDTimeStampedModel):
         db_index=True,
     )
     score = models.PositiveIntegerField(default=0)
+    # The score threshold applied when this match was evaluated (global default
+    # or the partner's override). Stored for auditability: "why was this partner
+    # shown / not shown to this applicant?".
+    threshold_used = models.PositiveIntegerField(null=True, blank=True)
+    # True when the product passed hard criteria AND met the threshold, i.e. it
+    # is eligible to receive a referral. ``eligible`` remains the hard-criteria
+    # verdict for backward compatibility.
+    referral_eligible = models.BooleanField(default=False)
     rank = models.PositiveIntegerField(null=True, blank=True)
 
     # Compact per-criterion outcome map for admin/debugging, e.g.

@@ -210,13 +210,14 @@ class MatchesView(APIView):
         record_event(application, ApplicationEventType.PARTNER_VIEWED)
         matches = (
             Match.objects.filter(
-                application=application, eligible=True, rank__isnull=False
+                application=application, referral_eligible=True, rank__isnull=False
             )
             .select_related("lender", "product")
             .order_by("rank")
         )
         results = [
-            _serialize(m.product, m.reasons, m.rank, m.score) for m in matches
+            _serialize(m.product, m.reasons, m.rank, m.score, m.threshold_used)
+            for m in matches
         ]
         return Response(
             {"application_id": application.public_id, "matches": results}
@@ -233,11 +234,15 @@ class SelectPartnerView(APIView):
         serializer = SelectPartnerSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        # The product must be one this application actually matched (eligible).
+        # Never trust the frontend's score/eligibility: the referral is allowed
+        # only against a persisted Match that the backend itself marked
+        # referral-eligible (passed hard criteria AND met the threshold).
         product_id = serializer.validated_data["product_id"]
         match = (
             Match.objects.filter(
-                application=application, product_id=product_id, eligible=True
+                application=application,
+                product_id=product_id,
+                referral_eligible=True,
             )
             .select_related("product__lender")
             .first()

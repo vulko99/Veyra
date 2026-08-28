@@ -53,13 +53,22 @@ class LenderAdmin(admin.ModelAdmin):
         "name",
         "partner_type",
         "status",
-        "product_count",
+        "min_score",
+        "accepts_shared_leads",
+        "delivery_method",
+        "referral_count",
+        "successful_count",
+        "funded_count",
         "active",
-        "display_order",
-        "priority",
     )
-    list_editable = ("status", "display_order")
-    list_filter = ("status", "partner_type", "active")
+    list_editable = ("status",)
+    list_filter = (
+        "status",
+        "partner_type",
+        "active",
+        "accepts_shared_leads",
+        "delivery_method",
+    )
     search_fields = ("name", "legal_name", "display_name", "slug", "contact_email")
     prepopulated_fields = {"slug": ("name",)}
     inlines = [LenderProductInline]
@@ -71,6 +80,19 @@ class LenderAdmin(admin.ModelAdmin):
             {"fields": ("partner_type", "status", "active", "priority", "display_order")},
         ),
         (
+            "Lead distribution",
+            {
+                "fields": (
+                    "accepts_shared_leads",
+                    "minimum_match_score",
+                    "max_referrals_per_application",
+                    "requires_user_selection",
+                    "delivery_method",
+                    "delivery_email",
+                )
+            },
+        ),
+        (
             "Presentation",
             {"fields": ("description", "logo", "logo_url", "website_url", "application_url")},
         ),
@@ -80,6 +102,22 @@ class LenderAdmin(admin.ModelAdmin):
     @admin.display(description="Products")
     def product_count(self, obj):
         return obj.products.count()
+
+    @admin.display(description="Min score")
+    def min_score(self, obj):
+        return obj.minimum_match_score if obj.minimum_match_score is not None else "global"
+
+    @admin.display(description="Referrals")
+    def referral_count(self, obj):
+        return obj.leads.count()
+
+    @admin.display(description="Successful")
+    def successful_count(self, obj):
+        return obj.leads.filter(status__in=("APPROVED", "FUNDED")).count()
+
+    @admin.display(description="Funded")
+    def funded_count(self, obj):
+        return obj.leads.filter(status="FUNDED").count()
 
 
 @admin.register(LenderProduct)

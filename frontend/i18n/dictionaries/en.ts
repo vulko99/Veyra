@@ -407,9 +407,9 @@ const en: Messages = {
         platformLabel: "I agree to Veyra processing my information",
         platformDesc: "Required so we can process your request.",
         partnerLabel:
-          "I agree to my data being shared with the partner I choose to continue to",
+          "I agree that Veyra may share my application information with financial partners that match my application criteria, so they can assess whether they can offer me financing",
         partnerDesc:
-          "Data is shared only with a partner you choose, and in line with the applicable processing information.",
+          "We show the matching options and you decide which partners to continue with. Required so we can show you options.",
         marketingLabel: "I want to receive useful updates from Veyra",
         marketingDesc: "Optional. You can unsubscribe at any time.",
         legalPrefix: "By continuing you accept our",
@@ -439,7 +439,8 @@ const en: Messages = {
   results: {
     eyebrow: "Results",
     title: "We found relevant options.",
-    subhead: "Based on the information you provided.",
+    subhead:
+      "Based on the information you provided. Review the options and choose which partners to continue with.",
     topMatch: "Best match for your entered criteria",
     suitable: "Matches the criteria you entered",
     compatibilityLabel: "Compatibility",
@@ -453,7 +454,7 @@ const en: Messages = {
       "Based on your input we did not find a relevant partner product at this time. You can adjust your request and try again.",
     adjust: "Adjust request",
     disclaimer:
-      "Veyra is not a lender. The final decision is made by the partner.",
+      "Veyra is not a lender. The final decision and terms are set by the respective partner.",
     loadError: "We could not load your options. Please try again.",
     noReference: "No application reference was provided.",
     routeError: "We could not open the partner link. Please try again.",

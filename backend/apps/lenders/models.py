@@ -26,6 +26,16 @@ class PartnerType(models.TextChoices):
     OTHER = "OTHER", "Other"
 
 
+class DeliveryMethod(models.TextChoices):
+    """How an agreed referral is delivered to a partner. Provider-independent:
+    the referral system stays the same as new backends are added."""
+
+    MANUAL = "MANUAL", "Manual / none (no automated delivery)"
+    EMAIL = "EMAIL", "Email"
+    API = "API", "Partner API"
+    WEBHOOK = "WEBHOOK", "Webhook"
+
+
 class Lender(UUIDTimeStampedModel):
     name = models.CharField(max_length=200)
     # Optional richer identity (Phase 3). display_name/legal_name fall back to
@@ -57,6 +67,30 @@ class Lender(UUIDTimeStampedModel):
     contact_email = models.EmailField(blank=True)
     notes = models.TextField(blank=True)
 
+    # --- Lead distribution policy (Phase: multi-partner marketplace) ---
+    # Whether this partner accepts leads that may also be shared with other
+    # matching partners. A partner may still MATCH regardless; this governs the
+    # distribution/delivery layer, never the matching engine.
+    accepts_shared_leads = models.BooleanField(default=True)
+    # Optional per-partner override of the global MATCH_THRESHOLD (0-100).
+    minimum_match_score = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        help_text="Overrides the global match threshold for this partner (0-100).",
+    )
+    # Optional cap on how many referrals one application may create to this
+    # partner (None = unlimited).
+    max_referrals_per_application = models.PositiveIntegerField(null=True, blank=True)
+    # Whether a referral requires explicit user selection (True today; set False
+    # only for partners cleared for automatic distribution).
+    requires_user_selection = models.BooleanField(default=True)
+
+    # How agreed referrals are delivered to this partner, and where.
+    delivery_method = models.CharField(
+        max_length=16, choices=DeliveryMethod.choices, default=DeliveryMethod.MANUAL
+    )
+    delivery_email = models.EmailField(blank=True)
+
     active = models.BooleanField(default=True)
     priority = models.IntegerField(
         default=0,
@@ -80,6 +114,15 @@ class Lender(UUIDTimeStampedModel):
     def registered_name(self) -> str:
         """Legal/registered name if provided, else name."""
         return self.legal_name or self.name
+
+    def effective_min_score(self, global_threshold: int) -> int:
+        """The score this partner requires to be referral-eligible: its own
+        ``minimum_match_score`` override if set, otherwise the global threshold."""
+        return (
+            self.minimum_match_score
+            if self.minimum_match_score is not None
+            else global_threshold
+        )
 
     def save(self, *args, **kwargs):
         # Keep the legacy ``active`` flag consistent with ``status`` without ever

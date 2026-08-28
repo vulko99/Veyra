@@ -16,6 +16,7 @@ from __future__ import annotations
 
 from decimal import Decimal
 
+from django.conf import settings
 from django.db import transaction
 
 from apps.applications.events import record_event
@@ -101,39 +102,43 @@ def match_application_v2(application: Application) -> list[dict]:
         .prefetch_related("eligibility_rules")
     )
 
+    threshold = getattr(settings, "MATCH_THRESHOLD", 80)
+
     evaluated = []
     for product in products:
         result = evaluate_product_detailed(context, product)
-        # Compatibility score (0-100). NOT a probability of approval; used only
-        # to inform the applicant, ranking stays priority-driven below.
+        # Compatibility score (0-100). NOT a probability of approval.
         compatibility = score_match(context, product) if result["eligible"] else 0
-        evaluated.append((product, result, compatibility))
+        # Partner-specific minimum overrides the global threshold when configured.
+        min_score = product.lender.effective_min_score(threshold)
+        # Referral-eligible = passes hard criteria AND meets the threshold.
+        referral_eligible = result["eligible"] and compatibility >= min_score
+        evaluated.append((product, result, compatibility, min_score, referral_eligible))
 
-    # Rank eligible products by configurable priority (deterministic tie-break).
+    # Multi-partner marketplace model: ALL referral-eligible partners, sorted by
+    # score descending (priority breaks ties). No winner-takes-all.
     eligible_sorted = sorted(
-        [e for e in evaluated if e[1]["eligible"]],
-        key=lambda e: (
-            -e[0].priority,
-            e[0].lender.display_order,
-            e[0].lender.priority * -1,
-            str(e[0].id),
-        ),
+        [e for e in evaluated if e[4]],
+        key=lambda e: (-e[2], -e[0].priority, e[0].lender.display_order, str(e[0].id)),
     )
     rank_by_product = {
         product.id: idx
-        for idx, (product, _r, _c) in enumerate(eligible_sorted, start=1)
+        for idx, (product, _r, _c, _m, _re) in enumerate(eligible_sorted, start=1)
     }
 
-    # Persist a Match (MatchResult) for every evaluated product (audit trail).
+    # Persist a Match (MatchResult) for every evaluated product (audit trail:
+    # score, threshold used, eligibility, reasons).
     Match.objects.filter(application=application).delete()
-    for product, result, compatibility in evaluated:
+    for product, result, compatibility, min_score, referral_eligible in evaluated:
         Match.objects.create(
             application=application,
             lender=product.lender,
             product=product,
             eligible=result["eligible"],
+            referral_eligible=referral_eligible,
             status=result["status"],
             score=compatibility,
+            threshold_used=min_score,
             rank=rank_by_product.get(product.id),
             evaluation=result["evaluation"],
             reason_summary=result["reason_summary"],
@@ -142,10 +147,14 @@ def match_application_v2(application: Application) -> list[dict]:
 
     results = [
         _serialize(
-            product, result["reasons"], rank_by_product[product.id], compatibility
+            product,
+            result["reasons"],
+            rank_by_product[product.id],
+            compatibility,
+            min_score,
         )
-        for product, result, compatibility in evaluated
-        if result["eligible"]
+        for product, result, compatibility, min_score, referral_eligible in evaluated
+        if referral_eligible
     ]
     results.sort(key=lambda r: r["ranking"])
 
@@ -171,6 +180,7 @@ def _serialize(
     reasons: list[dict],
     ranking: int,
     compatibility: int = 0,
+    threshold: int | None = None,
 ) -> dict:
     customer_reasons = [
         {"code": r.get("code", ""), "params": r.get("params", {}), "text": r.get("text", "")}
@@ -188,10 +198,14 @@ def _serialize(
         "min_term_months": product.min_term_months,
         "max_term_months": product.max_term_months,
         "match": True,
+        # All serialized results are above the threshold, hence referral-eligible.
+        "eligible": True,
         "ranking": ranking,
         "priority": product.priority,
         # Compatibility score (0-100) against published criteria. NOT approval
         # probability; the UI must present it as "съответствие".
         "compatibility_score": compatibility,
+        "match_score": compatibility,
+        "threshold": threshold,
         "reasons": customer_reasons,
     }

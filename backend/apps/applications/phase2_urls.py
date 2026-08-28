@@ -37,4 +37,11 @@ urlpatterns = [
         SelectPartnerView.as_view(),
         name="p2-application-select-partner",
     ),
+    # Phase 3 spec alias for the same explicit-selection action (creates a
+    # referral only on explicit user action — no duplicate logic).
+    path(
+        "applications/<str:public_id>/referrals/",
+        SelectPartnerView.as_view(),
+        name="p2-application-referrals",
+    ),
 ]

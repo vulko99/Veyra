@@ -442,6 +442,7 @@ const en: Messages = {
     subhead: "Based on the information you provided.",
     topMatch: "Best match for your entered criteria",
     suitable: "Matches the criteria you entered",
+    compatibilityLabel: "Compatibility",
     amountRange: "Amount",
     termRange: "Term",
     months: "months",

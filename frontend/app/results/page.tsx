@@ -170,6 +170,19 @@ function ResultsInner() {
                           {productTypeLabel(match.product_type)}
                         </p>
                       </div>
+                      {typeof match.compatibility_score === "number" &&
+                        match.compatibility_score > 0 && (
+                          <span
+                            className="ml-auto flex-none rounded-full border border-mint/25 bg-mint/10 px-3 py-1 text-right text-xs font-semibold text-mint-400"
+                            title={r.compatibilityLabel}
+                          >
+                            {r.compatibilityLabel}
+                            <span className="ml-1 font-display text-sm font-extrabold text-appwhite">
+                              {match.compatibility_score}
+                              <span className="text-appmuted">/100</span>
+                            </span>
+                          </span>
+                        )}
                     </div>
 
                     <div className="mt-6 grid grid-cols-2 gap-x-6 gap-y-4 border-t border-white/10 pt-5">

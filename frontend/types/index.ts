@@ -80,6 +80,8 @@ export interface Phase2Match {
   match: boolean;
   ranking: number;
   priority: number;
+  /** Compatibility score (0–100) against published criteria. NOT an approval probability. */
+  compatibility_score?: number;
   reasons: ReasonPayload[];
 }
 

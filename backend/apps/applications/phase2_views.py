@@ -216,7 +216,7 @@ class MatchesView(APIView):
             .order_by("rank")
         )
         results = [
-            _serialize(m.product, m.reasons, m.rank) for m in matches
+            _serialize(m.product, m.reasons, m.rank, m.score) for m in matches
         ]
         return Response(
             {"application_id": application.public_id, "matches": results}

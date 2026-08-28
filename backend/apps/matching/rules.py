@@ -7,7 +7,41 @@ from __future__ import annotations
 
 from decimal import Decimal, InvalidOperation
 
+from django.db import models
+
 from apps.lenders.models import RuleOperator
+
+
+class RuleOutcome(models.TextChoices):
+    """Three-state result of evaluating a single criterion.
+
+    UNKNOWN means the applicant did not provide the information the rule needs;
+    it is deliberately distinct from FAIL so the engine can avoid rejecting an
+    applicant merely for missing (rather than disqualifying) data.
+    """
+
+    PASS = "PASS", "Pass"
+    FAIL = "FAIL", "Fail"
+    UNKNOWN = "UNKNOWN", "Unknown / not provided"
+
+
+def is_missing(value) -> bool:
+    """True when the applicant has not provided a usable value."""
+    if value is None:
+        return True
+    return isinstance(value, str) and value.strip() == ""
+
+
+def evaluate_rule_outcome(operator: str, actual, expected) -> str:
+    """Evaluate a single condition to PASS / FAIL / UNKNOWN.
+
+    Returns UNKNOWN when the applicant supplied no value for the field; the
+    caller decides whether an UNKNOWN excludes the product (mandatory rules) or
+    merely flags the match.
+    """
+    if is_missing(actual):
+        return RuleOutcome.UNKNOWN
+    return RuleOutcome.PASS if evaluate_rule(operator, actual, expected) else RuleOutcome.FAIL
 
 
 def to_number(value):

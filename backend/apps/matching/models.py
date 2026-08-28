@@ -11,6 +11,14 @@ from apps.core.models import UUIDTimeStampedModel
 from apps.lenders.models import Lender, LenderProduct
 
 
+class MatchStatus(models.TextChoices):
+    """Overall compatibility verdict for a (application, product) pair."""
+
+    ELIGIBLE = "ELIGIBLE", "Eligible"
+    INELIGIBLE = "INELIGIBLE", "Ineligible"
+    UNKNOWN = "UNKNOWN", "Unknown / insufficient data"
+
+
 class Match(UUIDTimeStampedModel):
     application = models.ForeignKey(
         Application, on_delete=models.CASCADE, related_name="matches"
@@ -21,8 +29,22 @@ class Match(UUIDTimeStampedModel):
     )
 
     eligible = models.BooleanField(default=False)
+    # Richer verdict (Phase 3). ``eligible`` is kept in sync (eligible = status
+    # is not INELIGIBLE) so existing callers keep working.
+    status = models.CharField(
+        max_length=16,
+        choices=MatchStatus.choices,
+        default=MatchStatus.INELIGIBLE,
+        db_index=True,
+    )
     score = models.PositiveIntegerField(default=0)
     rank = models.PositiveIntegerField(null=True, blank=True)
+
+    # Compact per-criterion outcome map for admin/debugging, e.g.
+    # {"amount": "PASS", "term": "PASS", "income": "PASS", "employment": "UNKNOWN"}.
+    evaluation = models.JSONField(default=dict, blank=True)
+    # Short, neutral human summary (never an approval claim).
+    reason_summary = models.CharField(max_length=255, blank=True)
 
     # Full reason objects (may contain internal-only reasons).
     reasons = models.JSONField(default=list, blank=True)

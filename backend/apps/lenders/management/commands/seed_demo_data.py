@@ -14,6 +14,8 @@ from apps.lenders.models import (
     EligibilityRule,
     Lender,
     LenderProduct,
+    PartnerStatus,
+    PartnerType,
     PayoutModel,
     ProductType,
     RuleField,
@@ -86,6 +88,9 @@ DEMO = [
             "payout_value": Decimal("3.50"),
             "employment": ALL_EMPLOYMENT,
             "max_obligations": Decimal("1500"),
+            # Illustrative age band (demo only).
+            "min_age": 21,
+            "max_age": 70,
         },
     },
 ]
@@ -101,7 +106,14 @@ class Command(BaseCommand):
                 slug=entry["slug"],
                 defaults={
                     "name": entry["name"],
+                    "display_name": entry["name"],
+                    "legal_name": f"{entry['name']} (demo) EOOD",
                     "description": entry["description"],
+                    "partner_type": PartnerType.LENDER,
+                    "status": PartnerStatus.ACTIVE,
+                    "contact_name": "Demo Contact",
+                    "contact_email": f"partners+{entry['slug']}@example.com",
+                    "notes": "Demo partner — not a real company. Illustrative data only.",
                     "active": True,
                     "priority": entry["priority"],
                     "display_order": entry["display_order"],
@@ -120,6 +132,8 @@ class Command(BaseCommand):
                     "min_term_months": p["min_term_months"],
                     "max_term_months": p["max_term_months"],
                     "min_income": p["min_income"],
+                    "min_age": p.get("min_age"),
+                    "max_age": p.get("max_age"),
                     "priority": p["priority"],
                     "application_url": f"https://example.com/{entry['slug']}/apply",
                     "tracking_url_template": (

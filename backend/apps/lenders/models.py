@@ -11,14 +11,51 @@ from django.db import models
 from apps.core.models import UUIDTimeStampedModel
 
 
+class PartnerStatus(models.TextChoices):
+    """Lifecycle of a partner relationship (Phase 3)."""
+
+    PENDING = "PENDING", "Pending"
+    ACTIVE = "ACTIVE", "Active"
+    PAUSED = "PAUSED", "Paused"
+    INACTIVE = "INACTIVE", "Inactive"
+
+
+class PartnerType(models.TextChoices):
+    LENDER = "LENDER", "Lender"
+    BROKER = "BROKER", "Broker"
+    OTHER = "OTHER", "Other"
+
+
 class Lender(UUIDTimeStampedModel):
     name = models.CharField(max_length=200)
+    # Optional richer identity (Phase 3). display_name/legal_name fall back to
+    # ``name`` via the properties below so existing callers keep working.
+    legal_name = models.CharField(max_length=250, blank=True)
+    display_name = models.CharField(max_length=200, blank=True)
     slug = models.SlugField(max_length=120, unique=True)
     description = models.TextField(blank=True)
     logo = models.ImageField(upload_to="lenders/logos/", blank=True, null=True)
     # URL-based logo (Phase 2 Partner.logo_url); no fabricated partner logos.
     logo_url = models.URLField(blank=True)
     website_url = models.URLField(blank=True)
+    # Partner-level default application URL (products may override).
+    application_url = models.URLField(blank=True)
+
+    partner_type = models.CharField(
+        max_length=16, choices=PartnerType.choices, default=PartnerType.LENDER
+    )
+    # Lifecycle status (Phase 3). ``active`` remains the authoritative matching
+    # switch and is kept in sync with this field (see save()).
+    status = models.CharField(
+        max_length=16,
+        choices=PartnerStatus.choices,
+        default=PartnerStatus.ACTIVE,
+        db_index=True,
+    )
+
+    contact_name = models.CharField(max_length=200, blank=True)
+    contact_email = models.EmailField(blank=True)
+    notes = models.TextField(blank=True)
 
     active = models.BooleanField(default=True)
     priority = models.IntegerField(
@@ -33,6 +70,31 @@ class Lender(UUIDTimeStampedModel):
 
     def __str__(self) -> str:
         return self.name
+
+    @property
+    def public_name(self) -> str:
+        """Consumer-facing name: display_name if set, else name."""
+        return self.display_name or self.name
+
+    @property
+    def registered_name(self) -> str:
+        """Legal/registered name if provided, else name."""
+        return self.legal_name or self.name
+
+    def save(self, *args, **kwargs):
+        # Keep the legacy ``active`` flag consistent with ``status`` without ever
+        # overriding an explicit active=False (matching queries rely on active):
+        #   - a non-active status forces active off,
+        #   - toggling active off is reflected as INACTIVE.
+        if self.status in (
+            PartnerStatus.PENDING,
+            PartnerStatus.PAUSED,
+            PartnerStatus.INACTIVE,
+        ):
+            self.active = False
+        elif not self.active and self.status == PartnerStatus.ACTIVE:
+            self.status = PartnerStatus.INACTIVE
+        super().save(*args, **kwargs)
 
 
 class ProductType(models.TextChoices):
@@ -79,6 +141,12 @@ class LenderProduct(UUIDTimeStampedModel):
     min_income = models.DecimalField(
         max_digits=12, decimal_places=2, null=True, blank=True
     )
+
+    # Optional age bounds (Phase 3). Nullable: when unset the criterion is not
+    # evaluated. When set but the applicant's age is unknown, the criterion is
+    # reported UNKNOWN rather than a hard rejection (see the matching engine).
+    min_age = models.PositiveIntegerField(null=True, blank=True)
+    max_age = models.PositiveIntegerField(null=True, blank=True)
 
     # Where the applicant is sent, and how outbound clicks are tracked.
     application_url = models.URLField()
@@ -136,6 +204,7 @@ class RuleField(models.TextChoices):
     EXISTING_DEBT = "existing_debt"
     MONTHLY_DEBT_PAYMENT = "monthly_debt_payment"
     LOAN_PURPOSE = "loan_purpose"
+    AGE = "age"
 
 
 class RuleOperator(models.TextChoices):
@@ -165,6 +234,17 @@ class EligibilityRule(UUIDTimeStampedModel):
     operator = models.CharField(max_length=32, choices=RuleOperator.choices)
     value = models.JSONField(
         help_text="Scalar for comparisons; list for IN/NOT_IN; [low, high] for BETWEEN."
+    )
+
+    # When True, the applicant MUST have supplied this field: a missing value
+    # (otherwise reported UNKNOWN) is treated as a hard failure. When False,
+    # missing data leaves the product eligible but flags the match UNKNOWN.
+    mandatory = models.BooleanField(
+        default=False,
+        help_text=(
+            "If set, missing applicant data for this rule excludes the product; "
+            "otherwise a missing value is reported as UNKNOWN, not a rejection."
+        ),
     )
 
     # Whether a human-readable reason derived from this rule may be shown to

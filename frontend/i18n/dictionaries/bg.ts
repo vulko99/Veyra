@@ -435,6 +435,7 @@ export const bg = {
     subhead: "Въз основа на въведената от вас информация.",
     topMatch: "Най-подходящо според въведените критерии",
     suitable: "Отговаря на въведените критерии",
+    compatibilityLabel: "Съответствие",
     amountRange: "Сума",
     termRange: "Срок",
     months: "месеца",

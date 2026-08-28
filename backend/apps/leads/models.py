@@ -22,6 +22,7 @@ class LeadStatus(models.TextChoices):
     FUNDED = "FUNDED"
     DECLINED = "DECLINED"
     REJECTED = "REJECTED"
+    CANCELLED = "CANCELLED"
     EXPIRED = "EXPIRED"
 
 

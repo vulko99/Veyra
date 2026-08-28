@@ -17,11 +17,16 @@ class LenderProductPublicSerializer(serializers.ModelSerializer):
             "min_term_months",
             "max_term_months",
             "min_income",
+            "min_age",
+            "max_age",
             "active",
         ]
 
 
 class LenderPublicSerializer(serializers.ModelSerializer):
+    # Consumer-facing name (display_name if set, else name). ``name`` is kept
+    # for backward compatibility with existing clients.
+    display_name = serializers.CharField(source="public_name", read_only=True)
     products = serializers.SerializerMethodField()
 
     class Meta:
@@ -29,9 +34,14 @@ class LenderPublicSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "name",
+            "display_name",
             "slug",
             "description",
+            "logo_url",
             "website_url",
+            "application_url",
+            "partner_type",
+            "status",
             "active",
             "priority",
             "products",
@@ -48,11 +58,21 @@ class LenderAdminSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "name",
+            "legal_name",
+            "display_name",
             "slug",
             "description",
+            "logo_url",
             "website_url",
+            "application_url",
+            "partner_type",
+            "status",
+            "contact_name",
+            "contact_email",
+            "notes",
             "active",
             "priority",
+            "display_order",
             "created_at",
             "updated_at",
         ]
@@ -74,6 +94,8 @@ class LenderProductAdminSerializer(serializers.ModelSerializer):
             "min_term_months",
             "max_term_months",
             "min_income",
+            "min_age",
+            "max_age",
             "application_url",
             "tracking_type",
             "tracking_url_template",
@@ -109,6 +131,7 @@ class EligibilityRuleAdminSerializer(serializers.ModelSerializer):
             "field",
             "operator",
             "value",
+            "mandatory",
             "show_reason_to_customer",
             "reason_template",
             "active",

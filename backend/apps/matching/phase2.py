@@ -28,8 +28,9 @@ from apps.consents.services import has_required_consents
 from apps.core.exceptions import VeyraAPIError
 from apps.lenders.models import LenderProduct
 
-from .engine import evaluate_product
+from .engine import age_from_range, evaluate_product_detailed
 from .models import Match
+from .scoring import score_match
 
 
 def build_context_v2(application: Application) -> dict:
@@ -59,6 +60,7 @@ def build_context_v2(application: Application) -> dict:
         "existing_debt": obligations,
         "monthly_debt_payment": obligations,
         "loan_purpose": application.purpose,
+        "age": age_from_range(application.age_range),
     }
 
 
@@ -101,12 +103,15 @@ def match_application_v2(application: Application) -> list[dict]:
 
     evaluated = []
     for product in products:
-        eligible, reasons = evaluate_product(context, product)
-        evaluated.append((product, eligible, reasons))
+        result = evaluate_product_detailed(context, product)
+        # Compatibility score (0-100). NOT a probability of approval; used only
+        # to inform the applicant, ranking stays priority-driven below.
+        compatibility = score_match(context, product) if result["eligible"] else 0
+        evaluated.append((product, result, compatibility))
 
     # Rank eligible products by configurable priority (deterministic tie-break).
     eligible_sorted = sorted(
-        [e for e in evaluated if e[1]],
+        [e for e in evaluated if e[1]["eligible"]],
         key=lambda e: (
             -e[0].priority,
             e[0].lender.display_order,
@@ -116,26 +121,31 @@ def match_application_v2(application: Application) -> list[dict]:
     )
     rank_by_product = {
         product.id: idx
-        for idx, (product, _e, _r) in enumerate(eligible_sorted, start=1)
+        for idx, (product, _r, _c) in enumerate(eligible_sorted, start=1)
     }
 
     # Persist a Match (MatchResult) for every evaluated product (audit trail).
     Match.objects.filter(application=application).delete()
-    for product, eligible, reasons in evaluated:
+    for product, result, compatibility in evaluated:
         Match.objects.create(
             application=application,
             lender=product.lender,
             product=product,
-            eligible=eligible,
-            score=product.priority if eligible else 0,
+            eligible=result["eligible"],
+            status=result["status"],
+            score=compatibility,
             rank=rank_by_product.get(product.id),
-            reasons=reasons,
+            evaluation=result["evaluation"],
+            reason_summary=result["reason_summary"],
+            reasons=result["reasons"],
         )
 
     results = [
-        _serialize(product, reasons, rank_by_product[product.id])
-        for product, eligible, reasons in evaluated
-        if eligible
+        _serialize(
+            product, result["reasons"], rank_by_product[product.id], compatibility
+        )
+        for product, result, compatibility in evaluated
+        if result["eligible"]
     ]
     results.sort(key=lambda r: r["ranking"])
 
@@ -156,14 +166,19 @@ def match_application_v2(application: Application) -> list[dict]:
     return results
 
 
-def _serialize(product: LenderProduct, reasons: list[dict], ranking: int) -> dict:
+def _serialize(
+    product: LenderProduct,
+    reasons: list[dict],
+    ranking: int,
+    compatibility: int = 0,
+) -> dict:
     customer_reasons = [
         {"code": r.get("code", ""), "params": r.get("params", {}), "text": r.get("text", "")}
         for r in reasons
         if r.get("show_to_customer", True) and (r.get("code") or r.get("text"))
     ]
     return {
-        "partner": product.lender.name,
+        "partner": product.lender.public_name,
         "partner_slug": product.lender.slug,
         "product": product.name,
         "product_id": str(product.id),
@@ -175,5 +190,8 @@ def _serialize(product: LenderProduct, reasons: list[dict], ranking: int) -> dic
         "match": True,
         "ranking": ranking,
         "priority": product.priority,
+        # Compatibility score (0-100) against published criteria. NOT approval
+        # probability; the UI must present it as "съответствие".
+        "compatibility_score": compatibility,
         "reasons": customer_reasons,
     }

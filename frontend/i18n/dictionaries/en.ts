@@ -497,7 +497,8 @@ const en: Messages = {
       "Based on the information you provided. Review the options and choose which partners to continue with.",
     countSuffix: "relevant options",
     compatibilityExplainer:
-      "Compatibility shows how well the data you entered matches the partner's configured criteria. It is not an approval probability. The final decision is made by the respective lender.",
+      "The indicator reflects the match against the partner's pre-set criteria. It is not an approval probability.",
+    matchSuffix: "match with the criteria",
     topMatch: "Highest compatibility with your entered criteria",
     suitable: "Suitable based on the data you entered",
     compatibilityLabel: "Compatibility",

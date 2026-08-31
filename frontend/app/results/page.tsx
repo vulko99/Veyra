@@ -278,11 +278,10 @@ function ResultsInner() {
                             className="ml-auto flex-none rounded-full border border-mint/25 bg-mint/10 px-3 py-1 text-right text-xs font-semibold text-mint-400"
                             title={r.compatibilityLabel}
                           >
-                            {r.compatibilityLabel}
-                            <span className="ml-1 font-display text-sm font-extrabold text-appwhite">
-                              {match.compatibility_score}
-                              <span className="text-appmuted">/100</span>
-                            </span>
+                            <span className="font-display text-sm font-extrabold text-appwhite">
+                              {match.compatibility_score}%
+                            </span>{" "}
+                            {r.matchSuffix}
                           </span>
                         )}
                     </div>

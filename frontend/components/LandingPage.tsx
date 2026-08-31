@@ -4,6 +4,16 @@ import { JsonLd } from "@/components/JsonLd";
 import { TrackView } from "@/components/TrackView";
 import { SITE_URL } from "@/lib/seo";
 
+// Internal links surfaced on every landing page so growth pages (which are not
+// all in the primary nav) stay linked and share crawl/link equity.
+const RELATED = [
+  { href: "/krediti", label: "Кредити онлайн" },
+  { href: "/barzi-krediti", label: "Бързи кредити" },
+  { href: "/loans", label: "Видове кредити" },
+  { href: "/kalkulator", label: "Кредитен калкулатор" },
+  { href: "/guides", label: "Ръководства" },
+];
+
 /** Server-rendered SEO landing page: useful content + one clear CTA into the
  *  Veyra application. Static HTML (fast, crawlable) with a tiny view-tracking
  *  island. Marketplace framing; no approval claims. */
@@ -73,6 +83,19 @@ export function LandingPage({ data }: { data: Landing }) {
             </section>
           ))}
         </div>
+
+        {/* Related internal links (keeps growth pages linked, spreads equity) */}
+        <nav aria-label="Свързани страници" className="mt-12 flex flex-wrap gap-2.5">
+          {RELATED.filter((r) => r.href !== `/${data.slug}`).map((r) => (
+            <Link
+              key={r.href}
+              href={r.href}
+              className="rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-sm font-medium text-ink transition-colors hover:border-mint/50 hover:text-mint-600"
+            >
+              {r.label}
+            </Link>
+          ))}
+        </nav>
 
         {/* FAQ */}
         <section className="mt-14 border-t border-slate-200/80 pt-8">

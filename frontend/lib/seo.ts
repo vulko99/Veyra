@@ -88,9 +88,18 @@ export function buildMetadata(path: string, overrides: Partial<Metadata> = {}): 
     description: seo?.description,
     alternates: { canonical },
     openGraph: seo
-      ? { title: seo.title, description: seo.description, url: `${SITE_URL}${canonical}` }
+      ? {
+          title: seo.title,
+          description: seo.description,
+          url: `${SITE_URL}${canonical}`,
+          // A child openGraph does not inherit the parent's images in Next, so
+          // set them explicitly to keep the share card on every page.
+          images: ["/og.png"],
+        }
       : undefined,
-    twitter: seo ? { title: seo.title, description: seo.description } : undefined,
+    twitter: seo
+      ? { title: seo.title, description: seo.description, images: ["/og.png"] }
+      : undefined,
     ...overrides,
   };
 }

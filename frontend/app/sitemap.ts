@@ -26,7 +26,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
   ];
 
   const staticEntries = staticPaths.map((p) => ({
-    url: `${SITE_URL}${p.path}`,
+    // Home is the bare origin (matches its canonical, no trailing slash).
+    url: p.path === "/" ? SITE_URL : `${SITE_URL}${p.path}`,
     lastModified: now,
     changeFrequency: p.freq,
     priority: p.priority,

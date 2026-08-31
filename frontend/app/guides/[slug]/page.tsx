@@ -23,8 +23,9 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
       title: g.metaTitle,
       description: g.description,
       url: `${SITE_URL}${canonical}`,
+      images: ["/og.png"],
     },
-    twitter: { title: g.metaTitle, description: g.description },
+    twitter: { title: g.metaTitle, description: g.description, images: ["/og.png"] },
   };
 }
 

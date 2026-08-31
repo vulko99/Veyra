@@ -191,9 +191,15 @@ function ResultsInner() {
         <div className="reveal">
           <span className="a-eyebrow">{r.eyebrow}</span>
           <h1 className="mt-4 text-[2rem] font-bold leading-[1.06] tracking-tight text-appwhite sm:text-[2.6rem]">
-            {matches && matches.length > 1 ? r.titleMultiple : r.title}
+            {matches && matches.length === 0
+              ? r.emptyHeadline
+              : matches && matches.length > 1
+                ? r.titleMultiple
+                : r.title}
           </h1>
-          <p className="mt-3 text-appmuted">{r.subhead}</p>
+          <p className="mt-3 text-appmuted">
+            {matches && matches.length === 0 ? r.emptySubhead : r.subhead}
+          </p>
 
           {matches && matches.length > 0 && (
             <>

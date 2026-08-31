@@ -527,9 +527,12 @@ const en: Messages = {
     months: "months",
     continueToPartner: "Continue to partner",
     opening: "Opening…",
+    emptyHeadline: "There are no suitable options right now.",
+    emptySubhead:
+      "Based on the information you entered, we did not find a partner whose criteria match your profile. You can adjust your request and try again.",
     emptyTitle: "No relevant options right now",
     emptyBody:
-      "Based on your input we did not find a relevant partner product at this time. You can adjust your request and try again.",
+      "Based on the information you entered, we did not find any suitable options. You can adjust your request and try again.",
     adjust: "Adjust request",
     disclaimer:
       "Veyra is not a lender. The final decision and terms are set by the respective partner.",

@@ -2,7 +2,9 @@
 #
 # Deploys two free web services:
 #   - veyra-backend  : Django + Gunicorn. SQLite (no external DB), Celery in
-#                      eager mode (no Redis / worker), demo data seeded on boot.
+#                      eager mode (no Redis / worker), demo data seeded on boot,
+#                      DEMO_MODE on (fictional Demo Partner A/B/C, simulated
+#                      referrals — no external email/API).
 #   - veyra-frontend : Next.js, proxying /api/* to the backend (no CORS setup).
 #
 # NOTE: this is a throwaway DEMO config, not production. SQLite is ephemeral on
@@ -15,7 +17,7 @@
 #   1. Push this file to your repo (it's on your branch).
 #   2. render.com  ->  New  ->  Blueprint  ->  pick this repo/branch.
 #   3. Render creates both services. When it asks, set API_PROXY_TARGET on the
-#      frontend to the backend's URL (https://veyra-backend.onrender.com).
+#      frontend to the backend's URL (e.g. https://veyra-backend.onrender.com).
 #   4. Open the frontend URL and share it with your partner.
 
 services:
@@ -27,7 +29,8 @@ services:
     dockerfilePath: ./backend/Dockerfile
     dockerContext: ./backend
     healthCheckPath: /health/
-    startCommand: >-
+    # Docker runtime uses dockerCommand (NOT startCommand) to override the CMD.
+    dockerCommand: >-
       bash entrypoint.sh gunicorn config.wsgi:application
       --bind 0.0.0.0:$PORT --workers 2
     envVars:
@@ -41,7 +44,11 @@ services:
       # Run Celery tasks inline — no Redis, no worker needed for a demo.
       - key: CELERY_TASK_ALWAYS_EAGER
         value: "True"
-      # Seed demo data on every boot (SQLite is ephemeral on free tier).
+      # Demo mode: fictional demo partners participate; referrals are simulated
+      # (never emailed / no external API). Set to "false" for real production.
+      - key: DEMO_MODE
+        value: "true"
+      # Seed demo partners (A/B/C) on every boot (SQLite is ephemeral here).
       - key: SEED_DEMO_DATA
         value: "true"
       # Render terminates TLS; the app trusts X-Forwarded-Proto. Keep the
@@ -62,7 +69,13 @@ services:
     buildCommand: npm ci && npm run build
     startCommand: npm start
     envVars:
+      # Make the browser call the SAME origin (/api/...), which the Next server
+      # then rewrites to API_PROXY_TARGET below. This is baked at build time, so
+      # it MUST be set here (otherwise the app calls http://localhost:8000).
+      - key: NEXT_PUBLIC_API_URL
+        value: /api/v1
       # Point the Next.js /api/* proxy at the backend. Set this to the backend
-      # service URL after the first deploy (Render prompts because sync: false).
+      # service URL after the first deploy (Render prompts because sync: false),
+      # e.g. https://veyra-backend.onrender.com
       - key: API_PROXY_TARGET
         sync: false

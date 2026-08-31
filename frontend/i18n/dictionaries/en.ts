@@ -22,6 +22,7 @@ const en: Messages = {
   nav: {
     howItWorks: "How it works",
     loans: "Loans",
+    calculator: "Calculator",
     faq: "FAQ",
     responsible: "Responsible borrowing",
     menu: "Menu",
@@ -34,6 +35,8 @@ const en: Messages = {
     links: {
       howItWorks: "How it works",
       loans: "Loans",
+      calculator: "Calculator",
+      guides: "Guides",
       faq: "FAQ",
       about: "About",
       contact: "Contact",
@@ -450,6 +453,25 @@ const en: Messages = {
       incomeRequired: "Please enter your monthly income.",
       nameRequired: "Please enter your name.",
     },
+  },
+  calculator: {
+    eyebrow: "Credit calculator",
+    title: "Estimate your monthly payment and total cost.",
+    intro:
+      "Enter an amount, term and indicative annual interest to see an example monthly payment and total cost. The result is indicative — exact terms are set by the partner.",
+    amount: "Amount",
+    term: "Term",
+    months: "months",
+    rate: "Annual interest (indicative)",
+    monthly: "Example monthly payment",
+    totalRepay: "Total to repay",
+    totalCost: "Total cost of credit",
+    cta: "See relevant options",
+    disclaimer:
+      "Indicative annuity estimate. Not an offer and excludes fees or APR. Final terms are set by the respective lender.",
+    seoHeading: "How to read the result",
+    seoBody:
+      "The monthly payment is what you pay each month. Total cost is the difference between the amount repaid and the amount borrowed. When comparing real offers, look at the APR, which also includes fees.",
   },
   results: {
     eyebrow: "Results",

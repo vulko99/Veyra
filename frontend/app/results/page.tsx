@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { getMatches, selectPartner } from "@/lib/api";
 import { formatEUR } from "@/lib/format";
+import { track } from "@/lib/analytics";
 import { useI18n } from "@/hooks/useI18n";
 import { AppShell } from "@/components/WizardStep";
 import type { Phase2Match } from "@/types";
@@ -79,15 +80,21 @@ function ResultsInner() {
       return;
     }
     getMatches(applicationId)
-      .then((res) => setMatches(res.matches))
+      .then((res) => {
+        setMatches(res.matches);
+        // Funnel signal only — a count, never applicant data.
+        track("matches_shown", { count: res.matches.length });
+      })
       .catch(() => setError(r.loadError));
   }, [applicationId, r.noReference, r.loadError]);
 
   async function handleContinue(match: Phase2Match) {
     if (!applicationId) return;
     setRouting(match.product_id);
+    track("partner_selected", { partner_slug: match.partner_slug, rank: match.ranking });
     try {
       const res = await selectPartner(applicationId, match.product_id);
+      track("outbound_click", { partner_slug: match.partner_slug });
       window.location.href = res.outbound_url;
     } catch {
       setError(r.routeError);

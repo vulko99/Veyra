@@ -1,0 +1,106 @@
+import Link from "next/link";
+import type { Landing } from "@/lib/landing-content";
+import { JsonLd } from "@/components/JsonLd";
+import { TrackView } from "@/components/TrackView";
+import { SITE_URL } from "@/lib/seo";
+
+/** Server-rendered SEO landing page: useful content + one clear CTA into the
+ *  Veyra application. Static HTML (fast, crawlable) with a tiny view-tracking
+ *  island. Marketplace framing; no approval claims. */
+export function LandingPage({ data }: { data: Landing }) {
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: data.faq.map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: { "@type": "Answer", text: f.a },
+    })),
+  };
+  const breadcrumb = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Начало", item: SITE_URL },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: data.eyebrow,
+        item: `${SITE_URL}/${data.slug}`,
+      },
+    ],
+  };
+
+  return (
+    <div className="relative">
+      <JsonLd data={faqJsonLd} />
+      <JsonLd data={breadcrumb} />
+      <TrackView event="landing_view" page={data.slug} />
+
+      <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-72 grid-lines mask-fade-b opacity-60" />
+      <div className="pointer-events-none absolute inset-0 -z-10 atmos-light" />
+
+      <div className="container-x max-w-3xl py-16 sm:py-20">
+        <header className="reveal">
+          <span className="eyebrow">{data.eyebrow}</span>
+          <h1 className="t-h1 mt-4 text-ink">{data.h1}</h1>
+          <p className="mt-5 t-body text-muted">{data.intro}</p>
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <Link href="/apply" className="btn-mint">
+              Започни заявка<span aria-hidden>→</span>
+            </Link>
+            <Link href="/kalkulator" className="btn-ghost">
+              Кредитен калкулатор
+            </Link>
+          </div>
+        </header>
+
+        <div className="mt-14 space-y-10">
+          {data.sections.map((s) => (
+            <section key={s.h2} className="border-t border-slate-200/80 pt-7">
+              <h2 className="t-h3 text-ink">{s.h2}</h2>
+              {s.body && <p className="mt-2 t-body text-muted">{s.body}</p>}
+              {s.bullets && (
+                <ul className="mt-3 space-y-2">
+                  {s.bullets.map((b) => (
+                    <li key={b} className="flex gap-2.5 t-body text-muted">
+                      <span className="mt-2 h-1.5 w-1.5 flex-none rounded-full bg-mint" />
+                      {b}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
+          ))}
+        </div>
+
+        {/* FAQ */}
+        <section className="mt-14 border-t border-slate-200/80 pt-8">
+          <h2 className="t-h3 text-ink">Често задавани въпроси</h2>
+          <div className="mt-5 space-y-5">
+            {data.faq.map((f) => (
+              <div key={f.q}>
+                <h3 className="font-display text-base font-bold text-ink">{f.q}</h3>
+                <p className="mt-1 t-small text-muted">{f.a}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* CTA */}
+        <div className="surface-dark relative mt-14 overflow-hidden rounded-[2rem] px-8 py-12 text-center sm:px-14">
+          <h2 className="t-h2 text-appwhite">{data.ctaTitle}</h2>
+          <p className="mx-auto mt-3 max-w-xl t-body text-appmuted">{data.ctaBody}</p>
+          <div className="mt-7">
+            <Link href="/apply" className="btn-mint">
+              Започни заявка<span aria-hidden>→</span>
+            </Link>
+          </div>
+          <p className="mt-5 t-caption text-appmuted">
+            Veyra не е кредитор. Окончателното решение и условията се определят от съответния партньор.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}

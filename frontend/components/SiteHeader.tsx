@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Logo } from "./Logo";
 import { useMessages } from "@/hooks/useI18n";
+import { track } from "@/lib/analytics";
 
 // The application flow is a distinct dark product experience with its own chrome.
 function isAppFlow(pathname: string | null): boolean {
@@ -26,7 +27,8 @@ export function SiteHeader() {
 
   const nav = [
     { href: "/how-it-works", label: m.nav.howItWorks },
-    { href: "/loans", label: m.nav.loans },
+    { href: "/krediti", label: m.nav.loans },
+    { href: "/kalkulator", label: m.nav.calculator },
     { href: "/faq", label: m.nav.faq },
     { href: "/responsible-borrowing", label: m.nav.responsible },
   ];
@@ -53,7 +55,11 @@ export function SiteHeader() {
               {item.label}
             </Link>
           ))}
-          <Link href="/apply" className="btn-mint ml-2 px-5 py-2.5 text-sm">
+          <Link
+            href="/apply"
+            className="btn-mint ml-2 px-5 py-2.5 text-sm"
+            onClick={() => track("cta_click", { location: "header" })}
+          >
             {m.common.startShort}
           </Link>
         </nav>

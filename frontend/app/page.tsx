@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useMessages } from "@/hooks/useI18n";
 import { MatchingViz } from "@/components/MatchingViz";
+import { track } from "@/lib/analytics";
 
 export default function HomePage() {
   const m = useMessages();
@@ -30,7 +31,11 @@ export default function HomePage() {
               {m.home.subhead}
             </p>
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-              <Link href="/apply" className="btn-mint">
+              <Link
+                href="/apply"
+                className="btn-mint"
+                onClick={() => track("cta_click", { location: "hero" })}
+              >
                 {m.home.primaryCta}
                 <span aria-hidden>→</span>
               </Link>
@@ -176,7 +181,11 @@ export default function HomePage() {
             {m.home.ctaBody}
           </p>
           <div className="relative mt-9">
-            <Link href="/apply" className="btn-mint">
+            <Link
+              href="/apply"
+              className="btn-mint"
+              onClick={() => track("cta_click", { location: "home_cta" })}
+            >
               {m.home.primaryCta}
               <span aria-hidden>→</span>
             </Link>

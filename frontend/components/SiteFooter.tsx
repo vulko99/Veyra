@@ -20,7 +20,9 @@ export function SiteFooter() {
       title: f.productTitle,
       links: [
         { href: "/how-it-works", label: f.links.howItWorks },
-        { href: "/loans", label: f.links.loans },
+        { href: "/krediti", label: f.links.loans },
+        { href: "/kalkulator", label: f.links.calculator },
+        { href: "/guides", label: f.links.guides },
         { href: "/faq", label: f.links.faq },
       ],
     },

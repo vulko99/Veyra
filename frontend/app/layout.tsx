@@ -5,8 +5,11 @@ import { ApplicationProvider } from "@/hooks/useApplication";
 import { I18nProvider } from "@/hooks/useI18n";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import { Analytics } from "@/components/Analytics";
+import { JsonLd } from "@/components/JsonLd";
 import { defaultLocale } from "@/i18n/config";
 import { getMessages } from "@/i18n";
+import { SITE_URL } from "@/lib/seo";
 
 const display = Manrope({
   subsets: ["latin", "cyrillic"],
@@ -20,25 +23,21 @@ const sans = Inter({
 
 const messages = getMessages(defaultLocale);
 
-// Absolute base for resolving Open Graph / Twitter image URLs. Set
-// NEXT_PUBLIC_SITE_URL to the deployed domain so shared links render the card.
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://veyra.bg";
-
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
-  title: messages.meta.title,
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: messages.meta.title,
+    // Per-route layouts provide full titles; this template leaves them as-is.
+    template: "%s",
+  },
   description: messages.meta.description,
   applicationName: "Veyra",
-  icons: {
-    icon: "/icon.svg",
-    shortcut: "/icon.svg",
-    apple: "/icon.svg",
-  },
+  alternates: { canonical: "/" },
   openGraph: {
     type: "website",
     siteName: "Veyra",
     locale: "bg_BG",
-    url: siteUrl,
+    url: SITE_URL,
     title: messages.meta.title,
     description: messages.meta.description,
     images: [
@@ -58,6 +57,24 @@ export const metadata: Metadata = {
   },
 };
 
+// Site-wide structured data: who Veyra is, and site-level search metadata.
+const orgJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "Veyra",
+  url: SITE_URL,
+  logo: `${SITE_URL}/veyra-logo.png`,
+  description: messages.meta.description,
+  slogan: "Една заявка. Повече възможности.",
+};
+const siteJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "Veyra",
+  url: SITE_URL,
+  inLanguage: "bg",
+};
+
 export default function RootLayout({
   children,
 }: {
@@ -66,6 +83,8 @@ export default function RootLayout({
   return (
     <html lang={defaultLocale} className={`${display.variable} ${sans.variable}`}>
       <body className="flex min-h-screen flex-col font-sans">
+        <JsonLd data={orgJsonLd} />
+        <JsonLd data={siteJsonLd} />
         <I18nProvider initialLocale={defaultLocale}>
           <ApplicationProvider>
             <SiteHeader />
@@ -73,6 +92,7 @@ export default function RootLayout({
             <SiteFooter />
           </ApplicationProvider>
         </I18nProvider>
+        <Analytics />
       </body>
     </html>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { VeyraMark } from "./Logo";
+import { Logo } from "./Logo";
 import { WIZARD_STEPS, stepIndex } from "@/lib/wizard";
 import { useI18n } from "@/hooks/useI18n";
 
@@ -36,14 +36,7 @@ export function AppRail({ current }: { current: string }) {
   return (
     <aside className="hidden w-64 flex-none border-r border-white/5 lg:block">
       <div className="sticky top-0 flex h-screen flex-col px-8 py-8">
-        <div className="flex items-center gap-2.5">
-          <span className="grid h-9 w-9 place-items-center rounded-xl bg-white/5 ring-1 ring-white/10">
-            <VeyraMark size={22} tone="white" />
-          </span>
-          <span className="font-display text-lg font-extrabold tracking-tighter text-appwhite">
-            Veyra
-          </span>
-        </div>
+        <Logo light height={28} />
 
         <nav className="mt-12 flex-1">
           <ol className="relative">

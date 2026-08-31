@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { VeyraMark } from "./Logo";
+import { Logo } from "./Logo";
 import { useMessages } from "@/hooks/useI18n";
 
 export function SiteFooter() {
@@ -46,14 +46,7 @@ export function SiteFooter() {
     <footer className="mt-28 bg-ink text-slate-300">
       <div className="container-x grid gap-12 py-16 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div>
-          <div className="flex items-center gap-2.5">
-            <span className="grid h-9 w-9 place-items-center rounded-xl bg-white/10">
-              <VeyraMark size={22} tone="white" />
-            </span>
-            <span className="font-display text-xl font-extrabold tracking-tighter text-white">
-              Veyra
-            </span>
-          </div>
+          <Logo light height={30} />
           <p className="mt-4 max-w-[16rem] font-display text-lg font-semibold tracking-tight text-white/90">
             {f.tagline}
           </p>

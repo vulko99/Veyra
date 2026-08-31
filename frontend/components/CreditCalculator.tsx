@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { track } from "@/lib/analytics";
 import { useMessages } from "@/hooks/useI18n";
 
@@ -23,6 +23,15 @@ export function CreditCalculator() {
   const [amount, setAmount] = useState(3000);
   const [months, setMonths] = useState(24);
   const [rate, setRate] = useState(15); // indicative annual interest %
+  const started = useRef(false);
+
+  const onInteract = () => {
+    if (!started.current) {
+      started.current = true;
+      track("calculator_started");
+    }
+    track("calculator_used");
+  };
 
   const { monthly, total, cost } = useMemo(() => {
     const r = rate / 100 / 12;
@@ -44,7 +53,8 @@ export function CreditCalculator() {
             max={20000}
             step={100}
             raw={amount}
-            onChange={(v) => setAmount(v)}
+            onChange={setAmount}
+            onInteract={onInteract}
           />
           <Field
             label={c.term}
@@ -53,7 +63,8 @@ export function CreditCalculator() {
             max={72}
             step={1}
             raw={months}
-            onChange={(v) => setMonths(v)}
+            onChange={setMonths}
+            onInteract={onInteract}
           />
           <Field
             label={c.rate}
@@ -62,7 +73,8 @@ export function CreditCalculator() {
             max={50}
             step={0.5}
             raw={rate}
-            onChange={(v) => setRate(v)}
+            onChange={setRate}
+            onInteract={onInteract}
           />
         </div>
 
@@ -79,9 +91,10 @@ export function CreditCalculator() {
           <Link
             href="/apply"
             className="btn-mint mt-6 w-full justify-center"
-            onClick={() =>
-              track("cta_click", { location: "calculator", amount, months })
-            }
+            onClick={() => {
+              track("calculator_completed", { amount, months });
+              track("cta_click", { location: "calculator", amount, months });
+            }}
           >
             {c.cta}
             <span aria-hidden>→</span>
@@ -101,6 +114,7 @@ function Field({
   max,
   step,
   onChange,
+  onInteract,
 }: {
   label: string;
   value: string;
@@ -109,6 +123,7 @@ function Field({
   max: number;
   step: number;
   onChange: (v: number) => void;
+  onInteract: () => void;
 }) {
   return (
     <div>
@@ -123,8 +138,8 @@ function Field({
         step={step}
         value={raw}
         onChange={(e) => onChange(Number(e.target.value))}
-        onMouseUp={() => track("calculator_used")}
-        onTouchEnd={() => track("calculator_used")}
+        onMouseUp={onInteract}
+        onTouchEnd={onInteract}
         className="mt-3 w-full accent-mint"
         aria-label={label}
       />

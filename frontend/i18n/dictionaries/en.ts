@@ -335,8 +335,24 @@ const en: Messages = {
         body: "If you are a licensed lender or financial institution and want to reach relevant customers, we would love to talk.",
       },
       {
-        heading: "Transparency",
-        body: "Partner terms are configurable and sourced from actual partner agreements. We do not show fabricated terms or use partner logos without permission.",
+        heading: "Qualified, matched opportunities",
+        body: "Veyra sends partners matched opportunities — applications whose entered data meets the partner's configured criteria.",
+      },
+      {
+        heading: "Matching on configured criteria",
+        body: "Matching is based on the criteria each partner configures — amount, term, income, employment and other rules. No hidden scoring, no fabricated terms.",
+      },
+      {
+        heading: "Referrals by agreed rules",
+        body: "Partners receive referrals according to agreed rules — match threshold, delivery method and the scope of shared data.",
+      },
+      {
+        heading: "Commercial terms",
+        body: "Commissions and commercial terms are defined by the actual agreement with each partner. We do not show fabricated terms or use partner logos without permission.",
+      },
+      {
+        heading: "No approval guarantee",
+        body: "Veyra is not a lender and does not guarantee approval. The final decision and terms are set by the respective partner.",
       },
     ],
     cta: "Get in touch",

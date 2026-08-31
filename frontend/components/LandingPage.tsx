@@ -14,6 +14,12 @@ const RELATED = [
   { href: "/guides", label: "Ръководства" },
 ];
 
+// Relevant educational guides linked from every landing page.
+const GUIDE_LINKS = [
+  { href: "/guides/kakvo-e-gpr", label: "Какво е ГПР?" },
+  { href: "/guides/mesechna-vnoska", label: "Каква месечна вноска мога да си позволя?" },
+];
+
 /** Server-rendered SEO landing page: useful content + one clear CTA into the
  *  Veyra application. Static HTML (fast, crawlable) with a tiny view-tracking
  *  island. Marketplace framing; no approval claims. */
@@ -96,6 +102,20 @@ export function LandingPage({ data }: { data: Landing }) {
             </Link>
           ))}
         </nav>
+
+        {/* Relevant guides */}
+        <section className="mt-12 border-t border-slate-200/80 pt-8">
+          <h2 className="t-h3 text-ink">Полезно четиво</h2>
+          <ul className="mt-4 space-y-2">
+            {GUIDE_LINKS.map((g) => (
+              <li key={g.href}>
+                <Link href={g.href} className="t-body text-mint-600 hover:underline">
+                  {g.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
 
         {/* FAQ */}
         <section className="mt-14 border-t border-slate-200/80 pt-8">

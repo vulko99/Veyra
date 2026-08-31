@@ -82,8 +82,11 @@ function ResultsInner() {
     getMatches(applicationId)
       .then((res) => {
         setMatches(res.matches);
-        // Funnel signal only — a count, never applicant data.
-        track("matches_shown", { count: res.matches.length });
+        // Funnel signals only — a count, never applicant data.
+        const count = res.matches.length;
+        track("matches_shown", { count });
+        if (count >= 1) track("match_generated", { count });
+        if (count > 1) track("multiple_matches_generated", { count });
       })
       .catch(() => setError(r.loadError));
   }, [applicationId, r.noReference, r.loadError]);
@@ -94,6 +97,7 @@ function ResultsInner() {
     track("partner_selected", { partner_slug: match.partner_slug, rank: match.ranking });
     try {
       const res = await selectPartner(applicationId, match.product_id);
+      track("partner_clicked", { partner_slug: match.partner_slug });
       track("outbound_click", { partner_slug: match.partner_slug });
       window.location.href = res.outbound_url;
     } catch {

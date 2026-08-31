@@ -89,6 +89,8 @@ class LenderAdmin(admin.ModelAdmin):
                     "requires_user_selection",
                     "delivery_method",
                     "delivery_email",
+                    "referral_allowed_fields",
+                    "referral_email_template",
                 )
             },
         ),

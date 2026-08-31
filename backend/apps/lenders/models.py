@@ -90,6 +90,13 @@ class Lender(UUIDTimeStampedModel):
         max_length=16, choices=DeliveryMethod.choices, default=DeliveryMethod.MANUAL
     )
     delivery_email = models.EmailField(blank=True)
+    # Whitelist of referral payload field names this partner is permitted to
+    # receive (per agreement). Empty list = the standard minimal payload.
+    referral_allowed_fields = models.JSONField(default=list, blank=True)
+    # Optional custom email body template. Placeholders like {reference},
+    # {product}, {requested_amount_eur}, {requested_term_months}, {contact_name},
+    # {contact_email}, {contact_phone} are substituted at send time.
+    referral_email_template = models.TextField(blank=True)
 
     active = models.BooleanField(default=True)
     priority = models.IntegerField(

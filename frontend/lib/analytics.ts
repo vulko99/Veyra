@@ -10,16 +10,24 @@
 // and coarse, non-identifying properties.
 
 export type AnalyticsEvent =
-  | "landing_view"
-  | "cta_click"
+  // Requested pre-launch funnel events
+  | "page_view"
+  | "calculator_started"
+  | "calculator_completed"
   | "application_started"
   | "application_step_completed"
   | "application_completed"
+  | "match_generated"
+  | "multiple_matches_generated"
+  | "partner_selected"
+  | "referral_created"
+  | "partner_clicked"
+  // Additional existing signals (kept for continuity)
+  | "landing_view"
+  | "cta_click"
   | "consent_given"
   | "matching_completed"
   | "matches_shown"
-  | "referral_created"
-  | "partner_selected"
   | "outbound_click"
   | "calculator_used";
 

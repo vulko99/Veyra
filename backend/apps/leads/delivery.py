@@ -46,6 +46,47 @@ def build_referral_payload(lead) -> dict:
     }
 
 
+# The default set of fields a partner receives when it has not configured an
+# explicit allow-list. Deliberately minimal — no DB ids, score, or rule data.
+DEFAULT_ALLOWED_FIELDS = [
+    "reference",
+    "tracking_id",
+    "product",
+    "requested_amount_eur",
+    "requested_term_months",
+    "contact_name",
+    "contact_email",
+    "contact_phone",
+]
+
+
+def flat_referral_payload(lead) -> dict:
+    """A flat, template-friendly view of the referral payload."""
+    p = build_referral_payload(lead)
+    return {
+        "reference": p["reference"],
+        "tracking_id": p["tracking_id"],
+        "product": p["product"],
+        "requested_amount_eur": p["requested_amount_eur"],
+        "requested_term_months": p["requested_term_months"],
+        "contact_name": p["contact"]["name"],
+        "contact_email": p["contact"]["email"],
+        "contact_phone": p["contact"]["phone"],
+    }
+
+
+def permitted_payload(lead) -> dict:
+    """Only the fields this partner is contractually allowed to receive."""
+    allowed = lead.lender.referral_allowed_fields or DEFAULT_ALLOWED_FIELDS
+    flat = flat_referral_payload(lead)
+    return {k: v for k, v in flat.items() if k in allowed}
+
+
+class _SafeDict(dict):
+    def __missing__(self, key):  # keep unknown placeholders empty, never raise
+        return ""
+
+
 class PartnerLeadDeliveryService:
     """Dispatch a referral to the backend configured on its partner."""
 
@@ -82,23 +123,18 @@ class PartnerLeadDeliveryService:
         if not to:
             return {"delivered": False, "method": DeliveryMethod.EMAIL, "reason": "no_address"}
 
-        payload = build_referral_payload(lead)
-        lines = [
-            f"Референция: {payload['reference']}",
-            f"Проследяване: {payload['tracking_id']}",
-            f"Продукт: {payload['product']}",
-            f"Сума (EUR): {payload['requested_amount_eur']}",
-            f"Срок (месеци): {payload['requested_term_months']}",
-            "",
-            "Контакт на клиента:",
-            f"  Име: {payload['contact']['name']}",
-            f"  Имейл: {payload['contact']['email']}",
-            f"  Телефон: {payload['contact']['phone']}",
-        ]
+        # Only send fields the partner is contractually allowed to receive.
+        payload = permitted_payload(lead)
+        template = lead.lender.referral_email_template
+        if template:
+            body = template.format_map(_SafeDict(payload))
+        else:
+            body = "\n".join(f"{k}: {payload[k]}" for k in payload)
+
         send_email(
-            subject=f"Veyra referral {payload['reference']}",
+            subject=f"Veyra referral {payload.get('reference', lead.tracking_id)}",
             to=[to],
-            body="\n".join(lines),
+            body=body,
         )
         return {"delivered": True, "method": DeliveryMethod.EMAIL}
 
@@ -117,3 +153,14 @@ def deliver_referral(lead) -> dict:
     if getattr(settings, "PARTNER_DELIVERY_ENABLED", True) is False:
         return {"delivered": False, "method": lead.lender.delivery_method, "reason": "disabled"}
     return PartnerLeadDeliveryService().deliver(lead)
+
+
+def send_referral_email(referral) -> dict:
+    """Explicitly send a referral to its partner by email.
+
+    Clean entry point for the email-referral MVP. Sends only the partner's
+    allowed fields, using its configured template. Requires a delivery email;
+    does not depend on delivery_method, so it can be triggered manually once a
+    real agreement is in place. Best-effort and audited.
+    """
+    return PartnerLeadDeliveryService()._deliver_email(referral)

@@ -1,17 +1,25 @@
 import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/seo";
 import { GUIDES } from "@/lib/guides-content";
+import { LANDINGS } from "@/lib/landing-content";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
+
+  // SEO landing pages are derived from the single content source, so adding a
+  // new landing automatically publishes it to the sitemap.
+  const landingPaths = LANDINGS.map((l) => ({
+    path: `/${l.slug}`,
+    priority: 0.9,
+    freq: "weekly" as const,
+  }));
 
   // Public, indexable routes. The /apply funnel and /results are intentionally
   // excluded (personal data, transient state).
   const staticPaths: { path: string; priority: number; freq: "weekly" | "monthly" }[] = [
     { path: "/", priority: 1.0, freq: "weekly" },
     { path: "/how-it-works", priority: 0.8, freq: "monthly" },
-    { path: "/krediti", priority: 0.9, freq: "weekly" },
-    { path: "/barzi-krediti", priority: 0.9, freq: "weekly" },
+    ...landingPaths,
     { path: "/kalkulator", priority: 0.8, freq: "monthly" },
     { path: "/loans", priority: 0.7, freq: "monthly" },
     { path: "/guides", priority: 0.7, freq: "weekly" },

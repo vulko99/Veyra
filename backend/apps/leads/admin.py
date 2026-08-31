@@ -20,10 +20,12 @@ class LeadAdmin(admin.ModelAdmin):
         "lender",
         "referral_status",
         "status",
+        "match_score",
+        "source",
         "created_at",
         "funded_display",
     )
-    list_filter = ("referral_status", "status", "lender")
+    list_filter = ("referral_status", "status", "lender", "source")
     search_fields = (
         "application__public_reference",
         "application__public_id",
@@ -33,6 +35,12 @@ class LeadAdmin(admin.ModelAdmin):
     )
     readonly_fields = (
         "tracking_id",
+        "match_score",
+        "consent_version",
+        "source",
+        "utm_source",
+        "utm_medium",
+        "utm_campaign",
         "created_at",
         "updated_at",
         "sent_at",

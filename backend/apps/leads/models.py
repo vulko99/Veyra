@@ -27,15 +27,29 @@ class LeadStatus(models.TextChoices):
 
 
 class ReferralStatus(models.TextChoices):
-    """Phase 2 partner-referral lifecycle."""
+    """Partner-referral lifecycle.
 
+    Covers the full multi-referral flow: a partner is matched, the applicant
+    selects it, it is sent to the partner, opened, the partner's own process
+    starts and completes, and finally resolves (approved / rejected / funded /
+    expired). Legacy values are retained for backward compatibility.
+    """
+
+    # Full lifecycle
+    MATCHED = "matched"
     SELECTED = "selected"
+    SENT = "sent"
+    OPENED = "opened"
+    STARTED = "started"
+    COMPLETED = "completed"
+    APPROVED = "approved"
+    FUNDED = "funded"
+    REJECTED = "rejected"
+    EXPIRED = "expired"
+    # Legacy / auxiliary values (kept for backward compatibility)
     REFERRED = "referred"
     RECEIVED = "received"
     PENDING = "pending"
-    APPROVED = "approved"
-    REJECTED = "rejected"
-    FUNDED = "funded"
     FAILED = "failed"
     UNKNOWN = "unknown"
 
@@ -73,6 +87,19 @@ class Lead(UUIDTimeStampedModel):
     external_lead_id = models.CharField(max_length=120, blank=True)
     external_application_id = models.CharField(max_length=120, blank=True)
 
+    # --- Attribution & audit (multi-referral) ---
+    # Compatibility score at the moment the referral was created (snapshot of the
+    # MatchResult). NOT an approval probability.
+    match_score = models.PositiveIntegerField(null=True, blank=True)
+    # The consent document version the applicant accepted for partner sharing.
+    consent_version = models.CharField(max_length=40, blank=True)
+    # Acquisition source / UTM captured for partner attribution.
+    source = models.CharField(max_length=120, blank=True)
+    utm_source = models.CharField(max_length=120, blank=True)
+    utm_medium = models.CharField(max_length=120, blank=True)
+    utm_campaign = models.CharField(max_length=120, blank=True)
+
+    # Unique, non-enumerable Veyra referral id used for partner attribution.
     tracking_id = models.CharField(max_length=64, unique=True, editable=False)
     click_id = models.CharField(max_length=120, blank=True)
     affiliate_id = models.CharField(max_length=120, blank=True)

@@ -5,6 +5,7 @@ import type {
   Phase2MatchResponse,
   ReferralResponse,
 } from "@/types";
+import { track } from "@/lib/analytics";
 
 // Phase 1 base (/api/v1); Phase 2 lives at /api.
 const V1 = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
@@ -88,16 +89,26 @@ export function draftToPayload(
 export function createApplication(
   payload: Record<string, unknown>
 ): Promise<Phase2Application> {
-  return request("/applications/", { method: "POST", body: JSON.stringify(payload) });
+  return request<Phase2Application>("/applications/", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  }).then((app) => {
+    track("application_started");
+    return app;
+  });
 }
 
 export function patchApplication(
   publicId: string,
   payload: Record<string, unknown>
 ): Promise<Phase2Application> {
-  return request(`/applications/${publicId}/`, {
+  return request<Phase2Application>(`/applications/${publicId}/`, {
     method: "PATCH",
     body: JSON.stringify(payload),
+  }).then((app) => {
+    const step = typeof payload.current_step === "string" ? payload.current_step : undefined;
+    track("application_step_completed", step ? { step } : {});
+    return app;
   });
 }
 
@@ -109,16 +120,23 @@ export function postConsent(
   publicId: string,
   flags: ConsentFlags
 ): Promise<Phase2Application> {
-  return request(`/applications/${publicId}/consent/`, {
+  return request<Phase2Application>(`/applications/${publicId}/consent/`, {
     method: "POST",
     body: JSON.stringify(flags),
+  }).then((app) => {
+    track("consent_given");
+    return app;
   });
 }
 
 export function runMatch(publicId: string): Promise<Phase2MatchResponse> {
-  return request(`/applications/${publicId}/match/`, {
+  return request<Phase2MatchResponse>(`/applications/${publicId}/match/`, {
     method: "POST",
     body: JSON.stringify({}),
+  }).then((res) => {
+    track("application_completed");
+    track("matching_completed", { count: res.matches?.length ?? 0 });
+    return res;
   });
 }
 
@@ -130,8 +148,11 @@ export function selectPartner(
   publicId: string,
   productId: string
 ): Promise<ReferralResponse> {
-  return request(`/applications/${publicId}/select-partner/`, {
+  return request<ReferralResponse>(`/applications/${publicId}/select-partner/`, {
     method: "POST",
     body: JSON.stringify({ product_id: productId }),
+  }).then((res) => {
+    track("referral_created");
+    return res;
   });
 }

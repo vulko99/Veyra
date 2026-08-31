@@ -6,6 +6,7 @@ import { I18nProvider } from "@/hooks/useI18n";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { Analytics } from "@/components/Analytics";
+import { RouteAnalytics } from "@/components/RouteAnalytics";
 import { JsonLd } from "@/components/JsonLd";
 import { defaultLocale } from "@/i18n/config";
 import { getMessages } from "@/i18n";
@@ -93,6 +94,7 @@ export default function RootLayout({
           </ApplicationProvider>
         </I18nProvider>
         <Analytics />
+        <RouteAnalytics />
       </body>
     </html>
   );

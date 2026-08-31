@@ -53,6 +53,13 @@ def create_referral(application: Application, product: LenderProduct) -> Lead:
             "selected_at": now,
             "referred_at": now,
             "sent_at": now,
+            # Attribution & audit snapshot.
+            "match_score": _match_score(application, product),
+            "consent_version": _consent_version(application),
+            "source": application.source or application.utm_source or "",
+            "utm_source": application.utm_source,
+            "utm_medium": application.utm_medium,
+            "utm_campaign": application.utm_campaign,
         },
     )
     if created:
@@ -79,6 +86,31 @@ def create_referral(application: Application, product: LenderProduct) -> Lead:
         # never fails the referral). No-op for partners not yet automated.
         deliver_referral(lead)
     return lead
+
+
+def _match_score(application: Application, product: LenderProduct) -> int | None:
+    """Snapshot the persisted MatchResult score (local import avoids a cycle)."""
+    from apps.matching.models import Match
+
+    return (
+        Match.objects.filter(application=application, product=product)
+        .values_list("score", flat=True)
+        .first()
+    )
+
+
+def _consent_version(application: Application) -> str:
+    """The version the applicant accepted for partner data sharing."""
+    from apps.consents.models import ConsentType
+
+    version = (
+        application.consents.filter(
+            consent_type=ConsentType.PARTNER_DATA_TRANSFER, accepted=True
+        )
+        .values_list("consent_text_version", flat=True)
+        .first()
+    )
+    return version or ""
 
 
 def referral_outbound_url(lead: Lead) -> str:

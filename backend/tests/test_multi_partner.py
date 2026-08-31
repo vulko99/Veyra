@@ -320,3 +320,86 @@ def test_manual_delivery_is_noop_but_referral_exists(settings):
     lead = create_referral(app, product)
     assert lead is not None
     assert mail.outbox == []  # nothing auto-sent for MANUAL
+
+
+# --------------------------------------------------------------------------
+# Referral attribution + tracking (Tasks 3/4)
+# --------------------------------------------------------------------------
+def test_referral_captures_attribution_snapshot(settings):
+    settings.MATCH_THRESHOLD = 70
+    from apps.leads.referrals import create_referral
+
+    product = make_product(make_partner("a"), "pa")
+    app = ready_application(source="google", utm_source="google", utm_campaign="brand")
+    match_application_v2(app)
+    lead = create_referral(app, product)
+
+    assert lead.tracking_id  # unique Veyra referral id
+    assert lead.match_score is not None and lead.match_score > 0
+    assert lead.consent_version == "1"  # version accepted for partner sharing
+    assert lead.source == "google"
+    assert lead.utm_source == "google"
+    assert lead.utm_campaign == "brand"
+
+
+def test_referral_status_lifecycle_values():
+    from apps.leads.models import ReferralStatus
+
+    for s in ("matched", "selected", "sent", "opened", "started", "completed",
+              "approved", "funded", "rejected", "expired"):
+        assert s in ReferralStatus.values
+
+
+# --------------------------------------------------------------------------
+# Email referral MVP (Task 5)
+# --------------------------------------------------------------------------
+def test_send_referral_email_respects_allowed_fields(settings):
+    from django.core import mail
+    from apps.leads.referrals import create_referral
+    from apps.leads.delivery import send_referral_email
+
+    settings.MATCH_THRESHOLD = 70
+    partner = make_partner(
+        "a",
+        delivery_method=DeliveryMethod.MANUAL,  # not auto-sent
+        delivery_email="leads@partner.example",
+        referral_allowed_fields=["reference", "product"],  # restrict payload
+    )
+    product = make_product(partner, "pa")
+    app = ready_application()
+    app.full_name = "Ivan Ivanov"
+    app.email = "ivan@example.com"
+    app.save()
+    match_application_v2(app)
+    lead = create_referral(app, product)
+    assert mail.outbox == []  # MANUAL → nothing auto-sent
+
+    result = send_referral_email(lead)
+    assert result["delivered"] is True
+    assert len(mail.outbox) == 1
+    body = mail.outbox[0].body
+    assert app.public_id in body            # reference allowed
+    assert "ivan@example.com" not in body   # contact NOT in allow-list
+    assert str(app.id) not in body          # never leak DB pk
+
+
+def test_send_referral_email_uses_template(settings):
+    from django.core import mail
+    from apps.leads.referrals import create_referral
+    from apps.leads.delivery import send_referral_email
+
+    settings.MATCH_THRESHOLD = 70
+    partner = make_partner(
+        "a",
+        delivery_email="leads@partner.example",
+        referral_email_template="Ref {reference} — {product}",
+    )
+    product = make_product(partner, "pa")
+    app = ready_application()
+    match_application_v2(app)
+    lead = create_referral(app, product)
+    mail.outbox.clear()
+
+    send_referral_email(lead)
+    assert len(mail.outbox) == 1
+    assert mail.outbox[0].body.startswith(f"Ref {app.public_id} — ")

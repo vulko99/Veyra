@@ -6,11 +6,17 @@ import { useState } from "react";
 import { useApplication } from "@/hooks/useApplication";
 import { useMessages } from "@/hooks/useI18n";
 import { WizardStep } from "@/components/WizardStep";
-import { draftToPayload, patchApplication, postConsent, runMatch } from "@/lib/api";
+import {
+  ApiRequestError,
+  draftToPayload,
+  patchApplication,
+  postConsent,
+  runMatch,
+} from "@/lib/api";
 
 export default function ConsentStep() {
   const router = useRouter();
-  const { draft, ensureApplication } = useApplication();
+  const { draft, ensureApplication, clearRemote } = useApplication();
   const m = useMessages();
   const s = m.apply.steps.consent;
   const [platform, setPlatform] = useState(false);
@@ -21,20 +27,40 @@ export default function ConsentStep() {
 
   const canSubmit = platform && partner && !submitting;
 
+  // The full submit sequence against one application id.
+  async function submitOnce(): Promise<string> {
+    const publicId = await ensureApplication();
+    if (!publicId) throw new Error("no application");
+    // Flush the latest funnel data, record consent, then run matching.
+    await patchApplication(publicId, draftToPayload(draft, "consent"));
+    await postConsent(publicId, {
+      privacy_processing_consent: platform,
+      partner_data_sharing_consent: partner,
+      marketing_consent: marketing,
+    });
+    await runMatch(publicId);
+    return publicId;
+  }
+
   async function handleSubmit() {
     setError(null);
     setSubmitting(true);
     try {
-      const publicId = await ensureApplication();
-      if (!publicId) throw new Error("no application");
-      // Flush the latest funnel data, record consent, then run matching.
-      await patchApplication(publicId, draftToPayload(draft, "consent"));
-      await postConsent(publicId, {
-        privacy_processing_consent: platform,
-        partner_data_sharing_consent: partner,
-        marketing_consent: marketing,
-      });
-      await runMatch(publicId);
+      let publicId: string;
+      try {
+        publicId = await submitOnce();
+      } catch (e) {
+        // A stored application id that no longer exists on the backend (e.g. the
+        // DB was reset between sessions) makes every call 404. Recover once by
+        // discarding the stale id — keeping the entered data — and starting a
+        // fresh application from the same draft.
+        if (e instanceof ApiRequestError && e.status === 404) {
+          clearRemote();
+          publicId = await submitOnce();
+        } else {
+          throw e;
+        }
+      }
       router.push(`/results?application=${publicId}`);
     } catch {
       setError(s.error);

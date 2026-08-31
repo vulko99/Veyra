@@ -64,6 +64,8 @@ function ResultsViz({ count }: { count: number }) {
   );
 }
 
+type Referral = { partner: string; outbound_url: string };
+
 function ResultsInner() {
   const params = useSearchParams();
   const { m } = useI18n();
@@ -71,8 +73,10 @@ function ResultsInner() {
   const applicationId = params.get("application");
   const [matches, setMatches] = useState<Phase2Match[] | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [routing, setRouting] = useState<string | null>(null);
-  const [confirming, setConfirming] = useState<Phase2Match | null>(null);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [confirming, setConfirming] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [done, setDone] = useState<Referral[] | null>(null);
 
   useEffect(() => {
     if (!applicationId) {
@@ -91,27 +95,99 @@ function ResultsInner() {
       .catch(() => setError(r.loadError));
   }, [applicationId, r.noReference, r.loadError]);
 
-  async function handleContinue(match: Phase2Match) {
-    if (!applicationId) return;
-    setRouting(match.product_id);
-    track("partner_selected", { partner_slug: match.partner_slug, rank: match.ranking });
+  const toggle = (m: Phase2Match) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(m.product_id)) next.delete(m.product_id);
+      else {
+        next.add(m.product_id);
+        track("partner_selected", { partner_slug: m.partner_slug, rank: m.ranking });
+      }
+      return next;
+    });
+  };
+
+  // Create a referral for each selected partner, then show the success screen.
+  async function confirmSelection() {
+    if (!applicationId || !matches) return;
+    setSubmitting(true);
     try {
-      const res = await selectPartner(applicationId, match.product_id);
-      track("partner_clicked", { partner_slug: match.partner_slug });
-      track("outbound_click", { partner_slug: match.partner_slug });
-      window.location.href = res.outbound_url;
+      const chosen = matches.filter((m) => selected.has(m.product_id));
+      const created: Referral[] = [];
+      for (const m of chosen) {
+        const res = await selectPartner(applicationId, m.product_id);
+        created.push({ partner: res.partner, outbound_url: res.outbound_url });
+      }
+      setDone(created);
+      setConfirming(false);
     } catch {
       setError(r.routeError);
-      setRouting(null);
+      setConfirming(false);
+    } finally {
+      setSubmitting(false);
     }
   }
 
   const productTypeLabel = (pt: string) =>
     (r.productTypes as Record<string, string>)[pt] ?? pt.replace(/_/g, " ");
 
+  // ----- Success screen (after referrals are created) -----
+  if (done) {
+    return (
+      <AppShell current="results">
+        <div className="mx-auto w-full max-w-2xl pt-10 sm:pt-16">
+          <div className="reveal text-center">
+            <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-mint/15 text-2xl text-mint-400">
+              ✓
+            </span>
+            <h1 className="mt-5 text-[2rem] font-bold leading-[1.08] tracking-tight text-appwhite sm:text-[2.4rem]">
+              {r.successTitle}
+            </h1>
+            <p className="mx-auto mt-3 max-w-lg text-appmuted">{r.successSubhead}</p>
+          </div>
+
+          <div className="reveal mt-8">
+            <p className="text-xs uppercase tracking-[0.14em] text-appmuted">
+              {r.successSelected}
+            </p>
+            <div className="mt-3 space-y-3">
+              {done.map((d) => (
+                <div
+                  key={d.partner}
+                  className="flex items-center gap-4 rounded-2xl border border-appborder bg-appsurface p-5"
+                >
+                  <span className="grid h-11 w-11 flex-none place-items-center rounded-xl border border-white/10 bg-white/5 font-display text-base font-extrabold text-appwhite">
+                    {d.partner.charAt(0)}
+                  </span>
+                  <span className="font-display text-base font-bold text-appwhite">
+                    {d.partner}
+                  </span>
+                  {d.outbound_url && (
+                    <a
+                      href={d.outbound_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="a-btn-ghost ml-auto text-sm"
+                      onClick={() => track("partner_clicked", { partner: d.partner })}
+                    >
+                      {r.openPartner}
+                    </a>
+                  )}
+                </div>
+              ))}
+            </div>
+            <p className="mt-6 text-center text-xs leading-relaxed text-appmuted">
+              {r.successDisclaimer}
+            </p>
+          </div>
+        </div>
+      </AppShell>
+    );
+  }
+
   return (
     <AppShell current="results">
-      <div className="mx-auto w-full max-w-2xl pt-8 sm:pt-12">
+      <div className="mx-auto w-full max-w-2xl pb-28 pt-8 sm:pt-12">
         <div className="reveal">
           <span className="a-eyebrow">{r.eyebrow}</span>
           <h1 className="mt-4 text-[2rem] font-bold leading-[1.06] tracking-tight text-appwhite sm:text-[2.6rem]">
@@ -130,6 +206,7 @@ function ResultsInner() {
               <div className="mt-6">
                 <ResultsViz count={matches.length} />
               </div>
+              <p className="mt-4 text-sm text-appmuted">{r.selectHint}</p>
             </>
           )}
         </div>
@@ -164,11 +241,16 @@ function ResultsInner() {
           <div className="reveal mt-6 space-y-4">
             {matches.map((match, i) => {
               const top = i === 0;
+              const isSel = selected.has(match.product_id);
               return (
                 <article
                   key={match.product_id}
-                  className={`overflow-hidden rounded-2xl border bg-appsurface ${
-                    top ? "border-mint/50 shadow-[0_0_0_1px_rgba(33,199,168,0.25),0_24px_60px_-30px_rgba(33,199,168,0.5)]" : "border-appborder"
+                  className={`overflow-hidden rounded-2xl border bg-appsurface transition-colors ${
+                    isSel
+                      ? "border-mint shadow-[0_0_0_1px_rgba(33,199,168,0.5)]"
+                      : top
+                        ? "border-mint/50"
+                        : "border-appborder"
                   }`}
                 >
                   {top && (
@@ -226,12 +308,11 @@ function ResultsInner() {
                     <div className="mt-6">
                       <button
                         type="button"
-                        className="btn-mint w-full sm:w-auto"
-                        disabled={routing === match.product_id}
-                        onClick={() => setConfirming(match)}
+                        aria-pressed={isSel}
+                        className={isSel ? "btn-mint w-full sm:w-auto" : "a-btn-ghost w-full sm:w-auto"}
+                        onClick={() => toggle(match)}
                       >
-                        {routing === match.product_id ? r.opening : r.continueToPartner}
-                        <span aria-hidden>→</span>
+                        {isSel ? `✓ ${r.selectedLabel}` : r.selectLabel}
                       </button>
                     </div>
                   </div>
@@ -247,40 +328,58 @@ function ResultsInner() {
         )}
       </div>
 
-      {/* Partner-selection confirmation — the referral is created only after
-          the user explicitly confirms (and understands they leave Veyra). */}
+      {/* Sticky action bar — continue with all selected partners. */}
+      {matches && matches.length > 0 && selected.size > 0 && !confirming && (
+        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-appborder bg-appsurface/95 backdrop-blur">
+          <div className="mx-auto flex max-w-2xl items-center justify-between gap-4 px-5 py-4">
+            <span className="text-sm text-appmuted">
+              <span className="font-display font-bold text-appwhite">{selected.size}</span>{" "}
+              {r.selectedLabel.toLowerCase()}
+            </span>
+            <button
+              type="button"
+              className="btn-mint"
+              onClick={() => setConfirming(true)}
+            >
+              {r.continueSelected}
+              <span aria-hidden>→</span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Confirmation — referrals are created only after explicit confirmation. */}
       {confirming && (
         <div
           className="fixed inset-0 z-50 grid place-items-center bg-midnight/80 p-4 backdrop-blur-sm"
           role="dialog"
           aria-modal="true"
-          onClick={() => routing === null && setConfirming(null)}
+          onClick={() => !submitting && setConfirming(false)}
         >
           <div
             className="w-full max-w-md rounded-2xl border border-appborder bg-appsurface p-6 sm:p-7"
             onClick={(e) => e.stopPropagation()}
           >
             <h2 className="font-display text-xl font-bold text-appwhite">
-              {r.confirmTitlePrefix}
-              {confirming.partner}
+              {r.confirmMultiTitle}
             </h2>
-            <p className="mt-3 text-sm leading-relaxed text-appmuted">{r.confirmBody}</p>
+            <p className="mt-3 text-sm leading-relaxed text-appmuted">{r.confirmMultiBody}</p>
             <div className="mt-7 flex flex-col-reverse gap-3 sm:flex-row">
               <button
                 type="button"
                 className="a-btn-ghost w-full sm:w-auto"
-                disabled={routing !== null}
-                onClick={() => setConfirming(null)}
+                disabled={submitting}
+                onClick={() => setConfirming(false)}
               >
                 {r.back}
               </button>
               <button
                 type="button"
                 className="btn-mint w-full flex-1 justify-center"
-                disabled={routing !== null}
-                onClick={() => handleContinue(confirming)}
+                disabled={submitting}
+                onClick={confirmSelection}
               >
-                {routing !== null ? r.opening : `${r.confirmCtaPrefix}${confirming.partner}`}
+                {submitting ? r.processing : r.confirmMultiCta}
                 <span aria-hidden>→</span>
               </button>
             </div>

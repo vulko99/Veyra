@@ -96,10 +96,14 @@ def match_application_v2(application: Application) -> list[dict]:
 
     context = build_context_v2(application)
 
+    products_qs = LenderProduct.objects.filter(active=True, lender__active=True)
+    # Demo partners participate only while DEMO_MODE is on. In production
+    # (DEMO_MODE off) they disappear and only real partners are matched — the
+    # engine itself is unchanged; it just reads different partner configuration.
+    if not getattr(settings, "DEMO_MODE", True):
+        products_qs = products_qs.filter(lender__is_demo=False)
     products = list(
-        LenderProduct.objects.filter(active=True, lender__active=True)
-        .select_related("lender")
-        .prefetch_related("eligibility_rules")
+        products_qs.select_related("lender").prefetch_related("eligibility_rules")
     )
 
     threshold = getattr(settings, "MATCH_THRESHOLD", 80)

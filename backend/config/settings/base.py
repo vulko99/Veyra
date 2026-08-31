@@ -196,6 +196,11 @@ ADMIN_ALERT_EMAIL = env_str("ADMIN_ALERT_EMAIL", "alerts@veyra.example")
 # Salt used when hashing PII for storage (IP, user agent). Rotate with care.
 HASH_SALT = env_str("HASH_SALT", "veyra-dev-hash-salt")
 
+# Demo mode. When on, fictional demo partners participate in matching and any
+# referral to them is simulated (never emailed / no external API call). Turn it
+# OFF in production so only real, configured partners are used.
+DEMO_MODE = env_bool("DEMO_MODE", True)
+
 # Matching engine
 MATCHING_TOP_N = int(env_str("MATCHING_TOP_N", "3"))
 # Global compatibility-score threshold (0-100). A partner product is eligible

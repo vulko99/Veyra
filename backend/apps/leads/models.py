@@ -99,6 +99,10 @@ class Lead(UUIDTimeStampedModel):
     utm_medium = models.CharField(max_length=120, blank=True)
     utm_campaign = models.CharField(max_length=120, blank=True)
 
+    # True when this referral was created for a demo partner (simulated: no
+    # external email/API is ever sent).
+    demo = models.BooleanField(default=False, db_index=True)
+
     # Unique, non-enumerable Veyra referral id used for partner attribution.
     tracking_id = models.CharField(max_length=64, unique=True, editable=False)
     click_id = models.CharField(max_length=120, blank=True)

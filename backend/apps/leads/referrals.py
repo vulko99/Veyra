@@ -53,6 +53,7 @@ def create_referral(application: Application, product: LenderProduct) -> Lead:
             "selected_at": now,
             "referred_at": now,
             "sent_at": now,
+            "demo": product.lender.is_demo,
             # Attribution & audit snapshot.
             "match_score": _match_score(application, product),
             "consent_version": _consent_version(application),

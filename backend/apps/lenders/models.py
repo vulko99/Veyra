@@ -67,6 +67,10 @@ class Lender(UUIDTimeStampedModel):
     contact_email = models.EmailField(blank=True)
     notes = models.TextField(blank=True)
 
+    # Fictional demonstration partner (not a real company). Visible in matching
+    # only while settings.DEMO_MODE is on; referrals to it are simulated.
+    is_demo = models.BooleanField(default=False, db_index=True)
+
     # --- Lead distribution policy (Phase: multi-partner marketplace) ---
     # Whether this partner accepts leads that may also be shared with other
     # matching partners. A partner may still MATCH regardless; this governs the

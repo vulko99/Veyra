@@ -16,6 +16,9 @@ interface ApplicationContextValue {
   draft: ApplicationDraft;
   update: (patch: Partial<ApplicationDraft>) => void;
   reset: () => void;
+  /** Forget the backend application id (e.g. it 404'd after a DB reset) while
+   *  keeping the user's entered draft, so a fresh application can be created. */
+  clearRemote: () => void;
   publicId: string | null;
   /** Ensure the application exists on the backend, returning its VY- id. */
   ensureApplication: () => Promise<string | null>;
@@ -173,9 +176,22 @@ export function ApplicationProvider({ children }: { children: React.ReactNode })
     }
   };
 
+  // Drop only the backend id (keep the draft). Used to recover from a stale id
+  // that no longer exists on the backend (e.g. DB reset between sessions).
+  const clearRemote = () => {
+    idRef.current = null;
+    creatingRef.current = null;
+    setPublicId(null);
+    try {
+      window.sessionStorage.removeItem(ID_KEY);
+    } catch {
+      /* ignore */
+    }
+  };
+
   return (
     <ApplicationContext.Provider
-      value={{ draft, update, reset, publicId, ensureApplication, hydrated }}
+      value={{ draft, update, reset, clearRemote, publicId, ensureApplication, hydrated }}
     >
       {children}
     </ApplicationContext.Provider>

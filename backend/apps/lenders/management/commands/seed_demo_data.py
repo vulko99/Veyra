@@ -22,75 +22,74 @@ from apps.lenders.models import (
     RuleOperator,
 )
 
-# Phase 2 employment codes accepted per demo product.
-ALL_EMPLOYMENT = ["employed", "self_employed", "business_owner", "pensioner"]
+# Employment categories treated as "employment required" (has an income source).
+EMPLOYMENT_REQUIRED = ["employed", "self_employed", "business_owner", "pensioner"]
 
+# Demonstration criteria ONLY — fictional partners, not real lender conditions.
+# Kept broad so a normal demo application can realistically match multiple.
 DEMO = [
     {
         "name": "Demo Partner A",
         "slug": "demo-partner-a",
-        "description": "Illustrative short-term partner (demo data only).",
+        "description": "Fictional demonstration partner (demo data only).",
         "priority": 30,
         "display_order": 1,
         "product": {
-            "name": "Demo Short-Term Credit A",
-            "slug": "demo-short-term-a",
-            "product_type": ProductType.SHORT_TERM_LOAN,
+            "name": "Demo Consumer Credit A",
+            "slug": "demo-consumer-a",
+            "product_type": ProductType.CONSUMER_LOAN,
             "min_amount": Decimal("500"),
-            "max_amount": Decimal("3000"),
+            "max_amount": Decimal("5000"),
             "min_term_months": 3,
-            "max_term_months": 24,
-            "min_income": Decimal("800"),
+            "max_term_months": 36,
+            "min_income": Decimal("1200"),
             "priority": 80,
             "payout_model": PayoutModel.CPL,
             "payout_value": Decimal("12.00"),
-            "employment": ["employed", "self_employed"],
+            "employment": EMPLOYMENT_REQUIRED,  # employment required
         },
     },
     {
         "name": "Demo Partner B",
         "slug": "demo-partner-b",
-        "description": "Illustrative consumer partner (demo data only).",
+        "description": "Fictional demonstration partner (demo data only).",
         "priority": 20,
         "display_order": 2,
         "product": {
             "name": "Demo Consumer Credit B",
             "slug": "demo-consumer-b",
             "product_type": ProductType.CONSUMER_LOAN,
-            "min_amount": Decimal("500"),
-            "max_amount": Decimal("5000"),
+            "min_amount": Decimal("1000"),
+            "max_amount": Decimal("8000"),
             "min_term_months": 3,
-            "max_term_months": 36,
+            "max_term_months": 48,
             "min_income": Decimal("1000"),
-            "priority": 90,
+            "priority": 70,
             "payout_model": PayoutModel.CPA,
             "payout_value": Decimal("45.00"),
-            "employment": ALL_EMPLOYMENT,
+            "employment": EMPLOYMENT_REQUIRED,  # employment required
         },
     },
     {
         "name": "Demo Partner C",
         "slug": "demo-partner-c",
-        "description": "Illustrative larger consumer partner (demo data only).",
+        "description": "Fictional demonstration partner (demo data only).",
         "priority": 10,
         "display_order": 3,
         "product": {
             "name": "Demo Consumer Credit C",
             "slug": "demo-consumer-c",
             "product_type": ProductType.CONSUMER_LOAN,
-            "min_amount": Decimal("1000"),
+            "min_amount": Decimal("500"),
             "max_amount": Decimal("10000"),
-            "min_term_months": 6,
+            "min_term_months": 3,
             "max_term_months": 60,
-            "min_income": Decimal("1500"),
-            "priority": 70,
+            "min_income": Decimal("900"),
+            "priority": 60,
             "payout_model": PayoutModel.CPS_PERCENT,
             "payout_value": Decimal("3.50"),
-            "employment": ALL_EMPLOYMENT,
-            "max_obligations": Decimal("1500"),
-            # Illustrative age band (demo only).
-            "min_age": 21,
-            "max_age": 70,
+            # employment NOT required -> no employment eligibility rule
+            "employment": None,
         },
     },
 ]
@@ -114,6 +113,8 @@ class Command(BaseCommand):
                     "contact_name": "Demo Contact",
                     "contact_email": f"partners+{entry['slug']}@example.com",
                     "notes": "Demo partner — not a real company. Illustrative data only.",
+                    "is_demo": True,
+                    "minimum_match_score": 80,  # demo threshold
                     "active": True,
                     "priority": entry["priority"],
                     "display_order": entry["display_order"],
@@ -146,30 +147,23 @@ class Command(BaseCommand):
                 },
             )
 
-            # Employment eligibility: accept only the listed statuses.
-            EligibilityRule.objects.update_or_create(
-                product=product,
-                field=RuleField.EMPLOYMENT_TYPE,
-                operator=RuleOperator.IN,
-                defaults={
-                    "value": p["employment"],
-                    "show_reason_to_customer": False,
-                    "active": True,
-                },
-            )
-
-            # Optional: cap existing monthly obligations.
-            if "max_obligations" in p:
+            # Employment eligibility: only when the product requires employment.
+            if p.get("employment"):
                 EligibilityRule.objects.update_or_create(
                     product=product,
-                    field=RuleField.MONTHLY_DEBT_PAYMENT,
-                    operator=RuleOperator.LESS_THAN_OR_EQUAL,
+                    field=RuleField.EMPLOYMENT_TYPE,
+                    operator=RuleOperator.IN,
                     defaults={
-                        "value": str(p["max_obligations"]),
+                        "value": p["employment"],
                         "show_reason_to_customer": False,
                         "active": True,
                     },
                 )
+            else:
+                # Partner C does not require employment — remove any prior rule.
+                EligibilityRule.objects.filter(
+                    product=product, field=RuleField.EMPLOYMENT_TYPE
+                ).delete()
 
         self.stdout.write(
             self.style.SUCCESS(

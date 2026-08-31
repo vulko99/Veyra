@@ -51,6 +51,7 @@ def deactivate_partners(modeladmin, request, queryset):
 class LenderAdmin(admin.ModelAdmin):
     list_display = (
         "name",
+        "is_demo",
         "partner_type",
         "status",
         "min_score",
@@ -63,6 +64,7 @@ class LenderAdmin(admin.ModelAdmin):
     )
     list_editable = ("status",)
     list_filter = (
+        "is_demo",
         "status",
         "partner_type",
         "active",
@@ -77,7 +79,7 @@ class LenderAdmin(admin.ModelAdmin):
         (None, {"fields": ("name", "legal_name", "display_name", "slug")}),
         (
             "Classification",
-            {"fields": ("partner_type", "status", "active", "priority", "display_order")},
+            {"fields": ("partner_type", "status", "is_demo", "active", "priority", "display_order")},
         ),
         (
             "Lead distribution",

@@ -14,10 +14,17 @@ const API = V1.replace(/\/v1\/?$/, ""); // -> "/api" or "http://localhost:8000/a
 export class ApiRequestError extends Error {
   code: string;
   details: Record<string, unknown>;
-  constructor(code: string, message: string, details: Record<string, unknown>) {
+  status: number;
+  constructor(
+    code: string,
+    message: string,
+    details: Record<string, unknown>,
+    status = 0
+  ) {
     super(message);
     this.code = code;
     this.details = details;
+    this.status = status;
   }
 }
 
@@ -37,8 +44,9 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   }
   if (!res.ok) {
     const err = body as { error?: { code: string; message: string; details: Record<string, unknown> } };
-    if (err?.error) throw new ApiRequestError(err.error.code, err.error.message, err.error.details || {});
-    throw new ApiRequestError("REQUEST_FAILED", `Request failed (${res.status}).`, {});
+    if (err?.error)
+      throw new ApiRequestError(err.error.code, err.error.message, err.error.details || {}, res.status);
+    throw new ApiRequestError("REQUEST_FAILED", `Request failed (${res.status}).`, {}, res.status);
   }
   return body as T;
 }

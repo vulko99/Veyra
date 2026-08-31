@@ -150,6 +150,10 @@ class PartnerLeadDeliveryService:
 
 def deliver_referral(lead) -> dict:
     """Best-effort delivery entry point used by the referral service."""
+    # Demo isolation: a referral to a demo partner (or the whole system in
+    # DEMO_MODE) is simulated — never emailed, never sent to an external API.
+    if lead.demo or lead.lender.is_demo or getattr(settings, "DEMO_MODE", True):
+        return {"delivered": False, "method": lead.lender.delivery_method, "reason": "demo_simulated"}
     if getattr(settings, "PARTNER_DELIVERY_ENABLED", True) is False:
         return {"delivered": False, "method": lead.lender.delivery_method, "reason": "disabled"}
     return PartnerLeadDeliveryService().deliver(lead)

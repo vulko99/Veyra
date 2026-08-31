@@ -287,6 +287,7 @@ def test_email_delivery_sends_minimal_payload(settings):
     from django.core import mail
 
     settings.MATCH_THRESHOLD = 70
+    settings.DEMO_MODE = False  # production: real partner, delivery active
     from apps.leads.referrals import create_referral
 
     partner = make_partner(

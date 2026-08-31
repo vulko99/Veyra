@@ -68,11 +68,18 @@ def score_match(context: dict, product) -> int:
     else:
         income_fit = 1.0 if income else 0.5
 
-    # Employment: stable employment scores higher.
+    # Employment: stable employment scores higher. Recognises both the Phase 2
+    # applicant codes (lowercase) and legacy Phase 1 codes (uppercase).
     employment = (context.get("employment_type") or "").upper()
     employment_fit = {
-        "FULL_TIME": 1.0,
+        # Phase 2 applicant statuses
+        "EMPLOYED": 1.0,
         "SELF_EMPLOYED": 0.85,
+        "BUSINESS_OWNER": 0.85,
+        "PENSIONER": 0.8,
+        "OTHER": 0.6,
+        # Legacy Phase 1 codes
+        "FULL_TIME": 1.0,
         "CONTRACT": 0.8,
         "PART_TIME": 0.7,
         "RETIRED": 0.7,

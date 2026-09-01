@@ -4,9 +4,9 @@ import type { Messages } from "./bg";
 
 const en: Messages = {
   meta: {
-    title: "Veyra — One request. More options.",
+    title: "Veyra — One request. Transparent comparison.",
     description:
-      "Tell us what you need. Veyra compares relevant financial options from our partners — the choice stays yours. Veyra is not a lender.",
+      "Veyra compares our partners' options against publicly published criteria and shows why an option fits your profile. You decide who to continue with. Veyra is not a lender.",
   },
   common: {
     brand: "Veyra",
@@ -54,11 +54,11 @@ const en: Messages = {
   home: {
     badge: "Financial marketplace",
     h1a: "One request.",
-    h1b: "More options.",
+    h1b: "Transparent comparison.",
     subhead:
-      "You fill in one application. Veyra compares what you enter against partner criteria and shows you the relevant options.",
-    primaryCta: "Start application",
-    secondaryCta: "How Veyra works",
+      "Veyra compares our partners' options against publicly published criteria. You decide who to continue with.",
+    primaryCta: "See your options",
+    secondaryCta: "How it works",
     viz: {
       request: "Your request",
       requestValue: "€2,000 · 12 months",
@@ -72,27 +72,27 @@ const en: Messages = {
     },
     trust: [
       { stat: "1", label: "request" },
-      { stat: "2 min", label: "to complete" },
+      { stat: "Published", label: "criteria" },
       { stat: "€0", label: "fee for you" },
     ],
     featuresTitle: "Why Veyra",
-    featuresIntro: "A transparent choice — no legwork, no surprises.",
+    featuresIntro: "A transparent choice — no surprises.",
     features: [
       {
-        title: "One application",
-        body: "Fill it in once. We compare the relevant options for you — no visiting dozens of sites.",
+        title: "One request",
+        body: "You fill in the request once. We compare the relevant options against partners' published criteria.",
       },
       {
         title: "Transparent matching",
-        body: "We show why an option fits your profile — based on published criteria, not a hidden score.",
+        body: "We show why an option fits your profile — against publicly published criteria, not a hidden assessment.",
       },
       {
         title: "The choice is yours",
-        body: "You decide which partner to continue to. No obligation, no pressure.",
+        body: "You decide which partner to continue with. No obligation.",
       },
     ],
     stepsTitle: "How it works",
-    stepsIntro: "Three steps from request to relevant options.",
+    stepsIntro: "From request to relevant options.",
     steps: [
       {
         title: "Tell us what you need",
@@ -104,7 +104,7 @@ const en: Messages = {
       },
       {
         title: "You choose",
-        body: "Review the options and continue to a partner if you decide to. The decision is theirs.",
+        body: "Review the options and continue to a partner if you decide to. The decision is yours.",
       },
     ],
     ctaTitle: "Ready to see your options?",
@@ -461,12 +461,12 @@ const en: Messages = {
         platformLabel: "I agree to Veyra processing my information",
         platformDesc: "Required so we can process your request.",
         partnerLabel:
-          "I agree that Veyra may share my application information with financial partners that match my application criteria, so they can assess whether they can offer me financing",
+          "I agree that Veyra may share my application information with the financial partners I select on the results page, so they can assess whether they can offer me financing",
         partnerListPrefix: "See who the partners are:",
         partnerListLink: "partner list",
         ageNotice: "The service is intended for people aged 18 and over.",
         partnerDesc:
-          "We show the matching options and you decide which partners to continue with. Required so we can show you options.",
+          "Your data is passed only to the partners you choose yourself — not to all of them at once. Each partner is an independent data controller.",
         marketingLabel: "I want to receive useful updates from Veyra",
         marketingDesc: "Optional. You can unsubscribe at any time.",
         legalPrefix: "By continuing you accept our",

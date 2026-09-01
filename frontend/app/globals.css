@@ -453,6 +453,22 @@ body {
   .reveal > *:nth-child(3) { animation-delay: 0.16s; }
   .reveal > *:nth-child(4) { animation-delay: 0.22s; }
   .reveal > *:nth-child(5) { animation-delay: 0.28s; }
+
+  /* Above-the-fold content that sits *below* the hero: the first section of a
+     page whose hero is short enough to leave it on screen at load. ScrollReveal
+     deliberately skips anything already in view — arming it would hide content
+     that has already been painted — so without this it is the one block on the
+     page that never animates at all.
+
+     Same load-time entrance as .reveal, so pair the two classes; these rules
+     only move the stagger, picking it up where the hero's left off so the page
+     resolves top-down rather than everything lifting at once. Harmless on
+     narrower screens where the section does fall below the fold: it plays
+     unseen and the scroll entrance still does the visible work. */
+  .reveal-late > *:nth-child(1) { animation-delay: 0.34s; }
+  .reveal-late > *:nth-child(2) { animation-delay: 0.40s; }
+  .reveal-late > *:nth-child(3) { animation-delay: 0.46s; }
+  .reveal-late > *:nth-child(4) { animation-delay: 0.52s; }
 }
 
 @layer utilities {

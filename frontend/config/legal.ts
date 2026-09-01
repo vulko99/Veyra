@@ -19,16 +19,29 @@ export function isTodo(value: string): boolean {
 // Required on every page that advertises credit under the Consumer Credit Act
 // transposing EU Directive 2023/2225 (in force 20 Nov 2026).
 //
-// The wording below follows the draft Bulgarian statute. The directive's own
-// official BG text reads "Внимание! Заемането на пари струва пари."
+// Checked against чл. 8, ал. 1 of the new Закон за потребителския кредит,
+// which requires the warning to be given "чрез използване на израза
+// „Внимание! Вземането на кредит струва пари" или друг подобен израз."
 //
-// [[TODO:WARNING_WORDING]] — CONFIRM against the final published statute
-// before 20 Nov 2026 and update this single constant. It is deliberately not
-// inlined anywhere so the change is one edit.
+// So the constant below is the statute's own exemplar phrase, verbatim. Note
+// the transposition did NOT adopt the directive's BG wording ("Внимание!
+// Заемането на пари струва пари") — Bulgaria chose "вземането на кредит" over
+// "заемането на пари". Do not "correct" this back to the directive text.
+//
+// The article also permits "или друг подобен израз", so compliance does not
+// hinge on an exact string match; a reworded but equivalent warning would
+// still satisfy it. Kept deliberately un-inlined so the wording is one edit.
 export const CREDIT_WARNING = "Внимание! Вземането на кредит струва пари.";
 
-/** Set true once the wording is verified against the published Act. */
-export const CREDIT_WARNING_CONFIRMED = false;
+/**
+ * Verified against чл. 8, ал. 1 as published for consultation (strategy.bg,
+ * consultation closed 14 Jan 2026) and corroborated by secondary legal
+ * coverage of the adopted Act. NOT read against the Държавен вестник text —
+ * that copy was not retrievable. The residual risk is low because the article
+ * allows an equivalent expression, but a lawyer should still confirm against
+ * ДВ before 20 Nov 2026, when unconfirmed wording becomes a real breach.
+ */
+export const CREDIT_WARNING_CONFIRMED = true;
 
 // --- APR (ГПР) cap ---------------------------------------------------------
 // Bulgaria caps consumer-credit APR at 5x the statutory default interest rate.

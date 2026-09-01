@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useMemo, useRef, useState } from "react";
 import { track } from "@/lib/analytics";
+import { APR_CAP, formatAprCap } from "@/config/legal";
 import { useMessages } from "@/hooks/useI18n";
 
 const EUR = new Intl.NumberFormat("bg-BG", {
@@ -70,7 +71,9 @@ export function CreditCalculator() {
             label={c.rate}
             value={`${rate.toFixed(1)}%`}
             min={0}
-            max={50}
+            /* The statutory ГПР cap, from config — it moves every 1 Jan and
+               1 Jul, so it must never be a literal here. */
+            max={APR_CAP.value}
             step={0.5}
             raw={rate}
             onChange={setRate}
@@ -88,6 +91,11 @@ export function CreditCalculator() {
             <Row label={c.totalRepay} value={EUR2.format(total)} />
             <Row label={c.totalCost} value={EUR2.format(cost)} strong />
           </dl>
+          {/* Reference only — the cap applies to ГПР, which includes fees, not
+              to the indicative interest rate above. */}
+          <p className="mt-4 t-caption text-muted">
+            {c.aprCapRef} {formatAprCap()}
+          </p>
           <Link
             href="/apply"
             className="btn-mint mt-6 w-full justify-center"

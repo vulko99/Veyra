@@ -25,3 +25,40 @@
 # Official Next.js runtime: handles SSR/routing for the App Router on Netlify.
 [[plugins]]
   package = "@netlify/plugin-nextjs"
+
+# ---------------------------------------------------------------------------
+# Custom domain
+# ---------------------------------------------------------------------------
+# A *.netlify.app subdomain damages trust, search ranking and financial-ads
+# review at the same time. Moving to a custom domain (ideally .bg) is a config
+# change only — no code change — because every absolute URL derives from a
+# single value (frontend/lib/seo.ts -> SITE_URL).
+#
+# To migrate:
+#   1. Netlify -> Domain management -> add the domain and set it as PRIMARY.
+#      Netlify then issues the certificate and 301s the .netlify.app subdomain
+#      to the primary domain automatically. That covers the redirect
+#      requirement on its own; the block below is only needed for an apex/www
+#      preference Netlify does not already handle.
+#   2. Set NEXT_PUBLIC_SITE_URL to the new origin (e.g. https://veyra.bg) in
+#      Site settings -> Environment variables, then redeploy. Canonical tags,
+#      OG URLs, sitemap.xml and robots.txt all follow from it.
+#      Until it is set, the build falls back to Netlify's own URL, so a preview
+#      deploy never claims to be the production domain.
+#   3. Add the new origin to the backend's CORS/ALLOWED_HOSTS.
+#   4. Re-verify Google Search Console and Bing Webmaster Tools for the new
+#      domain, and resubmit the sitemap.
+#
+# The target domain is NOT hardcoded anywhere. Fill it in here only once it is
+# confirmed (TODO-LEGAL.md §7), then uncomment:
+#
+# [[redirects]]
+#   from = "https://veyramarket.netlify.app/*"
+#   to = "https://REPLACE-WITH-CONFIRMED-DOMAIN/:splat"
+#   status = 301
+#   force = true
+#
+# NOTE: do NOT add a SPA catch-all redirect (`from = "/*"` -> `/index.html`).
+# It would swallow /robots.txt and /sitemap.xml, which are generated as real
+# prerendered files by app/robots.ts and app/sitemap.ts. There is no such
+# catch-all in this config, and there must not be one.

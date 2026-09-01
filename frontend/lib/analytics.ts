@@ -16,6 +16,14 @@
 
 import { hasAnalyticsConsent } from "@/lib/consent";
 
+// Naming note: the pre-launch brief asked for form_start / form_step_2 /
+// form_complete / partner_click / calculator_use. Those map 1:1 onto the
+// events already instrumented below — application_started,
+// application_step_completed (which also carries WHICH step, so it is strictly
+// more useful than a fixed form_step_2), application_completed,
+// partner_clicked and calculator_used. Kept under the existing names rather
+// than duplicated; map them in the analytics tool if a report needs the other
+// vocabulary.
 export type AnalyticsEvent =
   // Requested pre-launch funnel events
   | "page_view"

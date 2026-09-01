@@ -1,9 +1,24 @@
 import type { Metadata } from "next";
 
-// Single source of truth for the deployed origin. Set NEXT_PUBLIC_SITE_URL to
-// the production domain so canonical/OG/sitemap URLs are absolute and correct.
+// Single source of truth for the deployed origin. Everything absolute —
+// canonical tags, OG URLs, sitemap entries, robots — derives from this one
+// value, so moving to a custom domain is an environment change, not a code
+// change. The target domain is deliberately NOT hardcoded: advertising a
+// domain that does not exist yet points crawlers at a dead host.
+//
+// Resolution order:
+//   1. NEXT_PUBLIC_SITE_URL — the production domain, set at deploy time.
+//   2. URL — injected by Netlify at build time (the site's primary URL), so a
+//      preview or *.netlify.app deploy describes itself honestly instead of
+//      claiming to be the production domain.
+//   3. localhost — local development only.
+//
+// Server-only: every consumer of SITE_URL renders on the server, which is what
+// makes the non-NEXT_PUBLIC fallback safe. Keep it that way.
 export const SITE_URL = (
-  process.env.NEXT_PUBLIC_SITE_URL || "https://veyra.bg"
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  process.env.URL ||
+  "http://localhost:3000"
 ).replace(/\/$/, "");
 
 type Seo = { title: string; description: string };

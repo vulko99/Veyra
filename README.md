@@ -252,6 +252,53 @@ The matching engine stays language-neutral: it emits stable **reason codes**
 API is not tied to any language and the English fallback keeps backend tests
 stable. Customer-facing emails are Bulgarian.
 
+### URL strategy
+
+Public URLs use **Latin transliteration of Bulgarian**, not Cyrillic:
+
+    /kalkulator                  not   /калкулатор
+    /kak-podrezhdame-ofertite    not   /как-подреждаме-офертите
+
+Both work — Cyrillic URLs are percent-encoded in transit and display correctly
+in the browser — but transliteration is the safer default for tooling
+compatibility (analytics, ad platforms, logs, CI, spreadsheets, and anything
+that mangles percent-encoded UTF-8).
+
+**This is decided; apply it consistently.** New routes get transliterated
+slugs. Existing examples: `/krediti`, `/barzi-krediti`, `/kalkulator`,
+`/kredit-do-zaplata`, `/obedinyavane-na-zadalzheniya`.
+
+## Compliance surfaces you must not regress
+
+The Bulgarian Consumer Credit Act transposing EU Directive 2023/2225 takes
+effect **20 November 2026**. Several behaviours in this codebase exist to
+satisfy it (and the Google Ads financial-products policy), and are easy to undo
+by accident:
+
+- **No speed or ease claims about obtaining credit**, in any language,
+  anywhere — including `alt` text, meta descriptions and OG tags. The law
+  targets emphasising *лекотата или бързината* of getting credit. Describing
+  the product honestly ("one request instead of many") is fine; promising fast
+  money is not.
+- **The credit warning** (`<CreditWarning>`) renders at body type size in the
+  page flow. Not the footer, not behind a click, never shrunk to fine print.
+  Its wording lives in `frontend/config/legal.ts`, never inline.
+- **The disclosures block** (`<LegalDisclosures>`) must stay visible without
+  clicking, hovering or expanding. ЗПК чл. 25 requires the representative
+  example to be no less prominent than the surrounding copy.
+- **The ГПР cap moves.** It resets every 1 January and 1 July — `APR_CAP` in
+  `frontend/config/legal.ts`. Never hardcode it.
+- **The ranking methodology** at `/kak-podrezhdame-ofertite` describes what
+  `apps/matching/scoring.py` actually does, including the commercially
+  motivated tie-break. Changing the weights without updating that page makes a
+  published disclosure inaccurate.
+- **No consent checkbox is pre-ticked**, and analytics loads nothing before
+  consent (`frontend/lib/consent.ts`).
+- **No `Review` / `AggregateRating` structured data** without genuine,
+  verifiable reviews.
+- **Nothing regulated is invented.** Unsupplied values stay loud `[[TODO:*]]`
+  placeholders — see [`TODO-LEGAL.md`](TODO-LEGAL.md).
+
 ## Security & privacy
 
 - UUID public references — sequential DB IDs are never exposed.
@@ -279,3 +326,8 @@ legal/regulatory advice and finalise licensing, GDPR/data-processing structure,
 partner agreements, required disclosures, and advertising rules. The code keeps
 consent, partner disclosures, terms/privacy versions, and audit records
 configurable to support this.
+
+Outstanding values the owner must supply before launch — company identity,
+disclosures, representative example, partner list, confirmed statutory warning
+wording and target domain — are collected in
+[`TODO-LEGAL.md`](TODO-LEGAL.md).

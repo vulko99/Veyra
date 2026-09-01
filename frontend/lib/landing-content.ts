@@ -11,6 +11,19 @@ export type LandingSection = {
 
 export type Landing = {
   slug: string;
+  /**
+   * Whether this page may be used as a destination for PAID traffic.
+   *
+   * Google prohibits advertising personal loans requiring full repayment
+   * within 60 days, and it reviews the landing page, not just the ad. Pages
+   * built around sub-60-day products ("кредит до заплата") and around speed as
+   * the search intent ("бързи кредити") are organic-only.
+   *
+   * Organic targeting of these terms is intended and stays — this flag exists
+   * so a paid campaign can filter them out programmatically instead of relying
+   * on someone remembering.
+   */
+  adEligible: boolean;
   eyebrow: string;
   h1: string;
   intro: string;
@@ -62,6 +75,7 @@ const KREDITI: Landing = {
   ],
   ctaTitle: "Готов ли си да видиш подходящите възможности?",
   ctaBody: "Без регистрация и без ангажимент да продължиш.",
+  adEligible: true,
 };
 
 const BARZI_KREDITI: Landing = {
@@ -101,6 +115,8 @@ const BARZI_KREDITI: Landing = {
   ],
   ctaTitle: "Сравни бързи кредити",
   ctaBody: "Една заявка, няколко възможности. Без регистрация и без ангажимент.",
+  // Organic only: the search intent here is speed itself.
+  adEligible: false,
 };
 
 const KREDIT_ONLINE: Landing = {
@@ -139,6 +155,7 @@ const KREDIT_ONLINE: Landing = {
   ],
   ctaTitle: "Кандидатствай онлайн с една заявка",
   ctaBody: "Една заявка, няколко възможности. Без регистрация и без ангажимент.",
+  adEligible: true,
 };
 
 const KREDIT_LOSHO_CKR: Landing = {
@@ -177,6 +194,7 @@ const KREDIT_LOSHO_CKR: Landing = {
   ],
   ctaTitle: "Виж какви възможности съответстват на профила ти",
   ctaBody: "Без гаранция за одобрение. Прозрачно съответствие по критерии.",
+  adEligible: true,
 };
 
 const KREDIT_DO_ZAPLATA: Landing = {
@@ -215,6 +233,9 @@ const KREDIT_DO_ZAPLATA: Landing = {
   ],
   ctaTitle: "Сравни краткосрочни възможности",
   ctaBody: "Прегледай подходящите възможности и избери сам къде да продължиш.",
+  // Organic only: "кредит до заплата" products are typically 30-day, which
+  // Google prohibits advertising.
+  adEligible: false,
 };
 
 const KREDIT_BEZ_TRUDOV: Landing = {
@@ -253,6 +274,7 @@ const KREDIT_BEZ_TRUDOV: Landing = {
   ],
   ctaTitle: "Виж подходящите възможности за твоя профил",
   ctaBody: "Без гаранция за одобрение. Ти избираш къде да продължиш.",
+  adEligible: true,
 };
 
 const OBEDINYAVANE: Landing = {
@@ -291,6 +313,7 @@ const OBEDINYAVANE: Landing = {
   ],
   ctaTitle: "Разгледай възможности за обединяване",
   ctaBody: "Една заявка, няколко възможности. Ти решаваш къде да продължиш.",
+  adEligible: true,
 };
 
 export const LANDINGS: Landing[] = [
@@ -306,3 +329,6 @@ export const LANDINGS: Landing[] = [
 export function getLanding(slug: string): Landing | undefined {
   return LANDINGS.find((l) => l.slug === slug);
 }
+
+/** Landing pages that may be used as paid-traffic destinations. */
+export const AD_ELIGIBLE_LANDINGS: Landing[] = LANDINGS.filter((l) => l.adEligible);

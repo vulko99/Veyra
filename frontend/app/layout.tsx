@@ -12,6 +12,7 @@ import { JsonLd } from "@/components/JsonLd";
 import { defaultLocale } from "@/i18n/config";
 import { getMessages } from "@/i18n";
 import { SITE_URL } from "@/lib/seo";
+import { companyJsonLdFields } from "@/config/company";
 
 const display = Manrope({
   subsets: ["latin", "cyrillic"],
@@ -57,6 +58,14 @@ export const metadata: Metadata = {
     description: messages.meta.description,
     images: ["/og.png"],
   },
+  // Search Console / Bing verification, supplied per-environment so no token
+  // is committed. Either may be absent.
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+    other: process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION
+      ? { "msvalidate.01": process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION }
+      : undefined,
+  },
 };
 
 // Site-wide structured data: who Veyra is, and site-level search metadata.
@@ -68,6 +77,9 @@ const orgJsonLd = {
   logo: `${SITE_URL}/veyra-logo.png`,
   description: messages.meta.description,
   slogan: "Една заявка. Прозрачно сравнение.",
+  // Legal identity, but only the fields actually supplied — a placeholder
+  // ЕИК or address must never reach structured data.
+  ...companyJsonLdFields(),
 };
 const siteJsonLd = {
   "@context": "https://schema.org",

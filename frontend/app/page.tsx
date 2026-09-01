@@ -3,15 +3,36 @@
 import Link from "next/link";
 import { useMessages } from "@/hooks/useI18n";
 import { MatchingViz } from "@/components/MatchingViz";
+import { JsonLd } from "@/components/JsonLd";
 import { CreditWarning } from "@/components/CreditWarning";
 import { LegalDisclosures } from "@/components/LegalDisclosures";
 import { track } from "@/lib/analytics";
+import { SITE_URL } from "@/lib/seo";
+import { companyJsonLdFields } from "@/config/company";
+
+// Homepage structured data. FinancialService describes what Veyra does; the
+// company's own identity lives in the Organization block in the root layout.
+//
+// Deliberately NO Review or AggregateRating markup: there are no genuine,
+// verifiable reviews, and fabricating them is both a Google penalty and a
+// consumer-protection violation. Do not add it without real reviews.
+const financialServiceJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FinancialService",
+  name: "Veyra",
+  url: SITE_URL,
+  areaServed: { "@type": "Country", name: "Bulgaria" },
+  currenciesAccepted: "EUR",
+  serviceType: "Consumer credit comparison marketplace",
+  ...companyJsonLdFields(),
+};
 
 export default function HomePage() {
   const m = useMessages();
 
   return (
     <>
+      <JsonLd data={financialServiceJsonLd} />
       {/* Hero */}
       <section className="relative overflow-hidden">
         <div className="pointer-events-none absolute inset-0 -z-10 grid-lines mask-fade-b opacity-70" />

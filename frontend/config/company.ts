@@ -30,3 +30,45 @@ export const COMPANY = {
 export const COMPANY_INCOMPLETE: boolean = Object.values(COMPANY).some(
   (v) => typeof v === "string" && v.startsWith("[[TODO:")
 );
+
+/**
+ * Company fields formatted for schema.org, with unfilled placeholders OMITTED.
+ *
+ * Structured data is machine-consumed: emitting "[[TODO:COMPANY_EIK]]" as a
+ * taxID would publish a fabricated-looking identifier to Google. A missing
+ * field is correct; a placeholder one is not.
+ */
+export function companyJsonLdFields(): Record<string, unknown> {
+  const filled = (v: string) => (v.startsWith("[[TODO:") ? undefined : v);
+  const out: Record<string, unknown> = {};
+
+  const legalName = filled(COMPANY.legalName);
+  if (legalName) out.legalName = legalName;
+
+  // ЕИК is the Bulgarian company registration number.
+  const eik = filled(COMPANY.eik);
+  if (eik) out.identifier = eik;
+
+  const vat = filled(COMPANY.vat);
+  if (vat) out.vatID = vat;
+
+  const address = filled(COMPANY.address);
+  if (address) {
+    out.address = {
+      "@type": "PostalAddress",
+      addressCountry: "BG",
+      streetAddress: address,
+    };
+  }
+
+  const phone = filled(COMPANY.phone);
+  if (phone) out.telephone = phone;
+
+  // Contact email is env-driven and falls back to an obvious @veyra.example
+  // placeholder, which must not be published either.
+  if (!COMPANY.contactEmail.endsWith("@veyra.example")) {
+    out.email = COMPANY.contactEmail;
+  }
+
+  return out;
+}

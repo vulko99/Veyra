@@ -498,6 +498,7 @@ const en: Messages = {
     cta: "See relevant options",
     disclaimer:
       "Indicative annuity estimate. Not an offer and excludes fees or APR. Final terms are set by the respective lender.",
+    aprCapRef: "Statutory APR cap in Bulgaria:",
     seoHeading: "How to read the result",
     seoBody:
       "The monthly payment is what you pay each month. Total cost is the difference between the amount repaid and the amount borrowed. When comparing real offers, look at the APR, which also includes fees.",

@@ -315,6 +315,7 @@ const en: Messages = {
     intro:
       "We are happy to help with questions about how Veyra works or about your data.",
     generalTitle: "General enquiries",
+    phoneTitle: "Phone",
     dataTitle: "Data & privacy",
     emailLabel: "Email:",
     note: "Contact addresses are placeholders for the MVP and will be finalised before launch.",

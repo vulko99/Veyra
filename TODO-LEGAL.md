@@ -110,8 +110,21 @@ This is a moving number — it must never be hardcoded into copy or templates.
 | 7.1 | Confirmed target domain (ideally `.bg`) | env `NEXT_PUBLIC_SITE_URL` |
 
 The codebase reads the origin from that single variable — canonical tags, OG
-URLs, sitemap and robots all derive from it. Nothing is hardcoded. Once the
-domain exists, add the 301 from the `netlify.app` subdomain (see `netlify.toml`).
+URLs, sitemap and robots all derive from it. Nothing is hardcoded. Until it is
+set, the build falls back to Netlify's own build-time `URL`, so a preview or
+`*.netlify.app` deploy never claims to be the production domain. Migration
+steps are documented in `netlify.toml`.
+
+## 7b. Operational settings (not legal values, but set them)
+
+| # | Item | Where | Note |
+|---|---|---|---|
+| 7b.1 | `CONSENT_TEXT_VERSION` | backend env | **Bump whenever the consent checkbox wording changes.** Recorded against every consent so you can prove what a user agreed to. Currently `2026-09-01`. |
+| 7b.2 | `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` | frontend env | Search Console |
+| 7b.3 | `NEXT_PUBLIC_BING_SITE_VERIFICATION` | frontend env | Bing Webmaster Tools |
+| 7b.4 | `NEXT_PUBLIC_GA_ID` or `NEXT_PUBLIC_PLAUSIBLE_DOMAIN` | frontend env | Nothing loads until one is set **and** the visitor grants consent. |
+
+Frontend variables are listed with comments in `frontend/.env.local.example`.
 
 ## 8. Bulgarian copy review
 
@@ -120,6 +133,30 @@ domain exists, add the 301 from the `netlify.app` subdomain (see `netlify.toml`)
 | 8.1 | **Native-speaker review of all Bulgarian copy** | `frontend/i18n/dictionaries/bg.ts`, `frontend/lib/landing-content.ts`, `frontend/lib/guides-content.ts` |
 
 Flagged in a header comment at the top of `bg.ts`. Not signed-off copy.
+
+**8.2 — Two decisions for the reviewer to confirm:**
+
+1. **Register.** The site addresses the reader informally throughout (*ти*).
+   The replacement copy supplied in the change brief was written formally
+   (*Вие*). It was implemented in the site's existing informal register so the
+   homepage and the application funnel do not clash mid-journey — the brief's
+   substance (transparency framing, no speed claims) is unchanged. If the
+   reviewer prefers formal throughout, that is a site-wide pass, not a
+   homepage edit.
+
+2. **Vocabulary.** The brief used *запитване* / *оферти*; the site's
+   established terms are *заявка* / *възможности*, which are used consistently
+   across the funnel, results, backend and SEO pages. The existing terms were
+   kept.
+
+**8.3 — One compliance judgement to confirm.** `бързи кредити` ("fast loans")
+is retained as a product-category term on the organic-only landing pages,
+along with cautionary uses ("обща цена за целия срок, не само бързината") and
+honest deflections ("Veyra не превежда средства; скоростта зависи от
+партньора"). None of these is a Veyra-voiced promise of speed. The brief
+permits organic targeting of these terms (§3.4) while its checklist (§13) reads
+stricter; those pages are marked `adEligible: false` so they can never be used
+for paid traffic. If a reviewer disagrees, the pages come out.
 
 ---
 

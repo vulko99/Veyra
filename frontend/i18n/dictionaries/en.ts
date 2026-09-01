@@ -185,8 +185,16 @@ const en: Messages = {
         a: "One application can match the criteria of more than one partner. Veyra shows you these options so you can decide for yourself where to continue.",
       },
       {
-        q: "Does browsing options affect anything?",
-        a: "Completing the application to see options does not itself involve a partner decision. If you continue to a partner, they run their own process.",
+        q: "Does the request affect my credit history?",
+        a: "No. Veyra does not query the ЦКР credit register and does not perform a credit assessment — we compare the information you enter against partners' published criteria. If you choose to continue to a partner, they run their own process, which may include a ЦКР check.",
+      },
+      {
+        q: "Who sees my data?",
+        a: "Veyra, and only the partners you select on the results page. We do not send your data to every partner at once and we do not sell it. Each partner is an independent data controller and is responsible for its own processing. The partner list is published on the Partners page.",
+      },
+      {
+        q: "What happens after I choose a partner?",
+        a: "We pass the selected partner the data needed to consider your request, in line with the consent you gave, and direct you to their site. From there the process is theirs: the partner may ask for further documents, makes its own assessment and takes the final decision on approval and terms. Veyra plays no part in that decision.",
       },
       {
         q: "Do you guarantee approval?",

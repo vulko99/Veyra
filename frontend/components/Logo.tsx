@@ -12,9 +12,18 @@ const LOCKUP_RATIO = 1458 / 379;
 export function Logo({
   light = false,
   height = 30,
+  priority = false,
 }: {
   light?: boolean;
   height?: number;
+  /**
+   * Preload this logo at high priority. Only for a logo that is genuinely
+   * above the fold — the site header or the application-flow chrome.
+   *
+   * Do NOT set it on the footer logo: that emits a high-priority preload for a
+   * below-the-fold image on every page and competes with the real LCP element.
+   */
+  priority?: boolean;
 }) {
   const src = light ? "/veyra-logo-white.png" : "/veyra-logo.png";
   const width = Math.round(height * LOCKUP_RATIO);
@@ -25,7 +34,7 @@ export function Logo({
         alt="Veyra"
         width={width}
         height={height}
-        priority
+        priority={priority}
         style={{ height, width: "auto" }}
       />
     </Link>

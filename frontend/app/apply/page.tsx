@@ -31,7 +31,7 @@ export default function ApplyIntroPage() {
       <div className="container-x flex min-h-screen max-w-xl flex-col justify-center py-14 text-center">
         <div className="reveal">
           <div className="mx-auto flex justify-center">
-            <Logo light />
+            <Logo light priority />
           </div>
           <h1 className="mt-10 text-3xl font-bold tracking-tight text-appwhite sm:text-[2.6rem]">
             {m.apply.intro.h1}

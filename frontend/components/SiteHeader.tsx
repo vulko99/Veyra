@@ -44,7 +44,7 @@ export function SiteHeader() {
       }`}
     >
       <div className="container-x flex h-[68px] items-center justify-between">
-        <Logo />
+        <Logo priority />
         <nav className="hidden items-center gap-1 md:flex">
           {nav.map((item) => (
             <Link

@@ -24,10 +24,15 @@ export default function ResponsibleBorrowingPage() {
         </div>
       </section>
 
-      {/* light callouts */}
+      {/* Light callouts. The dark hero above is short, so on most desktop
+          screens this section is already in view on arrival — which is exactly
+          the case ScrollReveal skips, leaving it as the one block on the page
+          that never animated. `reveal reveal-late` gives it the same blur-up on
+          load as the hero, staggered to land just after it; `reveal-scroll`
+          stays for the narrower screens where it does start below the fold. */}
       <section className="reveal-scroll relative">
         <div className="pointer-events-none absolute inset-0 -z-10 atmos-light" />
-        <div className="container-x max-w-4xl py-16">
+        <div className="reveal reveal-late container-x max-w-4xl py-16">
           <h2 className="t-h2 text-ink">{r.calloutsTitle}</h2>
           <div className="mt-8 grid gap-4 sm:grid-cols-2">
             {r.callouts.map((c, i) => (

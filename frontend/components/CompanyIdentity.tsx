@@ -1,7 +1,8 @@
 "use client";
 
 import { COMPANY } from "@/config/company";
-import { isTodo } from "@/config/legal";
+import { HIDE_UNFILLED, isTodo } from "@/config/legal";
+import { TodoMark } from "@/components/TodoMark";
 import { useMessages } from "@/hooks/useI18n";
 
 /**
@@ -44,6 +45,14 @@ export function CompanyIdentity({
   const labelCls = dark ? "text-white/45" : "text-muted";
   const valueCls = dark ? "text-white/80" : "text-ink";
 
+  // In the local preview mode, an unsupplied value is omitted rather than
+  // shown as a gap. If that leaves nothing identifying the operator, the whole
+  // block goes with it: a heading over a single email address says less than
+  // no heading at all.
+  const visibleRows = HIDE_UNFILLED ? rows.filter((r) => !isTodo(r.value)) : rows;
+  const identifying = visibleRows.filter((r) => r.label !== m.emailLabel);
+  if (HIDE_UNFILLED && identifying.length === 0) return null;
+
   return (
     <div className={className}>
       <h2
@@ -54,14 +63,12 @@ export function CompanyIdentity({
         {m.identityTitle}
       </h2>
       <dl className="mt-3 grid gap-x-8 gap-y-1.5 text-sm sm:grid-cols-2">
-        {rows.map((row) => (
+        {visibleRows.map((row) => (
           <div key={row.label} className="flex gap-2">
             <dt className={`flex-none ${labelCls}`}>{row.label}:</dt>
             <dd className={valueCls}>
               {isTodo(row.value) ? (
-                <mark className="rounded bg-red-500 px-1.5 py-0.5 font-mono text-[0.8em] font-bold text-white">
-                  {row.value}
-                </mark>
+                <TodoMark value={row.value} />
               ) : row.href ? (
                 <a href={row.href} className="hover:text-mint">
                   {row.value}

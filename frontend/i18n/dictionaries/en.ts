@@ -589,6 +589,8 @@ const en: Messages = {
   },
   legal: {
     warningAria: "Mandatory warning",
+    warningGloss: "Warning! Taking out credit costs money.",
+    warningGlossNote: "Statutory wording, binding in Bulgarian",
     notALender: "Veyra is not a lender. The final decision is made by the partner.",
     freeForYou: "The service is free for you. We are paid by the partners.",
     minAge: "The service is available to people aged 18 and over.",
@@ -607,6 +609,8 @@ const en: Messages = {
       "Representative example: for an amount of {amount} EUR, a term of {term} months, a fixed annual borrowing rate of {rate}%, APR {apr}%, total amount repayable {total} EUR, monthly instalment {monthly} EUR.",
     unfilledNotice:
       "MANDATORY INFORMATION NOT FILLED IN — this page must not be published or advertised until the values are supplied. See TODO-LEGAL.md.",
+    pendingNotice:
+      "The company is being registered. The mandatory values will be published before the site goes live.",
     identityTitle: "Company identification",
     companyLabel: "Company",
     eikLabel: "Company no.",

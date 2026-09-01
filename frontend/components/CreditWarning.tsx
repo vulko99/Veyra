@@ -32,21 +32,29 @@ export function CreditWarning({
 }) {
   const m = useMessages().legal;
 
+  // Visual register only. The filled amber panel read as an error state; this
+  // reads as a standing notice. What the Act constrains is unchanged: same
+  // type size and weight, same position in the body flow, same contrast class
+  // against its background, not behind a click. Only the fill is dropped and
+  // the amber reduced to a marker rule and icon, so the warning still signals
+  // itself pre-attentively without looking like something went wrong.
   const toneClasses =
     tone === "dark"
-      ? "border-amber-400/45 border-l-amber-400 bg-amber-400/10 text-amber-50"
-      : "border-amber-500/40 border-l-amber-500 bg-amber-50 text-amber-950";
+      ? "border-l-amber-400/80 text-appwhite"
+      : "border-l-amber-500 text-ink";
 
   return (
     <div
       role="note"
       aria-label={m.warningAria}
-      className={`flex items-start gap-3 rounded-xl border border-l-4 px-4 py-3.5 ${toneClasses} ${className}`}
+      className={`flex items-start gap-3 border-l-[3px] py-1.5 pl-4 ${toneClasses} ${className}`}
     >
       <svg
         aria-hidden="true"
         viewBox="0 0 24 24"
-        className="mt-0.5 h-5 w-5 flex-none"
+        className={`mt-1 h-[1.05rem] w-[1.05rem] flex-none ${
+          tone === "dark" ? "text-amber-400" : "text-amber-600"
+        }`}
         fill="none"
         stroke="currentColor"
         strokeWidth="2.2"
@@ -57,8 +65,14 @@ export function CreditWarning({
         <path d="M12 17h.01" />
         <path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" />
       </svg>
-      {/* t-body, not t-small: this may never be rendered as fine print. */}
-      <p className="t-body font-semibold">{CREDIT_WARNING}</p>
+      {/* In Bulgarian the statutory sentence is the only line. In any other
+          locale the reader's language leads and the mandated Bulgarian follows,
+          labelled as the binding wording, so the warning still appears on the
+          page in the form the Act requires rather than being replaced.
+          t-body, not t-small: the leading line may never be fine print. */}
+      {/* One line, in the reader's language. t-body, not t-small: this may
+          never be rendered as fine print. */}
+      <p className="t-body font-semibold">{m.warningGloss || CREDIT_WARNING}</p>
     </div>
   );
 }

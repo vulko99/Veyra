@@ -30,7 +30,7 @@ export default function HomePage() {
             <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted">
               {m.home.subhead}
             </p>
-            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+            <div className="mt-9 flex flex-col gap-3 min-[480px]:flex-row">
               <Link
                 href="/apply"
                 className="btn-mint"

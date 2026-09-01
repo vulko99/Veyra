@@ -3,15 +3,17 @@
 import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { getMatches, selectPartner } from "@/lib/api";
+import { getApplication, getMatches, selectPartner } from "@/lib/api";
 import { formatEUR } from "@/lib/format";
 import { track } from "@/lib/analytics";
 import { useI18n } from "@/hooks/useI18n";
+import { useApplication } from "@/hooks/useApplication";
 import { AppShell } from "@/components/WizardStep";
-import type { Phase2Match } from "@/types";
+import type { Phase2Application, Phase2Match } from "@/types";
 
-/** Compact dark matching motif: request → engine → matches, animated routes. */
-function ResultsViz({ count }: { count: number }) {
+/** Compact dark matching motif: request → engine → matches, animated routes.
+ *  `requestValue` is the applicant's own amount and term — never a placeholder. */
+function ResultsViz({ count, requestValue }: { count: number; requestValue: string }) {
   const { m } = useI18n();
   const v = m.home.viz;
   const outs = Array.from({ length: Math.min(count || 3, 3) });
@@ -23,7 +25,7 @@ function ResultsViz({ count }: { count: number }) {
             {v.request}
           </p>
           <p className="mt-0.5 font-display text-sm font-bold text-appwhite">
-            {v.requestValue}
+            {requestValue}
           </p>
         </div>
 
@@ -71,6 +73,8 @@ function ResultsInner() {
   const { m } = useI18n();
   const r = m.results;
   const applicationId = params.get("application");
+  const { draft, publicId } = useApplication();
+  const [application, setApplication] = useState<Phase2Application | null>(null);
   const [matches, setMatches] = useState<Phase2Match[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -94,6 +98,25 @@ function ResultsInner() {
       })
       .catch(() => setError(r.loadError));
   }, [applicationId, r.noReference, r.loadError]);
+
+  // Supplementary: the request summary shown above the matches. The stored
+  // application is authoritative — a results link opened in a fresh browser has
+  // no local draft. A failure here must not break the page; the draft below
+  // stands in, and failing that the summary is omitted entirely.
+  useEffect(() => {
+    if (!applicationId) return;
+    let cancelled = false;
+    getApplication(applicationId)
+      .then((app) => {
+        if (!cancelled) setApplication(app);
+      })
+      .catch(() => {
+        if (!cancelled) setApplication(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [applicationId]);
 
   const toggle = (m: Phase2Match) => {
     setSelected((prev) => {
@@ -130,6 +153,23 @@ function ResultsInner() {
 
   const productTypeLabel = (pt: string) =>
     (r.productTypes as Record<string, string>)[pt] ?? pt.replace(/_/g, " ");
+
+  // What the applicant actually asked for. The stored application is
+  // authoritative; the local draft only stands in when it belongs to this same
+  // application (a shared link can point at a different one). Never
+  // home.viz.requestValue — that is a fixed marketing illustration and would
+  // misstate the request on the page where the applicant decides.
+  const draftIsThisApplication = publicId != null && publicId === applicationId;
+  const requestedAmount =
+    application?.desired_amount_eur ??
+    (draftIsThisApplication ? draft.requested_amount : undefined);
+  const requestedTerm =
+    application?.desired_term_months ??
+    (draftIsThisApplication ? draft.requested_term_months : undefined);
+  const requestValue =
+    requestedAmount && requestedTerm != null
+      ? `${formatEUR(requestedAmount)} · ${requestedTerm} ${r.months}`
+      : null;
 
   // ----- Success screen (after referrals are created) -----
   if (done) {
@@ -209,9 +249,11 @@ function ResultsInner() {
                 </span>
                 {r.countSuffix}
               </div>
-              <div className="mt-6">
-                <ResultsViz count={matches.length} />
-              </div>
+              {requestValue && (
+                <div className="mt-6">
+                  <ResultsViz count={matches.length} requestValue={requestValue} />
+                </div>
+              )}
               <p className="mt-4 text-sm text-appmuted">{r.selectHint}</p>
             </>
           )}

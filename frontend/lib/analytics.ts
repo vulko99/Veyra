@@ -44,7 +44,8 @@ export type AnalyticsEvent =
   | "matching_completed"
   | "matches_shown"
   | "outbound_click"
-  | "calculator_used";
+  | "calculator_used"
+  | "language_changed";
 
 type Props = Record<string, string | number | boolean | undefined>;
 

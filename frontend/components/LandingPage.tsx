@@ -71,7 +71,7 @@ export function LandingPage({ data }: { data: Landing }) {
           {/* Mandatory credit warning — these pages advertise credit. Kept in
               the body flow, above the fold-ish, never as footer fine print. */}
           <CreditWarning className="mt-6" />
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+          <div className="mt-8 flex flex-col gap-3 min-[480px]:flex-row">
             <PrimaryCta label="Започни заявка" location={`landing:${data.slug}`} />
             <Link href="/kalkulator" className="btn-ghost">
               Кредитен калкулатор

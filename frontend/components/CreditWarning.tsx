@@ -1,6 +1,7 @@
+"use client";
+
 import { CREDIT_WARNING } from "@/config/legal";
-import { defaultLocale } from "@/i18n/config";
-import { getMessages } from "@/i18n";
+import { useMessages } from "@/hooks/useI18n";
 
 /**
  * The mandatory credit warning.
@@ -17,10 +18,10 @@ import { getMessages } from "@/i18n";
  * The wording itself is NOT inlined here: it comes from CREDIT_WARNING in
  * config/legal.ts, so the final statutory text can be corrected in one edit.
  *
- * Deliberately hook-free and context-free, so it renders identically on the
- * server and the client and its text is always present in the server-rendered
- * HTML — which is what ad review and no-JS crawlers see. It reads the default
- * catalog directly for the same reason; revisit if a second locale ships.
+ * NOTE: only the aria-label follows the active locale. CREDIT_WARNING itself
+ * stays Bulgarian in every locale — it is statutory wording mandated in
+ * Bulgarian, not copy to be translated. Do not "fix" that by moving it into
+ * the message catalogs.
  */
 export function CreditWarning({
   tone = "light",
@@ -29,7 +30,7 @@ export function CreditWarning({
   tone?: "light" | "dark";
   className?: string;
 }) {
-  const m = getMessages(defaultLocale).legal;
+  const m = useMessages().legal;
 
   const toneClasses =
     tone === "dark"

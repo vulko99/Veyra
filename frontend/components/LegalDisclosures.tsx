@@ -1,3 +1,5 @@
+"use client";
+
 import {
   DISCLOSURES,
   DISCLOSURES_INCOMPLETE,
@@ -5,8 +7,8 @@ import {
 } from "@/config/disclosures";
 import { COMPANY } from "@/config/company";
 import { formatAprCap, isTodo } from "@/config/legal";
-import { defaultLocale } from "@/i18n/config";
-import { getMessages, interpolate } from "@/i18n";
+import { interpolate } from "@/i18n";
+import { useMessages } from "@/hooks/useI18n";
 
 /**
  * The disclosures Google Ads' financial-products policy requires, plus the
@@ -25,9 +27,9 @@ import { getMessages, interpolate } from "@/i18n";
  * the representative example is not visually demoted. Do not "tidy" this into
  * smaller or greyer text.
  *
- * Deliberately hook-free and context-free, so it renders identically on the
- * server and the client and is always present in the server-rendered HTML —
- * which is what ad review and no-JS crawlers see.
+ * Follows the active locale: labels come from the message catalog, values from
+ * config. Next server-renders client components, so the block is still present
+ * in the initial HTML, which is what ad review and no-JS crawlers see.
  */
 export function LegalDisclosures({
   tone = "light",
@@ -36,7 +38,7 @@ export function LegalDisclosures({
   tone?: "light" | "dark";
   className?: string;
 }) {
-  const m = getMessages(defaultLocale).legal;
+  const m = useMessages().legal;
   const dark = tone === "dark";
 
   const termRange = interpolate(m.termRangeValue, {

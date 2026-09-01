@@ -1,7 +1,8 @@
+"use client";
+
 import { COMPANY } from "@/config/company";
 import { isTodo } from "@/config/legal";
-import { defaultLocale } from "@/i18n/config";
-import { getMessages } from "@/i18n";
+import { useMessages } from "@/hooks/useI18n";
 
 /**
  * Who the operator legally is: entity name, ЕИК, VAT, registered address and
@@ -20,7 +21,7 @@ export function CompanyIdentity({
   tone?: "light" | "dark";
   className?: string;
 }) {
-  const m = getMessages(defaultLocale).legal;
+  const m = useMessages().legal;
   const dark = tone === "dark";
 
   const rows: { label: string; value: string; href?: string }[] = [

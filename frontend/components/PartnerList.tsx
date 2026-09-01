@@ -1,6 +1,7 @@
+"use client";
+
 import { PARTNERS, HAS_PARTNERS } from "@/config/partners";
-import { defaultLocale } from "@/i18n/config";
-import { getMessages } from "@/i18n";
+import { useMessages } from "@/hooks/useI18n";
 
 /**
  * The live list of lender partners a user's data may be shared with.
@@ -14,7 +15,7 @@ import { getMessages } from "@/i18n";
  * plainly. It never renders invented names to fill the space.
  */
 export function PartnerList({ className = "" }: { className?: string }) {
-  const m = getMessages(defaultLocale).partners;
+  const m = useMessages().partners;
 
   if (!HAS_PARTNERS) {
     return (

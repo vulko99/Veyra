@@ -1,6 +1,7 @@
+"use client";
+
 import Link from "next/link";
-import { getMessages } from "@/i18n";
-import { defaultLocale } from "@/i18n/config";
+import { useMessages } from "@/hooks/useI18n";
 
 /**
  * Ranking-methodology disclosure — ЗЗП чл. 47а.
@@ -14,10 +15,12 @@ import { defaultLocale } from "@/i18n/config";
  * part that is commercially motivated: the operator-set `priority` tie-break.
  * Stating that plainly is the point of the page — do not soften it.
  *
- * Server component: pure content, no JS needed.
+ * Follows the active locale — the site has a Bulgarian/English switcher, and a
+ * ranking disclosure the reader cannot read is not a disclosure.
  */
 export default function RankingPage() {
-  const m = getMessages(defaultLocale).ranking;
+  const all = useMessages();
+  const m = all.ranking;
 
   return (
     <div className="relative">
@@ -88,13 +91,13 @@ export default function RankingPage() {
             href="/how-it-works"
             className="rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-sm font-medium text-ink transition-colors hover:border-mint/50 hover:text-mint-600"
           >
-            Как работи
+            {all.nav.howItWorks}
           </Link>
           <Link
             href="/partners"
             className="rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-sm font-medium text-ink transition-colors hover:border-mint/50 hover:text-mint-600"
           >
-            Партньори
+            {all.footer.links.partners}
           </Link>
         </nav>
       </div>

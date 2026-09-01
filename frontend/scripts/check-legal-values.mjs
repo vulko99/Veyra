@@ -10,13 +10,30 @@
  * Behaviour is intentionally asymmetric, so the partner-preview deploy keeps
  * working while the values are still being gathered:
  *
+ *   FATAL finding     -> fails EVERY build (exit 1), production or not
  *   production build  -> BLOCKING findings fail the build (exit 1)
- *   any other build   -> everything is reported as a warning (exit 0)
+ *   any other build   -> everything else is reported as a warning (exit 0)
+ *
+ * The two categories say different things. BLOCKING means "not gathered yet",
+ * which is the honest state of the company values during pre-launch and is
+ * fine on a preview. FATAL means the configuration is unsafe as it stands --
+ * there is no environment where you want it, so the environment is not
+ * consulted.
  *
  * "Production" is:
  *   REQUIRE_LEGAL_VALUES = true|1   -> force blocking
- *   REQUIRE_LEGAL_VALUES = false|0  -> force warn-only (escape hatch)
+ *   REQUIRE_LEGAL_VALUES = false|0  -> force warn-only, and the only way past
+ *                                      a FATAL finding (escape hatch)
  *   otherwise CONTEXT === "production" (set by Netlify on production deploys)
+ *
+ * That CONTEXT test is Netlify-specific, and deliberately NOT broadened to
+ * other hosts: the Render demo is a partner preview, and counting it as
+ * production would fail its build on company values that are legitimately
+ * still unfilled. The cost of that narrowness used to be that an unsafe
+ * setting shipped there unchallenged — NEXT_PUBLIC_PRELAUNCH=false reached
+ * the Render demo with no EIK set, and this script printed a warning and let
+ * the build through, because CONTEXT is unset everywhere except Netlify.
+ * That gap is what the FATAL category closes.
  *
  * Run standalone with:  npm run check:legal
  * Runs automatically before every build via the "prebuild" script.
@@ -63,6 +80,8 @@ function todosIn(rel) {
   return [...new Set(read(rel).match(/\[\[TODO:[A-Z_]+\]\]/g) || [])];
 }
 
+// Unsafe in any environment — see the FATAL/BLOCKING distinction above.
+const fatal = [];
 const blocking = [];
 const warnings = [];
 
@@ -70,9 +89,15 @@ const warnings = [];
 // while no legal entity exists to be the data controller. Pre-launch mode
 // (config/launch.ts) defaults to ON precisely so this cannot happen by
 // forgetting a variable — this catches someone turning it off too early.
+//
+// FATAL, not blocking: every other finding here is a value nobody has supplied
+// yet, which is a true and acceptable state on a preview. This one is a live
+// funnel collecting a name, phone, email and income with no data controller
+// behind the consent text, and that is not more acceptable on a demo than in
+// production — the people filling it in are just as real.
 const funnelOpen = process.env.NEXT_PUBLIC_PRELAUNCH === "false";
 if (funnelOpen && envMissing("NEXT_PUBLIC_COMPANY_EIK")) {
-  blocking.push(
+  fatal.push(
     "FUNNEL IS OPEN (NEXT_PUBLIC_PRELAUNCH=false) but no company ЕИК is set. " +
       "The funnel collects name, phone, email and income, and the consent text " +
       "names Veyra as the data controller. Do not accept submissions before the " +
@@ -137,20 +162,27 @@ if (envMissing("NEXT_PUBLIC_SITE_URL")) {
 // --- report -----------------------------------------------------------------
 
 const force = (process.env.REQUIRE_LEGAL_VALUES || "").toLowerCase();
+const forcedOff = force === "false" || force === "0";
 const isProduction =
   force === "true" || force === "1"
     ? true
-    : force === "false" || force === "0"
+    : forcedOff
       ? false
       : process.env.CONTEXT === "production";
 
 const bar = "─".repeat(72);
 const line = (items) => items.map((i) => `  • ${i}`).join("\n");
 
-if (blocking.length || warnings.length) {
+if (fatal.length || blocking.length || warnings.length) {
   console.error(`\n${bar}`);
   console.error("  UNFILLED REGULATED VALUES");
   console.error(`${bar}`);
+  if (fatal.length) {
+    console.error(
+      `\n${forcedOff ? "UNSAFE — overridden by REQUIRE_LEGAL_VALUES" : "FATAL"} (${fatal.length}):`
+    );
+    console.error(line(fatal));
+  }
   if (blocking.length) {
     console.error(`\n${isProduction ? "BLOCKING" : "Required before production"} (${blocking.length}):`);
     console.error(line(blocking));
@@ -164,6 +196,16 @@ if (blocking.length || warnings.length) {
   console.error(`${bar}\n`);
 }
 
+// Checked before the production test: an unsafe setting fails everywhere.
+if (fatal.length && !forcedOff) {
+  console.error(
+    `Refusing to build with ${fatal.length} unsafe setting(s), in ANY environment.\n` +
+      `This is not a "supply it before production" finding — fix the setting,\n` +
+      `or set REQUIRE_LEGAL_VALUES=false to override deliberately.\n`
+  );
+  process.exit(1);
+}
+
 if (isProduction && blocking.length) {
   console.error(
     `Refusing to build for production with ${blocking.length} unfilled regulated value(s).\n` +
@@ -172,6 +214,6 @@ if (isProduction && blocking.length) {
   process.exit(1);
 }
 
-if (!blocking.length && !warnings.length) {
+if (!fatal.length && !blocking.length && !warnings.length) {
   console.log("Legal values: all present.");
 }

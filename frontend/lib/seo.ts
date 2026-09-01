@@ -1,4 +1,7 @@
 import type { Metadata } from "next";
+import { defaultLocale, type Locale } from "@/i18n/config";
+import { localePath } from "@/lib/locale";
+import { isBgOnlyPath } from "@/lib/bg-only";
 
 // Single source of truth for the deployed origin. Everything absolute —
 // canonical tags, OG URLs, sitemap entries, robots — derives from this one
@@ -139,14 +142,120 @@ export const PAGE_SEO: Record<string, Seo> = {
   },
 };
 
-/** Build Next Metadata for a static path from the central SEO config. */
-export function buildMetadata(path: string, overrides: Partial<Metadata> = {}): Metadata {
-  const seo = PAGE_SEO[path];
-  const canonical = path === "/" ? "/" : path;
+// English title + description for the paths that genuinely have an English
+// version. Each entry mirrors the Bulgarian one above, including the
+// marketplace framing and the "Veyra is not a lender" qualifier — a translated
+// page that quietly drops the disclaimer is worse than an untranslated one.
+//
+// Presence in this map is what makes a page's English twin indexable. A path
+// missing here still renders in English, but is marked noindex rather than
+// being published to search under a Bulgarian title. That is deliberate: it
+// means adding English SEO copy is the single act that turns an English page
+// on for search, and forgetting to add it cannot leak a mislabelled page.
+export const PAGE_SEO_EN: Record<string, Seo> = {
+  "/how-it-works": {
+    title: "How Veyra works — comparing credit options",
+    description:
+      "You fill in one application, Veyra compares it against partners' published criteria and shows the options you match. You choose where to continue.",
+  },
+  "/loans": {
+    title: "Types of credit and options | Veyra",
+    description:
+      "Consumer credit, short-term credit and refinancing from our partners. Veyra is not a lender — we compare options against the details you enter.",
+  },
+  "/faq": {
+    title: "Frequently asked questions | Veyra",
+    description:
+      "Is Veyra a lender? Why do I see more than one option? Answers about compatibility, consent, and how the marketplace works.",
+  },
+  "/responsible-borrowing": {
+    title: "Responsible borrowing | Veyra",
+    description:
+      "What to weigh up before taking on credit: total cost, monthly instalment, existing commitments and the partner's terms. Practical guidance, no spin.",
+  },
+  "/about": {
+    title: "About Veyra — a financial marketplace",
+    description:
+      "Veyra is a marketplace for credit options. We do not lend and we do not make approval decisions — we connect you with suitable partners.",
+  },
+  "/partners": {
+    title: "Partners | Veyra",
+    description:
+      "How Veyra works with financial partners, and how matching options are shown according to their published criteria.",
+  },
+  "/contact": {
+    title: "Contact | Veyra",
+    description: "Get in touch with the Veyra team.",
+  },
+  "/cookies": {
+    title: "Cookie policy | Veyra",
+    description: "How Veyra uses cookies and similar technologies.",
+  },
+  "/privacy": {
+    title: "Privacy policy | Veyra",
+    description: "How Veyra processes and protects your personal data.",
+  },
+  "/terms": {
+    title: "Terms of use | Veyra",
+    description: "The terms and conditions for using Veyra.",
+  },
+  "/kak-podrezhdame-ofertite": {
+    title: "How we order the options | Veyra",
+    description:
+      "Which parameters Veyra uses to order the options shown, whether commercial arrangements affect that order, and how we earn. Full ranking transparency.",
+  },
+  "/kalkulator": {
+    title: "Credit calculator — monthly instalment and total cost | Veyra",
+    description:
+      "Work out an indicative monthly instalment and total cost by amount, term and interest rate. Free calculator — no application, no sign-up.",
+  },
+};
+
+/**
+ * Build Next Metadata for a static path, in a given locale.
+ *
+ * Canonical and hreflang follow the URL shape in `lib/locale.ts`: Bulgarian is
+ * unprefixed, English lives under `/en`. Three cases:
+ *
+ *  - Bulgarian-only content (landing pages, guides): canonical always points at
+ *    the Bulgarian URL and no alternates are advertised, because no English
+ *    version of that prose exists. The `/en` twin is noindex, so an English
+ *    reader who follows a link still gets English chrome without a
+ *    near-duplicate page entering the index.
+ *  - A translated page with English SEO copy: canonical is the page's own URL
+ *    and both languages are cross-declared, with Bulgarian as x-default.
+ *  - A translated page without English SEO copy yet: noindex in English.
+ */
+export function buildMetadata(
+  path: string,
+  locale: Locale = defaultLocale,
+  overrides: Partial<Metadata> = {}
+): Metadata {
+  const bgOnly = isBgOnlyPath(path);
+  const english = locale !== defaultLocale;
+  const hasEnglishSeo = Boolean(PAGE_SEO_EN[path]);
+
+  const seo = english ? PAGE_SEO_EN[path] ?? PAGE_SEO[path] : PAGE_SEO[path];
+  // A Bulgarian-only page canonicalises to its Bulgarian URL from either locale.
+  const canonical = bgOnly ? path : localePath(locale, path);
+  const indexable = !english || (hasEnglishSeo && !bgOnly);
+
   return {
     title: seo?.title,
     description: seo?.description,
-    alternates: { canonical },
+    alternates: {
+      canonical,
+      // Only claim an alternate that actually exists in that language.
+      languages:
+        bgOnly || !hasEnglishSeo
+          ? undefined
+          : {
+              bg: path,
+              en: localePath("en", path),
+              "x-default": path,
+            },
+    },
+    robots: indexable ? undefined : { index: false, follow: true },
     openGraph: seo
       ? {
           title: seo.title,
@@ -161,6 +270,26 @@ export function buildMetadata(path: string, overrides: Partial<Metadata> = {}): 
       ? { title: seo.title, description: seo.description, images: ["/og.png"] }
       : undefined,
     ...overrides,
+  };
+}
+
+/**
+ * `generateMetadata` for a static path, resolving the locale from the route.
+ *
+ * Pages export this instead of a static `metadata` object because the canonical
+ * URL, the hreflang set and whether the page is indexable all depend on which
+ * locale is being rendered — none of which is knowable at module scope.
+ */
+export function localizedMetadata(
+  path: string,
+  overrides: Partial<Metadata> = {}
+) {
+  return function generateMetadata({
+    params,
+  }: {
+    params: { locale: Locale };
+  }): Metadata {
+    return buildMetadata(path, params.locale ?? defaultLocale, overrides);
   };
 }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/LocaleLink";
 import { usePathname } from "next/navigation";
 import { Logo } from "./Logo";
 import { useMessages } from "@/hooks/useI18n";

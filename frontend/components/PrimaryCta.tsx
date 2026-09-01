@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/LocaleLink";
 import { PRELAUNCH, PRELAUNCH_CTA_HREF } from "@/config/launch";
 import { useMessages } from "@/hooks/useI18n";
 import { track } from "@/lib/analytics";

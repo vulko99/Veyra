@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/LocaleLink";
 import { useEffect, useState } from "react";
 import { getConsent, setConsent, subscribeConsent } from "@/lib/consent";
 import { useMessages } from "@/hooks/useI18n";

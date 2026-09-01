@@ -1,7 +1,8 @@
 import type { MetadataRoute } from "next";
-import { SITE_URL } from "@/lib/seo";
+import { SITE_URL, PAGE_SEO_EN } from "@/lib/seo";
 import { GUIDES } from "@/lib/guides-content";
 import { LANDINGS } from "@/lib/landing-content";
+import { localePath } from "@/lib/locale";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
@@ -34,20 +35,52 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/cookies", priority: 0.2, freq: "monthly" },
   ];
 
-  const staticEntries = staticPaths.map((p) => ({
-    // Home is the bare origin (matches its canonical, no trailing slash).
-    url: p.path === "/" ? SITE_URL : `${SITE_URL}${p.path}`,
-    lastModified: now,
-    changeFrequency: p.freq,
-    priority: p.priority,
-  }));
+  // Home is the bare origin (matches its canonical, no trailing slash).
+  const abs = (path: string) => (path === "/" ? SITE_URL : `${SITE_URL}${path}`);
 
-  const guideEntries = GUIDES.map((g) => ({
-    url: `${SITE_URL}/guides/${g.slug}`,
-    lastModified: now,
-    changeFrequency: "monthly" as const,
-    priority: 0.6,
-  }));
+  /**
+   * A path is listed in English only where an English version genuinely exists
+   * — the home page, plus anything with English SEO copy. The landing pages and
+   * guides are Bulgarian prose with no translation, so their `/en` twins are
+   * noindex (see buildMetadata) and must not appear here: submitting a URL that
+   * tells crawlers not to index it is a self-contradiction Search Console
+   * reports as an error.
+   */
+  const hasEnglish = (path: string) => path === "/" || Boolean(PAGE_SEO_EN[path]);
+
+  const entry = (path: string, priority: number, freq: "weekly" | "monthly") => {
+    const languages = hasEnglish(path)
+      ? { bg: abs(path), en: abs(localePath("en", path)) }
+      : undefined;
+
+    const bg = {
+      url: abs(path),
+      lastModified: now,
+      changeFrequency: freq,
+      priority,
+      ...(languages ? { alternates: { languages } } : {}),
+    };
+    if (!languages) return [bg];
+
+    return [
+      bg,
+      {
+        url: abs(localePath("en", path)),
+        lastModified: now,
+        changeFrequency: freq,
+        // English is the secondary locale; keep it below its Bulgarian twin so
+        // the Bulgarian URL stays the one crawled first.
+        priority: Math.max(0.1, Number((priority - 0.1).toFixed(1))),
+        alternates: { languages },
+      },
+    ];
+  };
+
+  const staticEntries = staticPaths.flatMap((p) => entry(p.path, p.priority, p.freq));
+
+  const guideEntries = GUIDES.flatMap((g) =>
+    entry(`/guides/${g.slug}`, 0.6, "monthly")
+  );
 
   return [...staticEntries, ...guideEntries];
 }

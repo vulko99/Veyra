@@ -18,7 +18,14 @@ module.exports = {
       // Allowed only in the two decorative illustrations, which depict a
       // hypothetical request and are not tied to any applicant.
       files: ["**/*.ts", "**/*.tsx"],
-      excludedFiles: ["components/MatchingViz.tsx", "app/how-it-works/page.tsx"],
+      // Route files live under app/[locale]/ since locales moved into the URL.
+      // Matched with a glob rather than a literal path so the allowlist cannot
+      // silently stop applying if the segment is ever renamed again — a rule
+      // that quietly matches nothing is worse than no rule.
+      excludedFiles: [
+        "components/MatchingViz.tsx",
+        "app/**/how-it-works/page.tsx",
+      ],
       rules: {
         "no-restricted-syntax": [
           "error",

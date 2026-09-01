@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import Link from "@/components/LocaleLink";
+import { useLocaleRouter } from "@/hooks/useLocaleRouter";
 import { WIZARD_STEPS, prevStep, stepIndex } from "@/lib/wizard";
 import { useI18n } from "@/hooks/useI18n";
 import { Logo } from "./Logo";
@@ -93,7 +93,7 @@ export function WizardStep({
   nextDisabled?: boolean;
   children: React.ReactNode;
 }) {
-  const router = useRouter();
+  const router = useLocaleRouter();
   const { m } = useI18n();
   const back = prevStep(current);
 

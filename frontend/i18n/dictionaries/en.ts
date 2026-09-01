@@ -18,6 +18,7 @@ const en: Messages = {
     disclaimer:
       "Veyra is not a lender. The final decision is made by the partner.",
     optional: "optional",
+    bgOnlyContent: "This page is available in Bulgarian only.",
   },
   nav: {
     howItWorks: "How it works",
@@ -384,7 +385,7 @@ const en: Messages = {
     sections: [
       {
         heading: "Necessary cookies",
-        body: "We use minimal cookies and local storage to make the application work (for example, saving your input between steps).",
+        body: "We use minimal cookies and local storage to make the application work (for example, saving your input between steps) and to remember the language you chose, so the site opens in it. This data is not used for tracking and is not shared with partners.",
       },
       {
         heading: "Analytics cookies",

@@ -134,7 +134,7 @@ class LenderProductAdmin(admin.ModelAdmin):
         "payout_model",
         "active",
     )
-    list_filter = ("active", "product_type", "payout_model", "lender")
+    list_filter = ("active", "ad_eligible", "product_type", "payout_model", "lender")
     search_fields = ("name", "slug", "lender__name")
     prepopulated_fields = {"slug": ("name",)}
     inlines = [EligibilityRuleInline]
@@ -153,6 +153,17 @@ class LenderProductAdmin(admin.ModelAdmin):
             },
         ),
         ("Applicant criteria", {"fields": ("min_income", "min_age", "max_age")}),
+        (
+            "Advertising",
+            {
+                "fields": ("ad_eligible",),
+                "description": (
+                    "Google prohibits advertising personal loans repayable within "
+                    "60 days. Uncheck for such products so paid landing pages can "
+                    "filter them out. Does not affect matching."
+                ),
+            },
+        ),
         (
             "Routing & commercial",
             {

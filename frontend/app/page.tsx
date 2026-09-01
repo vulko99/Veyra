@@ -3,13 +3,37 @@
 import Link from "next/link";
 import { useMessages } from "@/hooks/useI18n";
 import { MatchingViz } from "@/components/MatchingViz";
+import { JsonLd } from "@/components/JsonLd";
+import { CreditWarning } from "@/components/CreditWarning";
+import { PrimaryCta } from "@/components/PrimaryCta";
+import { LegalDisclosures } from "@/components/LegalDisclosures";
 import { track } from "@/lib/analytics";
+import { SITE_URL } from "@/lib/seo";
+import { companyJsonLdFields } from "@/config/company";
+
+// Homepage structured data. FinancialService describes what Veyra does; the
+// company's own identity lives in the Organization block in the root layout.
+//
+// Deliberately NO Review or AggregateRating markup: there are no genuine,
+// verifiable reviews, and fabricating them is both a Google penalty and a
+// consumer-protection violation. Do not add it without real reviews.
+const financialServiceJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FinancialService",
+  name: "Veyra",
+  url: SITE_URL,
+  areaServed: { "@type": "Country", name: "Bulgaria" },
+  currenciesAccepted: "EUR",
+  serviceType: "Consumer credit comparison marketplace",
+  ...companyJsonLdFields(),
+};
 
 export default function HomePage() {
   const m = useMessages();
 
   return (
     <>
+      <JsonLd data={financialServiceJsonLd} />
       {/* Hero */}
       <section className="relative overflow-hidden">
         <div className="pointer-events-none absolute inset-0 -z-10 grid-lines mask-fade-b opacity-70" />
@@ -31,14 +55,7 @@ export default function HomePage() {
               {m.home.subhead}
             </p>
             <div className="mt-9 flex flex-col gap-3 min-[480px]:flex-row">
-              <Link
-                href="/apply"
-                className="btn-mint"
-                onClick={() => track("cta_click", { location: "hero" })}
-              >
-                {m.home.primaryCta}
-                <span aria-hidden>→</span>
-              </Link>
+              <PrimaryCta label={m.home.primaryCta} location="hero" />
               <Link href="/how-it-works" className="btn-ghost">
                 {m.home.secondaryCta}
               </Link>
@@ -50,6 +67,13 @@ export default function HomePage() {
             <MatchingViz />
           </div>
         </div>
+      </section>
+
+      {/* Mandatory credit warning (Consumer Credit Act, in force 20 Nov 2026).
+          Must stay here in the body flow: not the footer, not behind a click,
+          not shrunk to fine print. */}
+      <section className="container-x pb-10">
+        <CreditWarning />
       </section>
 
       {/* Trust band */}
@@ -139,11 +163,11 @@ export default function HomePage() {
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-3">
                   <span className="grid h-10 w-10 place-items-center rounded-xl border border-slate-200 bg-canvas font-display text-base font-extrabold text-ink">
-                    {String.fromCharCode(65 + i)}
+                    {i + 1}
                   </span>
                   <div>
                     <p className="font-display text-base font-bold text-ink">
-                      {m.home.viz.partner} {String.fromCharCode(65 + i)}
+                      {m.home.viz.option} {i + 1}
                     </p>
                     <p className="t-caption text-muted">{m.home.marketplace.note}</p>
                   </div>
@@ -169,6 +193,16 @@ export default function HomePage() {
         <p className="mt-5 max-w-3xl t-small text-muted/90">
           {m.home.marketplace.explainer}
         </p>
+        <p className="mt-2 max-w-3xl t-caption text-muted/70">
+          {m.home.marketplace.illustrative}
+        </p>
+      </section>
+
+      {/* Mandatory disclosures — required by the Google Ads financial
+          products policy and by ЗПК чл. 25. Plain page content: no accordion,
+          no modal, no footer-only placement. */}
+      <section className="container-x pb-20">
+        <LegalDisclosures />
       </section>
 
       {/* CTA */}
@@ -181,14 +215,7 @@ export default function HomePage() {
             {m.home.ctaBody}
           </p>
           <div className="relative mt-9">
-            <Link
-              href="/apply"
-              className="btn-mint"
-              onClick={() => track("cta_click", { location: "home_cta" })}
-            >
-              {m.home.primaryCta}
-              <span aria-hidden>→</span>
-            </Link>
+            <PrimaryCta label={m.home.primaryCta} location="home_cta" />
           </div>
         </div>
       </section>

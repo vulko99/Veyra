@@ -36,7 +36,7 @@ export function AppRail({ current }: { current: string }) {
   return (
     <aside className="hidden w-64 flex-none border-r border-white/5 lg:block">
       <div className="sticky top-0 flex h-screen flex-col px-8 py-8">
-        <Logo light height={28} />
+        <Logo light height={28} priority />
 
         <nav className="mt-12 flex-1">
           <ol className="relative">

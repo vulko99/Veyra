@@ -202,6 +202,23 @@ class LenderProduct(UUIDTimeStampedModel):
     min_age = models.PositiveIntegerField(null=True, blank=True)
     max_age = models.PositiveIntegerField(null=True, blank=True)
 
+    # Whether this product may appear on landing pages used for PAID traffic.
+    #
+    # Google prohibits advertising personal loans that require full repayment
+    # within 60 days, and Bulgarian "кредит до заплата" products are typically
+    # 30-day. Such products can still be surfaced organically — that is fine
+    # and intended — so this flag governs the ADVERTISING surface only. It is
+    # deliberately NOT consulted by the matching engine: it must never change
+    # which options a borrower is shown.
+    ad_eligible = models.BooleanField(
+        default=True,
+        help_text=(
+            "May be featured on paid-traffic landing pages. Set False for "
+            "products repayable in 60 days or less (Google Ads policy). Does "
+            "not affect matching."
+        ),
+    )
+
     # Where the applicant is sent, and how outbound clicks are tracked.
     application_url = models.URLField()
     tracking_type = models.CharField(

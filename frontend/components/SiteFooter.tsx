@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Logo } from "./Logo";
 import { useMessages } from "@/hooks/useI18n";
+import { CompanyIdentity } from "./CompanyIdentity";
 
 export function SiteFooter() {
   const m = useMessages();
@@ -40,6 +41,7 @@ export function SiteFooter() {
         { href: "/privacy", label: f.links.privacy },
         { href: "/terms", label: f.links.terms },
         { href: "/cookies", label: f.links.cookies },
+        { href: "/kak-podrezhdame-ofertite", label: f.links.ranking },
       ],
     },
   ];
@@ -73,6 +75,14 @@ export function SiteFooter() {
           </div>
         ))}
       </div>
+      {/* Legal identity of the operator — required for trust, for Google Ads
+          review (physical address), and for basic consumer protection. */}
+      <div className="border-t border-white/10">
+        <div className="container-x py-8">
+          <CompanyIdentity tone="dark" />
+        </div>
+      </div>
+
       <div className="border-t border-white/10">
         <div className="container-x flex flex-col gap-2 py-6 text-xs text-white/45 sm:flex-row sm:items-center sm:justify-between">
           <p>© {new Date().getFullYear()} Veyra. {f.rights}</p>

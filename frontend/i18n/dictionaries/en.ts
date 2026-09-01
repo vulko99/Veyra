@@ -10,8 +10,8 @@ const en: Messages = {
   },
   common: {
     brand: "Veyra",
-    startCta: "Start in 2 minutes",
-    startShort: "Start",
+    startCta: "See your options",
+    startShort: "See options",
     howItWorks: "How it works",
     back: "Back",
     continue: "Continue",
@@ -29,7 +29,7 @@ const en: Messages = {
     language: "Language",
   },
   footer: {
-    tagline: "The financial choice, made easier.",
+    tagline: "Financial decisions — clearer.",
     productTitle: "Product",
     companyTitle: "Company",
     legalTitle: "Legal",
@@ -45,6 +45,7 @@ const en: Messages = {
       privacy: "Privacy",
       terms: "Terms",
       cookies: "Cookies",
+      ranking: "How we rank offers",
     },
     rights: "All rights reserved.",
     disclaimer:
@@ -64,7 +65,9 @@ const en: Messages = {
       engine: "Matching engine",
       engineNote: "Compares published criteria",
       matches: "3 relevant options",
-      partner: "Partner",
+      option: "Option",
+      illustrative:
+        "Illustration of the mechanism. The values shown are examples, not real offers or partners.",
       compatibility: "compatibility",
     },
     trust: [
@@ -93,7 +96,7 @@ const en: Messages = {
     steps: [
       {
         title: "Tell us what you need",
-        body: "Amount, term, and a few details about you. About two minutes, no account.",
+        body: "Amount, term, and a few details about you. No registration.",
       },
       {
         title: "Veyra matches",
@@ -105,12 +108,14 @@ const en: Messages = {
       },
     ],
     ctaTitle: "Ready to see your options?",
-    ctaBody: "It takes two minutes. No obligation to continue with any partner.",
+    ctaBody: "No obligation to continue with any partner.",
     marketplace: {
       eyebrow: "Marketplace",
       title: "One application. Several options.",
       body: "One application can match the criteria of more than one partner. We show you every relevant option so you decide where to continue.",
       note: "Suitable based on the criteria you entered",
+      illustrative:
+        "Illustration. The values shown are examples, not real offers or partners.",
       cta: "Continue",
       compatibility: "compatibility",
       explainer:
@@ -181,8 +186,16 @@ const en: Messages = {
         a: "One application can match the criteria of more than one partner. Veyra shows you these options so you can decide for yourself where to continue.",
       },
       {
-        q: "Does browsing options affect anything?",
-        a: "Completing the application to see options does not itself involve a partner decision. If you continue to a partner, they run their own process.",
+        q: "Does the request affect my credit history?",
+        a: "No. Veyra does not query the ЦКР credit register and does not perform a credit assessment — we compare the information you enter against partners' published criteria. If you choose to continue to a partner, they run their own process, which may include a ЦКР check.",
+      },
+      {
+        q: "Who sees my data?",
+        a: "Veyra, and only the partners you select on the results page. We do not send your data to every partner at once and we do not sell it. Each partner is an independent data controller and is responsible for its own processing. The partner list is published on the Partners page.",
+      },
+      {
+        q: "What happens after I choose a partner?",
+        a: "We pass the selected partner the data needed to consider your request, in line with the consent you gave, and direct you to their site. From there the process is theirs: the partner may ask for further documents, makes its own assessment and takes the final decision on approval and terms. Veyra plays no part in that decision.",
       },
       {
         q: "Do you guarantee approval?",
@@ -303,6 +316,7 @@ const en: Messages = {
     intro:
       "We are happy to help with questions about how Veyra works or about your data.",
     generalTitle: "General enquiries",
+    phoneTitle: "Phone",
     dataTitle: "Data & privacy",
     emailLabel: "Email:",
     note: "Contact addresses are placeholders for the MVP and will be finalised before launch.",
@@ -310,7 +324,7 @@ const en: Messages = {
   about: {
     title: "About Veyra",
     intro:
-      "Veyra makes the financial choice easier. We connect people with relevant financial partners through one simple request.",
+      "Veyra makes the financial choice clearer. We connect people with relevant financial partners through one request.",
     sections: [
       {
         heading: "Our mission",
@@ -357,6 +371,11 @@ const en: Messages = {
       },
     ],
     cta: "Get in touch",
+    listTitle: "Partners your data may be shared with",
+    listIntro:
+      "Each of these partners is an independent data controller. Your data is passed only to the partner or partners you select on the results page.",
+    listEmpty:
+      "No partners are published yet. The list will be shown here before any data is shared with any partner.",
   },
   cookies: {
     title: "Cookie policy",
@@ -380,7 +399,7 @@ const en: Messages = {
   apply: {
     intro: {
       h1: "Let's find options for you",
-      sub: "About two minutes. No account and no obligation to continue with any partner.",
+      sub: "No account and no obligation to continue with any partner.",
       bullets: [
         "One short application",
         "Relevant options based on what you enter",
@@ -443,6 +462,9 @@ const en: Messages = {
         platformDesc: "Required so we can process your request.",
         partnerLabel:
           "I agree that Veyra may share my application information with financial partners that match my application criteria, so they can assess whether they can offer me financing",
+        partnerListPrefix: "See who the partners are:",
+        partnerListLink: "partner list",
+        ageNotice: "The service is intended for people aged 18 and over.",
         partnerDesc:
           "We show the matching options and you decide which partners to continue with. Required so we can show you options.",
         marketingLabel: "I want to receive useful updates from Veyra",
@@ -486,9 +508,112 @@ const en: Messages = {
     cta: "See relevant options",
     disclaimer:
       "Indicative annuity estimate. Not an offer and excludes fees or APR. Final terms are set by the respective lender.",
+    aprCapRef: "Statutory APR cap in Bulgaria:",
     seoHeading: "How to read the result",
     seoBody:
       "The monthly payment is what you pay each month. Total cost is the difference between the amount repaid and the amount borrowed. When comparing real offers, look at the APR, which also includes fees.",
+  },
+  // --- Mandatory legal / regulatory strings --------------------------------
+  // See the Bulgarian catalog for the authoritative comment. Labels only.
+  // See the Bulgarian catalog for the authoritative comment (ЗЗП чл. 47а).
+  ranking: {
+    eyebrow: "Transparency",
+    title: "How we rank offers",
+    intro:
+      "Veyra orders the options you see, so we think it is right to explain exactly which parameters determine that order — and where a commercial interest exists.",
+    paramsTitle: "What determines the order",
+    paramsIntro:
+      "Every suitable option is given a compatibility score from 0 to 100, calculated from the following factors with the weights shown:",
+    params: [
+      {
+        label: "Requested amount (25%)",
+        body: "How well the amount you requested sits within the product's range. An amount near the middle of the range scores higher than one at the very edge.",
+      },
+      {
+        label: "Requested term (20%)",
+        body: "The same logic for the repayment term against the product's range.",
+      },
+      {
+        label: "Income against the minimum (20%)",
+        body: "How far the income you stated exceeds the product's published minimum.",
+      },
+      {
+        label: "Employment type (20%)",
+        body: "How the employment type you stated relates to the product's requirements.",
+      },
+      {
+        label: "Product suitability (15%)",
+        body: "How well the product type matches the purpose you stated.",
+      },
+    ],
+    orderTitle: "The display order",
+    orderBody:
+      "Options are ordered by compatibility score, highest first.",
+    commercialTitle: "Do our commercial arrangements influence this",
+    commercialBody:
+      "Yes, but only on a tie. When two options receive the same compatibility score, their order is decided by a priority value Veyra sets for each partner and product. That value may reflect our commercial agreement with the partner. It cannot outrank a higher compatibility score — it only orders equal results.",
+    moneyTitle: "How Veyra is paid",
+    moneyBody:
+      "We are paid by the partners, not by you. If you continue to a partner and are subsequently approved, the partner may pay us a commission. The service is free for you and there is no mark-up on the partner's terms.",
+    notLenderTitle: "Veyra is not a lender",
+    notLenderBody:
+      "We do not lend money and do not make approval decisions. The compatibility score reflects a match against a partner's published criteria — it is not a credit score and not a probability of approval. The final decision and terms are set entirely by the relevant partner.",
+    notUsedTitle: "What we do not use",
+    notUsed: [
+      "We do not perform a credit assessment and do not query the ЦКР credit register.",
+      "We do not use hidden factors beyond those listed above.",
+      "We do not accept payment to place an option above an objectively more suitable one.",
+    ],
+    footnote:
+      "If any of these parameters change, this page is updated alongside them.",
+  },
+  cookieBanner: {
+    title: "Cookies",
+    body: "We use essential cookies to make the site work. With your consent we would also use analytics cookies to improve it. Without consent, no analytics scripts are loaded at all.",
+    policyLink: "Cookie policy",
+    accept: "Accept analytics",
+    reject: "Essential only",
+  },
+  prelaunch: {
+    cta: "Credit calculator",
+    eyebrow: "Coming soon",
+    title: "We are not accepting requests yet.",
+    body:
+      "Veyra is preparing to launch. Until our partner agreements are finalised we are not accepting credit requests.",
+    noData:
+      "We collect no personal data on this page — there is no form, and we are not asking for an email or phone number.",
+    meanwhileTitle: "In the meantime",
+    calculatorCta: "Work out a monthly payment",
+    guidesCta: "Read the guides",
+    notALender: "Veyra is not a lender. We do not lend money or make approval decisions.",
+  },
+  legal: {
+    warningAria: "Mandatory warning",
+    notALender: "Veyra is not a lender. The final decision is made by the partner.",
+    freeForYou: "The service is free for you. We are paid by the partners.",
+    minAge: "The service is available to people aged 18 and over.",
+    disclosuresTitle: "Mandatory information",
+    disclosuresIntro:
+      "Information about our partners' credit products. Veyra is not a lender — the specific terms are set by the relevant partner.",
+    termRangeLabel: "Repayment period",
+    termRangeValue: "from {min} to {max} months",
+    maxAprLabel: "Maximum APR",
+    aprCapLabel: "Statutory APR cap",
+    aprCapNote: "5 x the statutory default interest rate. Reset on 1 January and 1 July.",
+    feesLabel: "Applicable fees",
+    addressLabel: "Registered address",
+    representativeTitle: "Representative example",
+    representativeExample:
+      "Representative example: for an amount of {amount} EUR, a term of {term} months, a fixed annual borrowing rate of {rate}%, APR {apr}%, total amount repayable {total} EUR, monthly instalment {monthly} EUR.",
+    unfilledNotice:
+      "MANDATORY INFORMATION NOT FILLED IN — this page must not be published or advertised until the values are supplied. See TODO-LEGAL.md.",
+    identityTitle: "Company identification",
+    companyLabel: "Company",
+    eikLabel: "Company no.",
+    vatLabel: "VAT no.",
+    addressShortLabel: "Address",
+    phoneLabel: "Phone",
+    emailLabel: "Email",
   },
   results: {
     eyebrow: "Results",

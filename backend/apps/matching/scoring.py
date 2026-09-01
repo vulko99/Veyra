@@ -11,6 +11,13 @@ from decimal import Decimal
 from django.conf import settings
 
 # Default weights sum to 100.
+#
+# PUBLISHED: these weights are disclosed to consumers at
+# /kak-podrezhdame-ofertite (ЗЗП чл. 47а requires the main ranking parameters to
+# be published). If you change them here — or override SCORING_WEIGHTS in
+# settings — update frontend/i18n/dictionaries/bg.ts -> ranking.params to match.
+# A published methodology that no longer describes the code is a compliance
+# problem, not a stale comment.
 DEFAULT_WEIGHTS = {
     "amount": 25,
     "term": 20,

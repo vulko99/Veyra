@@ -9,6 +9,7 @@ import { track } from "@/lib/analytics";
 import { useI18n } from "@/hooks/useI18n";
 import { useApplication } from "@/hooks/useApplication";
 import { AppShell } from "@/components/WizardStep";
+import { CreditWarning } from "@/components/CreditWarning";
 import type { Phase2Application, Phase2Match } from "@/types";
 
 /** Compact dark matching motif: request → engine → matches, animated routes.
@@ -186,6 +187,12 @@ function ResultsInner() {
             <p className="mx-auto mt-3 max-w-lg text-appmuted">{r.successSubhead}</p>
           </div>
 
+          {/* Mandatory credit warning — required on any view that advertises
+              credit, which includes the results/comparison view. */}
+          <div className="reveal mt-8">
+            <CreditWarning tone="dark" />
+          </div>
+
           <div className="reveal mt-8">
             <p className="text-xs uppercase tracking-[0.14em] text-appmuted">
               {r.successSelected}
@@ -239,6 +246,21 @@ function ResultsInner() {
           </h1>
           <p className="mt-3 text-appmuted">
             {matches && matches.length === 0 ? r.emptySubhead : r.subhead}
+          </p>
+
+          {/* Mandatory credit warning — required on any view that advertises
+              credit, which includes the results/comparison view. */}
+          <CreditWarning tone="dark" className="mt-6" />
+
+          {/* ЗЗП чл. 47а — the ranking disclosure has to be reachable from the
+              ranked view itself, not only from the footer. */}
+          <p className="mt-4 text-sm">
+            <Link
+              href="/kak-podrezhdame-ofertite"
+              className="font-medium text-mint-400 underline underline-offset-4 hover:text-mint"
+            >
+              {m.footer.links.ranking}
+            </Link>
           </p>
 
           {matches && matches.length > 0 && (

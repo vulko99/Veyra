@@ -38,7 +38,7 @@ export function AppShell({
           <header className="px-5 pt-6 sm:px-10">
             <div className="flex items-center justify-between">
               <span className="lg:hidden">
-                <Logo light />
+                <Logo light priority />
               </span>
               <span className="hidden text-sm font-medium text-appmuted lg:block">
                 {label}

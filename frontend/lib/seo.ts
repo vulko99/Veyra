@@ -1,9 +1,24 @@
 import type { Metadata } from "next";
 
-// Single source of truth for the deployed origin. Set NEXT_PUBLIC_SITE_URL to
-// the production domain so canonical/OG/sitemap URLs are absolute and correct.
+// Single source of truth for the deployed origin. Everything absolute —
+// canonical tags, OG URLs, sitemap entries, robots — derives from this one
+// value, so moving to a custom domain is an environment change, not a code
+// change. The target domain is deliberately NOT hardcoded: advertising a
+// domain that does not exist yet points crawlers at a dead host.
+//
+// Resolution order:
+//   1. NEXT_PUBLIC_SITE_URL — the production domain, set at deploy time.
+//   2. URL — injected by Netlify at build time (the site's primary URL), so a
+//      preview or *.netlify.app deploy describes itself honestly instead of
+//      claiming to be the production domain.
+//   3. localhost — local development only.
+//
+// Server-only: every consumer of SITE_URL renders on the server, which is what
+// makes the non-NEXT_PUBLIC fallback safe. Keep it that way.
 export const SITE_URL = (
-  process.env.NEXT_PUBLIC_SITE_URL || "https://veyra.bg"
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  process.env.URL ||
+  "http://localhost:3000"
 ).replace(/\/$/, "");
 
 type Seo = { title: string; description: string };
@@ -57,6 +72,11 @@ export const PAGE_SEO: Record<string, Seo> = {
     title: "Общи условия | Veyra",
     description: "Общите условия за ползване на Veyra.",
   },
+  "/kak-podrezhdame-ofertite": {
+    title: "Как подреждаме офертите | Veyra",
+    description:
+      "По какви параметри Veyra подрежда показаните възможности, влияят ли търговските договорки върху реда и как печелим. Пълна прозрачност на класирането.",
+  },
   "/kalkulator": {
     title: "Кредитен калкулатор — месечна вноска и обща цена | Veyra",
     description:
@@ -96,6 +116,21 @@ export const PAGE_SEO: Record<string, Seo> = {
     title: "Кредит без трудов договор — възможности | Veyra",
     description:
       "Самоосигуряващи се, свободни професии и пенсионери също имат доказуем доход. Veyra сравнява данните с критериите на партньорите. Одобрението е на кредитора.",
+  },
+  "/potrebitelski-kredit": {
+    title: "Потребителски кредит — сравни условия | Veyra",
+    description:
+      "Какво определя цената на потребителския кредит, какво преценяват кредиторите и на какво да обърнеш внимание преди да подпишеш. Veyra не е кредитор.",
+  },
+  "/kredit-za-avtomobil": {
+    title: "Кредит за автомобил — потребителски, автокредит или лизинг | Veyra",
+    description:
+      "Трите начина да финансираш автомобил и какво ги различава. Какво да сравниш освен лихвата. Veyra сравнява възможности — решението е на кредитора.",
+  },
+  "/kredit-za-remont": {
+    title: "Кредит за ремонт на жилище — как да прецениш | Veyra",
+    description:
+      "Как да определиш реалистична сума за ремонт, как да съобразиш срока и какво да сравниш между офертите. Veyra не е кредитор — сравняваме възможности.",
   },
   "/obedinyavane-na-zadalzheniya": {
     title: "Обединяване на задължения — как работи консолидацията | Veyra",

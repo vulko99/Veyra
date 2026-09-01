@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { Logo } from "./Logo";
 import { LanguageToggle } from "./LanguageToggle";
 import { useMessages } from "@/hooks/useI18n";
-import { track } from "@/lib/analytics";
+import { PrimaryCta } from "./PrimaryCta";
 
 // The application flow is a distinct dark product experience with its own chrome.
 function isAppFlow(pathname: string | null): boolean {
@@ -45,7 +45,7 @@ export function SiteHeader() {
       }`}
     >
       <div className="container-x flex h-[68px] items-center justify-between">
-        <Logo />
+        <Logo priority />
         <nav className="hidden items-center gap-1 md:flex">
           {nav.map((item) => (
             <Link
@@ -57,13 +57,12 @@ export function SiteHeader() {
             </Link>
           ))}
           <LanguageToggle className="ml-2" />
-          <Link
-            href="/apply"
+          <PrimaryCta
+            label={m.common.startShort}
             className="btn-mint ml-2 px-5 py-2.5 text-sm"
-            onClick={() => track("cta_click", { location: "header" })}
-          >
-            {m.common.startShort}
-          </Link>
+            location="header"
+            arrow={false}
+          />
         </nav>
         {/* Mobile: the switcher sits beside the menu button rather than inside
             the panel, so it is reachable without opening the menu first. */}
@@ -100,9 +99,13 @@ export function SiteHeader() {
                 {item.label}
               </Link>
             ))}
-            <Link href="/apply" className="btn-mint mt-2" onClick={() => setOpen(false)}>
-              {m.common.startShort}
-            </Link>
+            <PrimaryCta
+              label={m.common.startShort}
+              className="btn-mint mt-2"
+              location="header_mobile"
+              arrow={false}
+              onNavigate={() => setOpen(false)}
+            />
           </div>
         </nav>
       )}

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect } from "react";
 import { useMessages } from "@/hooks/useI18n";
+import { PrimaryCta } from "@/components/PrimaryCta";
 
 export default function HowItWorksPage() {
   const m = useMessages();
@@ -57,7 +58,7 @@ export default function HowItWorksPage() {
               {[0, 1, 2].map((i) => (
                 <div key={i} className="card-navy px-2 py-3 text-center">
                   <span className="text-[0.72rem] font-semibold text-appwhite">
-                    {viz.partner} {String.fromCharCode(65 + i)}
+                    {viz.option} {i + 1}
                   </span>
                 </div>
               ))}
@@ -76,10 +77,7 @@ export default function HowItWorksPage() {
         </div>
 
         <div className="mt-14">
-          <Link href="/apply" className="btn-mint">
-            {m.common.startCta}
-            <span aria-hidden>→</span>
-          </Link>
+          <PrimaryCta label={m.common.startCta} location="how_it_works" />
         </div>
       </div>
     </div>

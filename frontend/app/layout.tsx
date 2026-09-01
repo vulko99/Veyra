@@ -6,11 +6,13 @@ import { I18nProvider } from "@/hooks/useI18n";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { Analytics } from "@/components/Analytics";
+import { CookieConsent } from "@/components/CookieConsent";
 import { RouteAnalytics } from "@/components/RouteAnalytics";
 import { JsonLd } from "@/components/JsonLd";
 import { defaultLocale } from "@/i18n/config";
 import { getMessages } from "@/i18n";
 import { SITE_URL } from "@/lib/seo";
+import { companyJsonLdFields } from "@/config/company";
 
 const display = Manrope({
   subsets: ["latin", "cyrillic"],
@@ -46,7 +48,7 @@ export const metadata: Metadata = {
         url: "/og.png",
         width: 1200,
         height: 630,
-        alt: "Veyra — една заявка, повече възможности",
+        alt: "Veyra — една заявка, прозрачно сравнение на възможности",
       },
     ],
   },
@@ -55,6 +57,14 @@ export const metadata: Metadata = {
     title: messages.meta.title,
     description: messages.meta.description,
     images: ["/og.png"],
+  },
+  // Search Console / Bing verification, supplied per-environment so no token
+  // is committed. Either may be absent.
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+    other: process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION
+      ? { "msvalidate.01": process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION }
+      : undefined,
   },
 };
 
@@ -66,7 +76,10 @@ const orgJsonLd = {
   url: SITE_URL,
   logo: `${SITE_URL}/veyra-logo.png`,
   description: messages.meta.description,
-  slogan: "Една заявка. Повече възможности.",
+  slogan: "Една заявка. Прозрачно сравнение.",
+  // Legal identity, but only the fields actually supplied — a placeholder
+  // ЕИК or address must never reach structured data.
+  ...companyJsonLdFields(),
 };
 const siteJsonLd = {
   "@context": "https://schema.org",
@@ -92,6 +105,7 @@ export default function RootLayout({
             <main className="flex-1">{children}</main>
             <SiteFooter />
           </ApplicationProvider>
+          <CookieConsent />
         </I18nProvider>
         <Analytics />
         <RouteAnalytics />

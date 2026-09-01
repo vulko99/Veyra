@@ -160,7 +160,9 @@ class ConsentView(APIView):
 
         ip_hash = hash_value(client_ip(request))
         ua_hash = hash_value(request.META.get("HTTP_USER_AGENT", ""))
-        version = settings.PRIVACY_POLICY_VERSION
+        # The wording version, not the policy version: record_consent stores
+        # PRIVACY_POLICY_VERSION and TERMS_VERSION separately.
+        version = settings.CONSENT_TEXT_VERSION
 
         for field, consent_type in self._MAP.items():
             record_consent(

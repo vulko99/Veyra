@@ -6,7 +6,8 @@ import {
   REPRESENTATIVE_EXAMPLE,
 } from "@/config/disclosures";
 import { COMPANY } from "@/config/company";
-import { formatAprCap, isTodo } from "@/config/legal";
+import { formatAprCap, HIDE_UNFILLED, isTodo } from "@/config/legal";
+import { TodoMark } from "@/components/TodoMark";
 import { interpolate } from "@/i18n";
 import { useMessages } from "@/hooks/useI18n";
 
@@ -59,6 +60,17 @@ export function LegalDisclosures({
   // "unfilled" banner has to account for it as well.
   const incomplete = DISCLOSURES_INCOMPLETE || isTodo(COMPANY.address);
 
+  const hasTodo = (v: string) => /\[\[TODO:[A-Z_]+\]\]/.test(v);
+  const allRows = [
+    { label: m.termRangeLabel, value: termRange },
+    { label: m.maxAprLabel, value: DISCLOSURES.maxAPR },
+    { label: m.aprCapLabel, value: formatAprCap(), note: m.aprCapNote },
+    { label: m.feesLabel, value: DISCLOSURES.fees },
+    { label: m.addressLabel, value: COMPANY.address },
+  ];
+  const rows = HIDE_UNFILLED ? allRows.filter((r) => !hasTodo(r.value)) : allRows;
+  const showExample = !HIDE_UNFILLED || !hasTodo(example);
+
   const surface = dark
     ? "border-appborder bg-appsurface text-appwhite"
     : "border-slate-200 bg-white text-ink";
@@ -75,34 +87,46 @@ export function LegalDisclosures({
       </h2>
       <p className={`mt-2 t-body ${label}`}>{m.disclosuresIntro}</p>
 
-      {incomplete && (
-        <p className="mt-4 rounded-xl border-2 border-red-500 bg-red-50 px-4 py-3 t-body font-bold text-red-900">
-          {m.unfilledNotice}
-        </p>
-      )}
+      {incomplete &&
+        (HIDE_UNFILLED ? (
+          // Rows that are not ready are omitted above, so this states plainly
+          // that the block is not complete yet. Without it the panel would
+          // read as finished when it is not. The build guard, not this line,
+          // is what actually stops it reaching production.
+          <p className={`mt-3 t-small ${label}`}>{m.pendingNotice}</p>
+        ) : (
+          <p className="mt-4 rounded-xl border-2 border-red-500 bg-red-50 px-4 py-3 t-body font-bold text-red-900">
+            {m.unfilledNotice}
+          </p>
+        ))}
 
-      {/* Required disclosures 1-5. Full contrast, body size — never fine print. */}
+      {/* Required disclosures 1-5. Full contrast, body size — never fine print.
+          In the local preview mode a row whose value is not yet supplied is
+          omitted instead of showing a gap; the statutory APR cap is a real
+          published figure and always remains. */}
       <dl className={`mt-6 divide-y ${rule} border-t ${rule}`}>
-        <Row label={m.termRangeLabel} value={termRange} dark={dark} />
-        <Row label={m.maxAprLabel} value={DISCLOSURES.maxAPR} dark={dark} />
-        <Row
-          label={m.aprCapLabel}
-          value={formatAprCap()}
-          note={m.aprCapNote}
-          dark={dark}
-        />
-        <Row label={m.feesLabel} value={DISCLOSURES.fees} dark={dark} />
-        <Row label={m.addressLabel} value={COMPANY.address} dark={dark} />
+        {rows.map((row) => (
+          <Row
+            key={row.label}
+            label={row.label}
+            value={row.value}
+            note={row.note}
+            dark={dark}
+          />
+        ))}
       </dl>
 
       {/* Representative example — ЗПК чл. 25. Same type size and contrast as
-          the copy around it, by law. */}
-      <div className={`mt-7 border-t pt-6 ${rule}`}>
-        <h3 className="t-h3">{m.representativeTitle}</h3>
-        <p className="mt-2 t-body">
-          <Value value={example} dark={dark} />
-        </p>
-      </div>
+          the copy around it, by law. Its six values are supplied by a partner,
+          so before any partner is signed there is nothing to show. */}
+      {showExample && (
+        <div className={`mt-7 border-t pt-6 ${rule}`}>
+          <h3 className="t-h3">{m.representativeTitle}</h3>
+          <p className="mt-2 t-body">
+            <Value value={example} dark={dark} />
+          </p>
+        </div>
+      )}
 
       <div className={`mt-6 space-y-1.5 border-t pt-5 ${rule} t-body ${label}`}>
         <p>{m.notALender}</p>
@@ -152,12 +176,7 @@ function Value({ value, dark }: { value: string; dark: boolean }) {
     <>
       {parts.map((part, i) =>
         isTodo(part) ? (
-          <mark
-            key={i}
-            className="mx-0.5 rounded bg-red-500 px-1.5 py-0.5 font-mono text-[0.8em] font-bold text-white"
-          >
-            {part}
-          </mark>
+          <TodoMark key={i} value={part} />
         ) : (
           <span key={i} className={dark ? "text-appwhite" : "text-ink"}>
             {part}

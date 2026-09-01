@@ -14,7 +14,7 @@ export default function ResponsibleBorrowingPage() {
   return (
     <div>
       {/* dark editorial hero */}
-      <section className="surface-dark relative overflow-hidden">
+      <section className="under-nav surface-dark relative overflow-hidden">
         <div className="pointer-events-none absolute inset-0 opacity-[0.06] grid-lines" />
         <div className="container-x max-w-4xl py-20 sm:py-28">
           <div className="reveal">
@@ -30,7 +30,7 @@ export default function ResponsibleBorrowingPage() {
       </section>
 
       {/* light callouts */}
-      <section className="relative">
+      <section className="reveal-scroll relative">
         <div className="pointer-events-none absolute inset-0 -z-10 atmos-light" />
         <div className="container-x max-w-4xl py-16">
           <h2 className="t-h2 text-ink">{r.calloutsTitle}</h2>
@@ -51,7 +51,7 @@ export default function ResponsibleBorrowingPage() {
       </section>
 
       {/* editorial detail */}
-      <section className="container-x max-w-3xl pb-24">
+      <section className="reveal-scroll container-x max-w-3xl pb-24">
         <div className="space-y-8">
           {r.sections.map((s) => (
             <div key={s.heading} className="border-t border-slate-200/80 pt-7">

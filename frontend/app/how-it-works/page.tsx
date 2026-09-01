@@ -15,20 +15,21 @@ export default function HowItWorksPage() {
   }, [m.howItWorks.title]);
 
   return (
-    <div className="relative">
+    <div className="under-nav relative">
       <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-72 grid-lines mask-fade-b opacity-60" />
       <div className="pointer-events-none absolute inset-0 -z-10 atmos-light" />
 
       <div className="container-x max-w-5xl py-20">
         {/* header */}
+        {/* No eyebrow: it read "Veyra", which the logo two rows above already
+            says. An eyebrow should name the topic, not the brand. */}
         <div className="reveal max-w-2xl">
-          <span className="eyebrow">{m.common.brand}</span>
-          <h1 className="t-h1 mt-4 text-ink">{m.howItWorks.title}</h1>
-          <p className="mt-5 t-body max-w-xl text-muted">{m.howItWorks.intro}</p>
+          <h1 className="t-h1 text-ink">{m.howItWorks.title}</h1>
+          <p className="mt-5 t-body max-w-[52ch] text-muted">{m.howItWorks.intro}</p>
         </div>
 
         {/* journey 01 / 02 / 03 */}
-        <div className="mt-16 grid gap-6 md:grid-cols-3">
+        <div className="reveal-scroll mt-16 grid gap-6 md:grid-cols-3">
           {j.map((step, i) => (
             <div key={step.title} className="relative">
               {i < j.length - 1 && (
@@ -48,7 +49,7 @@ export default function HowItWorksPage() {
         </div>
 
         {/* matching diagram — dark product moment */}
-        <div className="surface-dark mt-10 overflow-hidden rounded-[2rem] px-6 py-12 sm:px-12">
+        <div className="reveal-scroll surface-dark mt-10 overflow-hidden rounded-[2rem] px-6 py-12 sm:px-12">
           <div className="mx-auto flex max-w-lg flex-col items-center gap-0 text-center">
             <Node label={viz.request} sub={viz.requestValue} tone="glass" />
             <Connector />
@@ -67,13 +68,30 @@ export default function HowItWorksPage() {
         </div>
 
         {/* detail sections as outlined cards */}
-        <div className="mt-16 grid gap-5 sm:grid-cols-2">
-          {m.howItWorks.sections.map((s) => (
-            <div key={s.heading} className="card-outline p-6">
-              <h3 className="t-h3 text-ink">{s.heading}</h3>
-              <p className="mt-2 t-small text-muted">{s.body}</p>
-            </div>
-          ))}
+        {/* Five items in two columns left the last card stranded beside an
+            empty cell. An odd count gives the final card the full width, so
+            the grid always has exactly as many cells as there is content. */}
+        <div className="reveal-scroll mt-16 grid gap-5 sm:grid-cols-2">
+          {m.howItWorks.sections.map((s, i) => {
+            const wide =
+              m.howItWorks.sections.length % 2 === 1 &&
+              i === m.howItWorks.sections.length - 1;
+            return (
+              <div
+                key={s.heading}
+                className={`card-outline p-6 ${
+                  wide ? "bg-mint-50/70 sm:col-span-2 sm:p-7" : ""
+                }`}
+              >
+                <h3 className="t-h3 text-ink">{s.heading}</h3>
+                <p
+                  className={`mt-2 t-small text-muted ${wide ? "max-w-[52ch]" : ""}`}
+                >
+                  {s.body}
+                </p>
+              </div>
+            );
+          })}
         </div>
 
         <div className="mt-14">

@@ -605,6 +605,13 @@ export const bg = {
   },
   legal: {
     warningAria: "Задължително предупреждение",
+    // The warning in the reader's own language, used as the leading line in
+    // non-Bulgarian locales. Empty here because in Bulgarian the statutory
+    // sentence is the leading line and needs no second version. Setting this
+    // never removes CREDIT_WARNING: that string is still rendered beneath,
+    // labelled by warningGlossNote as the binding wording.
+    warningGloss: "",
+    warningGlossNote: "",
     notALender: "Veyra не е кредитор. Окончателното решение се взема от партньора.",
     freeForYou: "Услугата е безплатна за теб. Получаваме възнаграждение от партньорите.",
     minAge: "Услугата е достъпна за лица над 18 години.",
@@ -623,6 +630,12 @@ export const bg = {
       "Представителен пример: при сума {amount} €, срок {term} месеца, фиксиран годишен лихвен процент {rate}%, ГПР {apr}%, обща дължима сума {total} €, месечна вноска {monthly} €.",
     unfilledNotice:
       "НЕЗАПЪЛНЕНА ЗАДЪЛЖИТЕЛНА ИНФОРМАЦИЯ — страницата не може да бъде публикувана или рекламирана, преди стойностите да бъдат въведени. Виж TODO-LEGAL.md.",
+    // Shown in place of a value that is not yet available, when the quiet
+    // preview mode is on. Honest for a company before registration and before
+    // partners are signed: it states that the value is pending, and never
+    // stands in a number that has not been decided.
+    pendingNotice:
+      "Дружеството е в процес на регистрация. Задължителните стойности ще бъдат публикувани преди пускането на сайта.",
     identityTitle: "Идентификация на дружеството",
     companyLabel: "Дружество",
     eikLabel: "ЕИК",

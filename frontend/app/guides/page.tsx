@@ -7,7 +7,7 @@ export const metadata: Metadata = buildMetadata("/guides");
 
 export default function GuidesIndex() {
   return (
-    <div className="relative">
+    <div className="under-nav relative">
       <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-64 grid-lines mask-fade-b opacity-50" />
       <div className="pointer-events-none absolute inset-0 -z-10 atmos-light" />
       <div className="container-x max-w-3xl py-16 sm:py-20">

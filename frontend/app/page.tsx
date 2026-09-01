@@ -34,18 +34,21 @@ export default function HomePage() {
   return (
     <>
       <JsonLd data={financialServiceJsonLd} />
-      {/* Hero */}
-      <section className="relative overflow-hidden">
+      {/* Hero.
+          Pulled up by the height of the navigation bar and given that height
+          back as padding, so the hero's gradients and grid run underneath the
+          glass instead of stopping at a hard edge below it. The bar then has
+          something to refract; content still starts below it. */}
+      <section className="under-nav relative overflow-hidden">
         <div className="pointer-events-none absolute inset-0 -z-10 grid-lines mask-fade-b opacity-70" />
         <div className="pointer-events-none absolute -right-40 -top-40 -z-10 h-[36rem] w-[36rem] rounded-full bg-mint/10 blur-3xl" />
         <div className="pointer-events-none absolute -left-40 top-40 -z-10 h-[30rem] w-[30rem] rounded-full bg-electric/10 blur-3xl" />
 
         <div className="container-x grid items-center gap-14 pb-16 pt-16 lg:grid-cols-[1.05fr_0.95fr] lg:pb-24 lg:pt-24">
           <div className="reveal">
-            <span className="eyebrow">
-              <span className="h-1.5 w-1.5 rounded-full bg-mint" />
-              {m.home.badge}
-            </span>
+            {/* The dot carried no state, only decoration. The label reads the
+                same without it and the mint accent is already doing that job. */}
+            <span className="eyebrow">{m.home.badge}</span>
             <h1 className="mt-6 font-display text-[2.9rem] font-extrabold leading-[1.02] tracking-tightest text-ink sm:text-6xl">
               {m.home.h1a}
               <br />
@@ -54,9 +57,20 @@ export default function HomePage() {
             <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted">
               {m.home.subhead}
             </p>
-            <div className="mt-9 flex flex-col gap-3 min-[480px]:flex-row">
-              <PrimaryCta label={m.home.primaryCta} location="hero" />
-              <Link href="/how-it-works" className="btn-ghost">
+            {/* Side by side at every width, including mobile. flex-wrap would
+                let them stack again once the Bulgarian labels stop fitting, so
+                the row never wraps and the buttons take tighter padding and a
+                smaller label on narrow screens instead. */}
+            <div className="mt-9 flex flex-row flex-nowrap items-center gap-2 sm:gap-3">
+              <PrimaryCta
+                label={m.home.primaryCta}
+                location="hero"
+                className="btn-mint whitespace-nowrap px-3 text-[0.8rem] min-[400px]:px-4 min-[400px]:text-sm sm:px-6 sm:text-[0.95rem]"
+              />
+              <Link
+                href="/how-it-works"
+                className="btn-ghost whitespace-nowrap px-3 text-[0.8rem] min-[400px]:px-4 min-[400px]:text-sm sm:px-6 sm:text-[0.95rem]"
+              >
                 {m.home.secondaryCta}
               </Link>
             </div>
@@ -72,12 +86,12 @@ export default function HomePage() {
       {/* Mandatory credit warning (Consumer Credit Act, in force 20 Nov 2026).
           Must stay here in the body flow: not the footer, not behind a click,
           not shrunk to fine print. */}
-      <section className="container-x pb-10">
+      <section className="reveal-scroll container-x pb-10">
         <CreditWarning />
       </section>
 
       {/* Trust band */}
-      <section className="border-y border-slate-200/70 bg-white">
+      <section className="reveal-scroll border-y border-slate-200/70 bg-white">
         <div className="container-x grid divide-y divide-slate-200/70 py-4 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
           {m.home.trust.map((t) => (
             <div key={t.label} className="flex items-baseline gap-3 px-2 py-5 sm:justify-center">
@@ -91,7 +105,7 @@ export default function HomePage() {
       </section>
 
       {/* Features */}
-      <section className="container-x py-24">
+      <section className="reveal-scroll container-x py-24">
         <div className="max-w-2xl">
           <span className="eyebrow">{m.home.featuresTitle}</span>
           <h2 className="mt-4 text-3xl font-bold tracking-tight text-ink sm:text-[2.6rem]">
@@ -115,7 +129,7 @@ export default function HomePage() {
       </section>
 
       {/* Steps — dark dual-surface panel (product moment inside marketing) */}
-      <section className="container-x py-20">
+      <section className="reveal-scroll container-x py-20">
         <div className="surface-dark relative overflow-hidden rounded-[2rem] px-6 py-14 sm:px-12 sm:py-16">
           <div className="max-w-2xl">
             <span className="a-eyebrow">{m.home.stepsTitle}</span>
@@ -143,10 +157,12 @@ export default function HomePage() {
       </section>
 
       {/* Marketplace — one application, several scored opportunities */}
-      <section className="container-x py-20">
+      <section className="reveal-scroll container-x py-20">
+        {/* No eyebrow here: "Маркетплейс" only repeats the hero badge, and the
+            headline already says what the section is. Four eyebrows across
+            eight sections reads as a template; three is the ceiling. */}
         <div className="max-w-2xl">
-          <span className="eyebrow">{m.home.marketplace.eyebrow}</span>
-          <h2 className="mt-4 text-3xl font-bold tracking-tight text-ink sm:text-[2.6rem]">
+          <h2 className="text-3xl font-bold tracking-tight text-ink sm:text-[2.6rem]">
             {m.home.marketplace.title}
           </h2>
           <p className="mt-4 leading-relaxed text-muted">{m.home.marketplace.body}</p>
@@ -174,14 +190,19 @@ export default function HomePage() {
                 </div>
               </div>
 
-              <div className="mt-6 flex items-end justify-between">
-                <div className="flex items-baseline gap-1.5">
+              {/* Neither side could shrink here, so at three-column width the
+                  pill overflowed and the card's overflow-hidden (needed for the
+                  brand rail) clipped it. The score group may now shrink and its
+                  label wrap; the pill never shrinks below its text; and the row
+                  wraps rather than overflowing when even that is too tight. */}
+              <div className="mt-6 flex flex-wrap items-end justify-between gap-x-3 gap-y-2">
+                <div className="flex min-w-0 flex-wrap items-baseline gap-x-1.5">
                   <span className="font-display text-3xl font-extrabold brand-gradient-text">
                     {score}%
                   </span>
                   <span className="text-sm text-muted">{m.home.marketplace.compatibility}</span>
                 </div>
-                <span className="inline-flex items-center gap-1 rounded-full bg-ink px-3.5 py-1.5 text-xs font-semibold text-white transition-transform group-hover:translate-x-0.5">
+                <span className="inline-flex flex-none items-center gap-1 whitespace-nowrap rounded-full bg-ink px-3.5 py-1.5 text-xs font-semibold text-white transition-transform group-hover:translate-x-0.5">
                   {m.home.marketplace.cta}
                   <span aria-hidden>→</span>
                 </span>
@@ -201,12 +222,12 @@ export default function HomePage() {
       {/* Mandatory disclosures — required by the Google Ads financial
           products policy and by ЗПК чл. 25. Plain page content: no accordion,
           no modal, no footer-only placement. */}
-      <section className="container-x pb-20">
+      <section className="reveal-scroll container-x pb-20">
         <LegalDisclosures />
       </section>
 
       {/* CTA */}
-      <section className="container-x pb-4">
+      <section className="reveal-scroll container-x pb-4">
         <div className="surface-dark relative overflow-hidden rounded-[2rem] px-8 py-16 text-center sm:px-16">
           <h2 className="relative mx-auto max-w-2xl t-h1 text-white">
             {m.home.ctaTitle}

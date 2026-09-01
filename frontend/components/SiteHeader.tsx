@@ -17,7 +17,27 @@ export function SiteHeader() {
   const m = useMessages();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [closing, setClosing] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+
+  // The panel has to stay mounted while it animates out, so closing is a state
+  // of its own rather than an immediate unmount. Under reduced motion the exit
+  // animation is collapsed, so it closes at once instead of waiting on a
+  // transition that will not be seen.
+  const closeMenu = () => {
+    const reduce =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) {
+      setOpen(false);
+      return;
+    }
+    setClosing(true);
+    window.setTimeout(() => {
+      setOpen(false);
+      setClosing(false);
+    }, 200);
+  };
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -37,14 +57,19 @@ export function SiteHeader() {
   if (isAppFlow(pathname)) return null;
 
   return (
-    <header
-      className={`sticky top-0 z-50 transition-colors duration-300 ${
-        scrolled
-          ? "border-b border-slate-200/70 bg-canvas/85 backdrop-blur-xl"
-          : "border-b border-transparent bg-transparent"
-      }`}
-    >
-      <div className="container-x flex h-[68px] items-center justify-between">
+    // The header itself carries NO backdrop-filter. An element with one becomes
+    // a backdrop root for its descendants, which meant the dropdown panel had
+    // nothing left to blur and stayed see-through however high the blur went.
+    // So the bar's glass is its own layer, and the panel is a sibling of it:
+    // each samples the page directly and both frost properly.
+    <header className="sticky top-0 z-50">
+      <div
+        aria-hidden
+        className={`glass-bar pointer-events-none absolute inset-0 transition-all duration-300 ${
+          scrolled ? "glass-bar--scrolled" : ""
+        }`}
+      />
+      <div className="container-x relative flex h-[68px] items-center justify-between">
         <Logo priority />
         {/* The inline nav appears only once it genuinely fits. Measured at the
             widest locale (Bulgarian): logo 96px + nav 898px = 994px, and the
@@ -76,8 +101,8 @@ export function SiteHeader() {
             type="button"
             aria-label={m.nav.menu}
             aria-expanded={open}
-            className="grid h-10 w-10 place-items-center rounded-xl text-ink"
-            onClick={() => setOpen((v) => !v)}
+            className="glass-control grid h-10 w-10 place-items-center rounded-xl text-ink transition-colors"
+            onClick={() => (open ? closeMenu() : setOpen(true))}
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               {open ? (
@@ -91,14 +116,22 @@ export function SiteHeader() {
       </div>
 
       {open && (
-        <nav className="border-t border-slate-200/70 bg-canvas px-5 py-4 min-[1100px]:hidden">
+        // Absolute, not in flow: the panel hangs below the bar and floats over
+        // the page instead of pushing it down. It carries the same glass as the
+        // bar, including the deeper scrolled tint, so opening the menu reads as
+        // the bar extending rather than a separate sheet appearing.
+        <nav
+          className={`menu-panel glass-bar absolute inset-x-0 top-full border-t border-slate-200/70 px-5 py-4 min-[1100px]:hidden ${
+            scrolled ? "glass-bar--scrolled" : ""
+          } ${closing ? "menu-panel--closing" : ""}`}
+        >
           <div className="flex flex-col gap-1">
             {nav.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
                 className="rounded-xl px-3 py-2.5 text-base font-medium text-ink"
-                onClick={() => setOpen(false)}
+                onClick={closeMenu}
               >
                 {item.label}
               </Link>
@@ -113,7 +146,7 @@ export function SiteHeader() {
               className="btn-mint mt-2 min-[480px]:self-start"
               location="header_mobile"
               arrow={false}
-              onNavigate={() => setOpen(false)}
+              onNavigate={closeMenu}
             />
           </div>
         </nav>

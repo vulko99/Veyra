@@ -61,3 +61,19 @@ export function formatAprCap(): string {
 // Consumer credit is 18+. (Bulgaria's data-protection age of consent is 14,
 // which matters only for general-audience content that collects data.)
 export const MIN_AGE = 18;
+
+// --- Local preview: hide unfilled values ------------------------------------
+// Omits any row whose regulated value is still an unfilled [[TODO:*]]
+// placeholder, so the site can be shown to a prospective partner before the
+// company is registered without reading as a page full of gaps.
+//
+// OPT-IN AND LOCAL ONLY, and deliberately so. A visible placeholder fails
+// loudly; a hidden row fails silently, and a credit site published with no
+// mandatory disclosures and no identifiable operator is a worse outcome than
+// one that merely looks unfinished. Nothing here is invented and nothing is
+// weakened: DISCLOSURES_INCOMPLETE and COMPANY_INCOMPLETE are untouched, and
+// check-legal-values.mjs still refuses a production build.
+//
+// Intended for .env.local, which is gitignored and cannot reach a deploy.
+export const HIDE_UNFILLED =
+  process.env.NEXT_PUBLIC_HIDE_UNFILLED === "true";

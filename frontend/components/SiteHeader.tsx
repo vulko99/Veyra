@@ -46,12 +46,16 @@ export function SiteHeader() {
     >
       <div className="container-x flex h-[68px] items-center justify-between">
         <Logo priority />
-        <nav className="hidden items-center gap-1 md:flex">
+        {/* The inline nav appears only once it genuinely fits. Measured at the
+            widest locale (Bulgarian): logo 96px + nav 898px = 994px, and the
+            container caps content at viewport - 64px, so `lg` (1024px) would
+            still be ~34px short and the labels would wrap mid-word. */}
+        <nav className="hidden items-center gap-1 min-[1100px]:flex">
           {nav.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="rounded-full px-3.5 py-2 text-sm font-medium text-ink/70 transition hover:bg-white hover:text-ink"
+              className="whitespace-nowrap rounded-full px-3.5 py-2 text-sm font-medium text-ink/70 transition hover:bg-white hover:text-ink"
             >
               {item.label}
             </Link>
@@ -59,14 +63,14 @@ export function SiteHeader() {
           <LanguageToggle className="ml-2" />
           <PrimaryCta
             label={m.common.startShort}
-            className="btn-mint ml-2 px-5 py-2.5 text-sm"
+            className="btn-mint ml-2 whitespace-nowrap px-5 py-2.5 text-sm"
             location="header"
             arrow={false}
           />
         </nav>
         {/* Mobile: the switcher sits beside the menu button rather than inside
             the panel, so it is reachable without opening the menu first. */}
-        <div className="flex items-center gap-2 md:hidden">
+        <div className="flex items-center gap-2 min-[1100px]:hidden">
           <LanguageToggle />
           <button
             type="button"
@@ -87,7 +91,7 @@ export function SiteHeader() {
       </div>
 
       {open && (
-        <nav className="border-t border-slate-200/70 bg-canvas px-5 py-4 md:hidden">
+        <nav className="border-t border-slate-200/70 bg-canvas px-5 py-4 min-[1100px]:hidden">
           <div className="flex flex-col gap-1">
             {nav.map((item) => (
               <Link

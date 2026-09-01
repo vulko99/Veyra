@@ -74,20 +74,20 @@ services:
       # it MUST be set here (otherwise the app calls http://localhost:8000).
       - key: NEXT_PUBLIC_API_URL
         value: /api/v1
-      # Keep the application funnel closed (/apply + /results serve the
-      # pre-launch notice). PRELAUNCH already defaults to ON; stated explicitly
-      # here because this is the one file that can silently turn it off.
+      # Application funnel OPEN (/apply + /results serve the real form) for the
+      # supervised partner demo. PRELAUNCH defaults to ON in config/launch.ts;
+      # "false" here opens it. This is a DEMO window, not a standing setting.
       #
-      # This was briefly "false" so partners could walk the funnel end to end.
-      # If that is needed again, know what it costs: the funnel collects a name,
+      # Know what it costs before leaving it on: the funnel collects a name,
       # phone, email, income and employment status, and its consent text names
-      # Veyra as the data controller — which is why config/launch.ts defaults it
-      # ON until the entity is registered. The prebuild guard does NOT catch it
-      # here: check-legal-values.mjs only blocks when CONTEXT=production, a
-      # Netlify variable Render never sets, so on Render it warns and builds
-      # anyway. Open it for a supervised demo window, not as a standing setting.
+      # Veyra as the data controller — which is why the default is ON until the
+      # entity is registered. The prebuild guard does NOT catch it here:
+      # check-legal-values.mjs only blocks when CONTEXT=production, a Netlify
+      # variable Render never sets, so on Render it warns and builds anyway.
+      # For the demo, use fictional data only — do not enter a real person's
+      # details. Set back to "true" once the walkthrough is done.
       - key: NEXT_PUBLIC_PRELAUNCH
-        value: "true"
+        value: "false"
       # Point the Next.js /api/* proxy at the backend. Set this to the backend
       # service URL after the first deploy (Render prompts because sync: false),
       # e.g. https://veyra-backend.onrender.com

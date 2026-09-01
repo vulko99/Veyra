@@ -7,29 +7,16 @@ import { getApplication, getMatches, selectPartner } from "@/lib/api";
 import { formatEUR } from "@/lib/format";
 import { track } from "@/lib/analytics";
 import { useI18n } from "@/hooks/useI18n";
+import { useApplication } from "@/hooks/useApplication";
 import { AppShell } from "@/components/WizardStep";
 import type { Phase2Application, Phase2Match } from "@/types";
 
-/** Compact dark matching motif: request → engine → matches, animated routes. */
-function ResultsViz({
-  count,
-  amountEur,
-  termMonths,
-}: {
-  count: number;
-  amountEur: string | null;
-  termMonths: number | null;
-}) {
+/** Compact dark matching motif: request → engine → matches, animated routes.
+ *  `requestValue` is the applicant's own amount and term — never a placeholder. */
+function ResultsViz({ count, requestValue }: { count: number; requestValue: string }) {
   const { m } = useI18n();
   const v = m.home.viz;
   const outs = Array.from({ length: Math.min(count || 3, 3) });
-  // The applicant's own request, read back from the application. Never
-  // home.viz.requestValue — that is a fixed marketing illustration and would
-  // misstate the request on the page where the applicant decides.
-  const requestValue =
-    amountEur !== null && termMonths !== null
-      ? `${formatEUR(amountEur)} · ${termMonths} ${m.results.months}`
-      : null;
   return (
     <div className="relative overflow-hidden rounded-2xl border border-appborder bg-appsurface/60 p-5 sm:p-6">
       <div className="grid grid-cols-[auto_1fr_auto] items-center gap-3 sm:gap-6">
@@ -37,11 +24,9 @@ function ResultsViz({
           <p className="text-[0.62rem] uppercase tracking-[0.14em] text-appmuted">
             {v.request}
           </p>
-          {requestValue && (
-            <p className="mt-0.5 font-display text-sm font-bold text-appwhite">
-              {requestValue}
-            </p>
-          )}
+          <p className="mt-0.5 font-display text-sm font-bold text-appwhite">
+            {requestValue}
+          </p>
         </div>
 
         <svg viewBox="0 0 200 40" preserveAspectRatio="none" className="h-10 w-full" aria-hidden>
@@ -88,6 +73,7 @@ function ResultsInner() {
   const { m } = useI18n();
   const r = m.results;
   const applicationId = params.get("application");
+  const { draft, publicId } = useApplication();
   const [application, setApplication] = useState<Phase2Application | null>(null);
   const [matches, setMatches] = useState<Phase2Match[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -113,10 +99,10 @@ function ResultsInner() {
       .catch(() => setError(r.loadError));
   }, [applicationId, r.noReference, r.loadError]);
 
-  // Supplementary: the request summary shown above the matches. Fetched from
-  // the backend rather than the local draft so a results link opened in a fresh
-  // browser still echoes the real request. A failure here must not break the
-  // page — the summary is simply omitted.
+  // Supplementary: the request summary shown above the matches. The stored
+  // application is authoritative — a results link opened in a fresh browser has
+  // no local draft. A failure here must not break the page; the draft below
+  // stands in, and failing that the summary is omitted entirely.
   useEffect(() => {
     if (!applicationId) return;
     let cancelled = false;
@@ -167,6 +153,23 @@ function ResultsInner() {
 
   const productTypeLabel = (pt: string) =>
     (r.productTypes as Record<string, string>)[pt] ?? pt.replace(/_/g, " ");
+
+  // What the applicant actually asked for. The stored application is
+  // authoritative; the local draft only stands in when it belongs to this same
+  // application (a shared link can point at a different one). Never
+  // home.viz.requestValue — that is a fixed marketing illustration and would
+  // misstate the request on the page where the applicant decides.
+  const draftIsThisApplication = publicId != null && publicId === applicationId;
+  const requestedAmount =
+    application?.desired_amount_eur ??
+    (draftIsThisApplication ? draft.requested_amount : undefined);
+  const requestedTerm =
+    application?.desired_term_months ??
+    (draftIsThisApplication ? draft.requested_term_months : undefined);
+  const requestValue =
+    requestedAmount && requestedTerm != null
+      ? `${formatEUR(requestedAmount)} · ${requestedTerm} ${r.months}`
+      : null;
 
   // ----- Success screen (after referrals are created) -----
   if (done) {
@@ -246,13 +249,11 @@ function ResultsInner() {
                 </span>
                 {r.countSuffix}
               </div>
-              <div className="mt-6">
-                <ResultsViz
-                  count={matches.length}
-                  amountEur={application?.desired_amount_eur ?? null}
-                  termMonths={application?.desired_term_months ?? null}
-                />
-              </div>
+              {requestValue && (
+                <div className="mt-6">
+                  <ResultsViz count={matches.length} requestValue={requestValue} />
+                </div>
+              )}
               <p className="mt-4 text-sm text-appmuted">{r.selectHint}</p>
             </>
           )}

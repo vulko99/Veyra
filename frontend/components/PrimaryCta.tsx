@@ -2,7 +2,9 @@
 
 import Link from "@/components/LocaleLink";
 import { PRELAUNCH, PRELAUNCH_CTA_HREF } from "@/config/launch";
+import { usePathname } from "next/navigation";
 import { useMessages } from "@/hooks/useI18n";
+import { splitLocale } from "@/lib/locale";
 import { track } from "@/lib/analytics";
 
 /**
@@ -29,8 +31,22 @@ export function PrimaryCta({
   onNavigate?: () => void;
 }) {
   const m = useMessages();
+  const pathname = usePathname();
   const href = PRELAUNCH ? PRELAUNCH_CTA_HREF : "/apply";
   const text = PRELAUNCH ? m.prelaunch.cta : label;
+
+  // A call to action pointing at the page you are already on is a dead
+  // control. It happens on /kalkulator while the funnel is closed: pre-launch
+  // rewrites this button to PRELAUNCH_CTA_HREF, which IS /kalkulator, so the
+  // header's most prominent button did nothing — and the nav entry that would
+  // have been the working link to that page had already been removed precisely
+  // because the button duplicated it.
+  //
+  // Compared on the locale-stripped path so /en/kalkulator counts as the same
+  // page as /kalkulator, and handled here rather than at the call site so a
+  // future destination cannot reintroduce it somewhere else.
+  const { path } = splitLocale(pathname ?? "/");
+  if (path === href) return null;
 
   return (
     <Link

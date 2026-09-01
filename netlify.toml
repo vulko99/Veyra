@@ -22,6 +22,23 @@
 [build.environment]
   NODE_VERSION = "20"
 
+  # Omit rows whose regulated value is not supplied yet, instead of rendering
+  # the loud red [[TODO:*]] marker in their place. Without this the deploy
+  # shows ten of them on /about alone, which is noise on a link sent to a
+  # prospective partner.
+  #
+  # This changes presentation only. No figure is substituted for a missing
+  # one, `npm run check:legal` still reports every outstanding value, the
+  # disclosures panel keeps its line saying the mandatory values are still to
+  # be published, and companyJsonLdFields() still omits unfilled identifiers
+  # rather than publishing placeholder ones.
+  #
+  # It does NOT weaken the guard that matters: `prebuild` runs
+  # scripts/check-legal-values.mjs, which exits 1 on a production deploy
+  # (CONTEXT === "production") while any blocking value is unfilled. A real
+  # launch is refused at build time regardless of what this flag renders.
+  NEXT_PUBLIC_HIDE_UNFILLED = "true"
+
 # Official Next.js runtime: handles SSR/routing for the App Router on Netlify.
 [[plugins]]
   package = "@netlify/plugin-nextjs"

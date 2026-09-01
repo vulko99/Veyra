@@ -103,9 +103,14 @@ export function SiteHeader() {
                 {item.label}
               </Link>
             ))}
+            {/* `.btn` is inline-flex, so the full-width look comes from the
+                column's default `align-items: stretch`, not the button. That
+                is the right tap target on a phone, but the panel now runs up
+                to 1100px, where an edge-to-edge pill reads as a banner — so
+                above the narrow breakpoint it sizes to its own content. */}
             <PrimaryCta
               label={m.common.startShort}
-              className="btn-mint mt-2"
+              className="btn-mint mt-2 min-[480px]:self-start"
               location="header_mobile"
               arrow={false}
               onNavigate={() => setOpen(false)}

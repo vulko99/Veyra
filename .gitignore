@@ -17,6 +17,10 @@ media/
 .env
 .env.local
 .env.*.local
+# ...and any sibling copy of it. `.env.local` is matched by exact name, so a
+# `.env.local.bak` set aside while toggling a flag is NOT ignored and gets
+# swept up by the next `git add -A`.
+.env.local.*
 *.pem
 
 # Node / Next.js

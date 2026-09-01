@@ -16,8 +16,8 @@ import { defaultLocale, isLocale, locales, type Locale } from "@/i18n/config";
  *
  * Deliberately free of imports beyond the locale list: this module is reached
  * from client components (LocaleLink, the i18n provider), so anything it pulls
- * in ships to the browser on every page. The Bulgarian-only path set lives in
- * `lib/bg-only.ts` for exactly that reason.
+ * in ships to the browser on every page. Keep the content modules — the landing
+ * copy, the guides — out of it.
  */
 export function localePath(locale: Locale, path: string): string {
   if (locale === defaultLocale) return path;

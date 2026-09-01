@@ -1,40 +1,46 @@
 import Link from "@/components/LocaleLink";
-import type { Landing } from "@/lib/landing-content";
+import { getLandingCopy, type Landing } from "@/lib/landing-content";
+import { getGuideCopy } from "@/lib/guides-content";
 import { JsonLd } from "@/components/JsonLd";
 import { TrackView } from "@/components/TrackView";
 import { CreditWarning } from "@/components/CreditWarning";
 import { StartCta, CalculatorLink } from "@/components/LandingCtas";
 import { LegalDisclosures } from "@/components/LegalDisclosures";
-import { BgOnlyNotice } from "@/components/BgOnlyNotice";
 import { SITE_URL } from "@/lib/seo";
+import { getMessages } from "@/i18n";
+import { type Locale } from "@/i18n/config";
+import { localePath } from "@/lib/locale";
 
 // Internal links surfaced on every landing page so growth pages (which are not
 // all in the primary nav) stay linked and share crawl/link equity.
-const RELATED = [
-  { href: "/krediti", label: "Кредити онлайн" },
-  { href: "/potrebitelski-kredit", label: "Потребителски кредит" },
-  { href: "/kredit-za-avtomobil", label: "Кредит за автомобил" },
-  { href: "/kredit-za-remont", label: "Кредит за ремонт" },
-  { href: "/barzi-krediti", label: "Бързи кредити" },
-  { href: "/loans", label: "Видове кредити" },
-  { href: "/kalkulator", label: "Кредитен калкулатор" },
-  { href: "/guides", label: "Ръководства" },
+//
+// Held as slugs, not as {href,label} pairs: each landing page already names
+// itself in both languages via its eyebrow, so deriving the label keeps these
+// links in the reader's language without a second copy of the same words.
+const RELATED_LANDINGS = [
+  "krediti",
+  "potrebitelski-kredit",
+  "kredit-za-avtomobil",
+  "kredit-za-remont",
+  "barzi-krediti",
 ];
 
-// Relevant educational guides linked from every landing page.
-const GUIDE_LINKS = [
-  { href: "/guides/kakvo-e-gpr", label: "Какво е ГПР?" },
-  { href: "/guides/mesechna-vnoska", label: "Каква месечна вноска мога да си позволя?" },
-];
+// Relevant educational guides linked from every landing page — same reasoning:
+// the label is the guide's own title in the active locale.
+const RELATED_GUIDES = ["kakvo-e-gpr", "mesechna-vnoska"];
 
 /** Server-rendered SEO landing page: useful content + one clear CTA into the
  *  Veyra application. Static HTML (fast, crawlable) with a tiny view-tracking
  *  island. Marketplace framing; no approval claims. */
-export function LandingPage({ data }: { data: Landing }) {
+export function LandingPage({ data, locale }: { data: Landing; locale: Locale }) {
+  const m = getMessages(locale);
+  const copy = data.copy[locale];
+  const path = localePath(locale, `/${data.slug}`);
+
   const faqJsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: data.faq.map((f) => ({
+    mainEntity: copy.faq.map((f) => ({
       "@type": "Question",
       name: f.q,
       acceptedAnswer: { "@type": "Answer", text: f.a },
@@ -44,15 +50,35 @@ export function LandingPage({ data }: { data: Landing }) {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Начало", item: SITE_URL },
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: m.landing.breadcrumbHome,
+        item: `${SITE_URL}${localePath(locale, "/")}`,
+      },
       {
         "@type": "ListItem",
         position: 2,
-        name: data.eyebrow,
-        item: `${SITE_URL}/${data.slug}`,
+        name: copy.eyebrow,
+        item: `${SITE_URL}${path}`,
       },
     ],
   };
+
+  const related = [
+    ...RELATED_LANDINGS.flatMap((slug) => {
+      const c = getLandingCopy(slug, locale);
+      return c ? [{ href: `/${slug}`, label: c.eyebrow }] : [];
+    }),
+    { href: "/loans", label: m.landing.links.loanTypes },
+    { href: "/kalkulator", label: m.landing.links.calculator },
+    { href: "/guides", label: m.landing.links.guides },
+  ].filter((r) => r.href !== `/${data.slug}`);
+
+  const guideLinks = RELATED_GUIDES.flatMap((slug) => {
+    const c = getGuideCopy(slug, locale);
+    return c ? [{ href: `/guides/${slug}`, label: c.title }] : [];
+  });
 
   return (
     <div className="under-nav relative">
@@ -63,16 +89,14 @@ export function LandingPage({ data }: { data: Landing }) {
       <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-72 grid-lines mask-fade-b opacity-60" />
       <div className="pointer-events-none absolute inset-0 -z-10 atmos-light" />
 
-      {/* Every string below is Bulgarian, including the headings and CTAs, so
-          the element is marked as such. On /en/<slug> the document is
-          `lang="en"` for the chrome; without this a screen reader would read
-          Bulgarian prose with English pronunciation rules. */}
-      <div lang="bg" className="container-x max-w-3xl py-16 sm:py-20">
+      {/* No `lang` override here: the article is written in the locale the
+          document already declares, so the page reads — and is read aloud —
+          in one language throughout. */}
+      <div className="container-x max-w-3xl py-16 sm:py-20">
         <header className="reveal">
-          <BgOnlyNotice className="mb-6" />
-          <span className="eyebrow">{data.eyebrow}</span>
-          <h1 className="t-h1 mt-4 text-ink">{data.h1}</h1>
-          <p className="mt-5 t-body text-muted">{data.intro}</p>
+          <span className="eyebrow">{copy.eyebrow}</span>
+          <h1 className="t-h1 mt-4 text-ink">{copy.h1}</h1>
+          <p className="mt-5 t-body text-muted">{copy.intro}</p>
 
           {/* Mandatory credit warning — these pages advertise credit. Kept in
               the body flow, above the fold-ish, never as footer fine print. */}
@@ -84,7 +108,7 @@ export function LandingPage({ data }: { data: Landing }) {
         </header>
 
         <div className="mt-14 space-y-10">
-          {data.sections.map((s, i) => (
+          {copy.sections.map((s, i) => (
             <section
               key={s.h2}
               // The first section is usually at or just below the fold when the
@@ -112,8 +136,11 @@ export function LandingPage({ data }: { data: Landing }) {
         </div>
 
         {/* Related internal links (keeps growth pages linked, spreads equity) */}
-        <nav aria-label="Свързани страници" className="reveal-scroll mt-12 flex flex-wrap gap-2.5">
-          {RELATED.filter((r) => r.href !== `/${data.slug}`).map((r) => (
+        <nav
+          aria-label={m.landing.relatedLabel}
+          className="reveal-scroll mt-12 flex flex-wrap gap-2.5"
+        >
+          {related.map((r) => (
             <Link
               key={r.href}
               href={r.href}
@@ -126,9 +153,9 @@ export function LandingPage({ data }: { data: Landing }) {
 
         {/* Relevant guides */}
         <section className="reveal-scroll mt-12 border-t border-slate-200/80 pt-8">
-          <h2 className="t-h3 text-ink">Полезно четиво</h2>
+          <h2 className="t-h3 text-ink">{m.landing.readingTitle}</h2>
           <ul className="mt-4 space-y-2">
-            {GUIDE_LINKS.map((g) => (
+            {guideLinks.map((g) => (
               <li key={g.href}>
                 <Link href={g.href} className="t-body text-mint-600 hover:underline">
                   {g.label}
@@ -144,9 +171,9 @@ export function LandingPage({ data }: { data: Landing }) {
 
         {/* FAQ */}
         <section className="reveal-scroll mt-14 border-t border-slate-200/80 pt-8">
-          <h2 className="t-h3 text-ink">Често задавани въпроси</h2>
+          <h2 className="t-h3 text-ink">{m.landing.faqTitle}</h2>
           <div className="mt-5 space-y-5">
-            {data.faq.map((f) => (
+            {copy.faq.map((f) => (
               <div key={f.q}>
                 <h3 className="font-display text-base font-bold text-ink">{f.q}</h3>
                 <p className="mt-1 t-small text-muted">{f.a}</p>
@@ -157,14 +184,12 @@ export function LandingPage({ data }: { data: Landing }) {
 
         {/* CTA */}
         <div className="reveal-scroll surface-dark relative mt-14 overflow-hidden rounded-[2rem] px-8 py-12 text-center sm:px-14">
-          <h2 className="t-h2 text-appwhite">{data.ctaTitle}</h2>
-          <p className="mx-auto mt-3 max-w-xl t-body text-appmuted">{data.ctaBody}</p>
+          <h2 className="t-h2 text-appwhite">{copy.ctaTitle}</h2>
+          <p className="mx-auto mt-3 max-w-xl t-body text-appmuted">{copy.ctaBody}</p>
           <div className="mt-7">
             <StartCta location={`landing_cta:${data.slug}`} />
           </div>
-          <p className="mt-5 t-caption text-appmuted">
-            Veyra не е кредитор. Окончателното решение и условията се определят от съответния партньор.
-          </p>
+          <p className="mt-5 t-caption text-appmuted">{m.landing.notLender}</p>
         </div>
       </div>
     </div>

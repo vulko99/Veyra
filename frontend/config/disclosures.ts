@@ -23,16 +23,17 @@ export type Disclosures = {
   maxAPR: string;
   /** Every applicable fee, as a human-readable Bulgarian list. */
   fees: string;
-  /** Physical business address (required by Google Ads policy). */
-  address: string;
 };
+
+// NOTE: the fifth required disclosure — physical business address — is NOT
+// duplicated here. It has a single home in config/company.ts (COMPANY.address)
+// so the footer, /about, JSON-LD and this block can never disagree.
 
 export const DISCLOSURES: Disclosures = {
   termMinMonths: "[[TODO:TERM_MIN]]",
   termMaxMonths: "[[TODO:TERM_MAX]]",
   maxAPR: "[[TODO:MAX_APR]]",
   fees: "[[TODO:FEES_LIST]]",
-  address: "[[TODO:REGISTERED_ADDRESS]]",
 };
 
 // --- Representative example (ЗПК чл. 25) -----------------------------------

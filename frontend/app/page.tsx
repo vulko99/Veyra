@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useMessages } from "@/hooks/useI18n";
 import { MatchingViz } from "@/components/MatchingViz";
+import { CreditWarning } from "@/components/CreditWarning";
+import { LegalDisclosures } from "@/components/LegalDisclosures";
 import { track } from "@/lib/analytics";
 
 export default function HomePage() {
@@ -50,6 +52,13 @@ export default function HomePage() {
             <MatchingViz />
           </div>
         </div>
+      </section>
+
+      {/* Mandatory credit warning (Consumer Credit Act, in force 20 Nov 2026).
+          Must stay here in the body flow: not the footer, not behind a click,
+          not shrunk to fine print. */}
+      <section className="container-x pb-10">
+        <CreditWarning />
       </section>
 
       {/* Trust band */}
@@ -139,11 +148,11 @@ export default function HomePage() {
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-3">
                   <span className="grid h-10 w-10 place-items-center rounded-xl border border-slate-200 bg-canvas font-display text-base font-extrabold text-ink">
-                    {String.fromCharCode(65 + i)}
+                    {i + 1}
                   </span>
                   <div>
                     <p className="font-display text-base font-bold text-ink">
-                      {m.home.viz.partner} {String.fromCharCode(65 + i)}
+                      {m.home.viz.option} {i + 1}
                     </p>
                     <p className="t-caption text-muted">{m.home.marketplace.note}</p>
                   </div>
@@ -169,6 +178,16 @@ export default function HomePage() {
         <p className="mt-5 max-w-3xl t-small text-muted/90">
           {m.home.marketplace.explainer}
         </p>
+        <p className="mt-2 max-w-3xl t-caption text-muted/70">
+          {m.home.marketplace.illustrative}
+        </p>
+      </section>
+
+      {/* Mandatory disclosures — required by the Google Ads financial
+          products policy and by ЗПК чл. 25. Plain page content: no accordion,
+          no modal, no footer-only placement. */}
+      <section className="container-x pb-20">
+        <LegalDisclosures />
       </section>
 
       {/* CTA */}

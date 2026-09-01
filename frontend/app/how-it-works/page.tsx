@@ -57,7 +57,7 @@ export default function HowItWorksPage() {
               {[0, 1, 2].map((i) => (
                 <div key={i} className="card-navy px-2 py-3 text-center">
                   <span className="text-[0.72rem] font-semibold text-appwhite">
-                    {viz.partner} {String.fromCharCode(65 + i)}
+                    {viz.option} {i + 1}
                   </span>
                 </div>
               ))}

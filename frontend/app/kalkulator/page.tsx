@@ -1,6 +1,7 @@
 "use client";
 
 import { CreditCalculator } from "@/components/CreditCalculator";
+import { CreditWarning } from "@/components/CreditWarning";
 import { useMessages } from "@/hooks/useI18n";
 
 export default function CalculatorPage() {
@@ -16,7 +17,9 @@ export default function CalculatorPage() {
           <p className="mt-5 t-body text-muted">{c.intro}</p>
         </div>
 
-        <div className="mt-10">
+        <CreditWarning className="mt-8" />
+
+        <div className="mt-8">
           <CreditCalculator />
         </div>
 

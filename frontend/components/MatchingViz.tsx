@@ -7,7 +7,13 @@ const DEMO_SCORES = [94, 89, 84];
 
 /**
  * The Veyra routing metaphor: a request flows through the matching engine and
- * fans out into ranked options. HTML chips carry the (Cyrillic) labels; an SVG
+ * fans out into ranked options.
+ *
+ * The output nodes are deliberately NON-SPECIFIC ("Възможност 1/2/3"), not
+ * named or lettered partners. Invented partner identities — the old
+ * "Партньор A / B / C" — are not an acceptable stand-in for real ones on a
+ * financial services site. Named partners appear only once they are signed
+ * and cleared for publication in config/partners.ts. HTML chips carry the (Cyrillic) labels; an SVG
  * behind them draws animated connectors. Coordinate space is 0..100 × 0..125
  * (portrait 4:5) with preserveAspectRatio="none"; strokes use non-scaling-stroke
  * so line weight stays constant.
@@ -125,11 +131,11 @@ export function MatchingViz() {
                 i === 0 ? "bg-ink text-mint" : "bg-slate-100 text-ink"
               }`}
             >
-              {String.fromCharCode(65 + i)}
+              {i + 1}
             </span>
             <span className="flex flex-col leading-tight">
               <span className="text-[0.72rem] font-semibold text-ink">
-                {v.partner} {String.fromCharCode(65 + i)}
+                {v.option} {i + 1}
               </span>
               <span className="text-[0.64rem] font-bold text-mint-600">
                 {DEMO_SCORES[i]}%{" "}

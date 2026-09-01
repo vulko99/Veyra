@@ -2,6 +2,8 @@ import Link from "next/link";
 import type { Landing } from "@/lib/landing-content";
 import { JsonLd } from "@/components/JsonLd";
 import { TrackView } from "@/components/TrackView";
+import { CreditWarning } from "@/components/CreditWarning";
+import { LegalDisclosures } from "@/components/LegalDisclosures";
 import { SITE_URL } from "@/lib/seo";
 
 // Internal links surfaced on every landing page so growth pages (which are not
@@ -61,6 +63,10 @@ export function LandingPage({ data }: { data: Landing }) {
           <span className="eyebrow">{data.eyebrow}</span>
           <h1 className="t-h1 mt-4 text-ink">{data.h1}</h1>
           <p className="mt-5 t-body text-muted">{data.intro}</p>
+
+          {/* Mandatory credit warning — these pages advertise credit. Kept in
+              the body flow, above the fold-ish, never as footer fine print. */}
+          <CreditWarning className="mt-6" />
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Link href="/apply" className="btn-mint">
               Започни заявка<span aria-hidden>→</span>
@@ -116,6 +122,10 @@ export function LandingPage({ data }: { data: Landing }) {
             ))}
           </ul>
         </section>
+
+        {/* Mandatory disclosures — required by the Google Ads financial
+            products policy and by ЗПК чл. 25. */}
+        <LegalDisclosures className="mt-14" />
 
         {/* FAQ */}
         <section className="mt-14 border-t border-slate-200/80 pt-8">

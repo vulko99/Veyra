@@ -63,7 +63,9 @@ const en: Messages = {
       engine: "Matching engine",
       engineNote: "Compares published criteria",
       matches: "3 relevant options",
-      partner: "Partner",
+      option: "Option",
+      illustrative:
+        "Illustration of the mechanism. The values shown are examples, not real offers or partners.",
       compatibility: "compatibility",
     },
     trust: [
@@ -110,6 +112,8 @@ const en: Messages = {
       title: "One application. Several options.",
       body: "One application can match the criteria of more than one partner. We show you every relevant option so you decide where to continue.",
       note: "Suitable based on the criteria you entered",
+      illustrative:
+        "Illustration. The values shown are examples, not real offers or partners.",
       cta: "Continue",
       compatibility: "compatibility",
       explainer:
@@ -488,6 +492,36 @@ const en: Messages = {
     seoHeading: "How to read the result",
     seoBody:
       "The monthly payment is what you pay each month. Total cost is the difference between the amount repaid and the amount borrowed. When comparing real offers, look at the APR, which also includes fees.",
+  },
+  // --- Mandatory legal / regulatory strings --------------------------------
+  // See the Bulgarian catalog for the authoritative comment. Labels only.
+  legal: {
+    warningAria: "Mandatory warning",
+    notALender: "Veyra is not a lender. The final decision is made by the partner.",
+    freeForYou: "The service is free for you. We are paid by the partners.",
+    minAge: "The service is available to people aged 18 and over.",
+    disclosuresTitle: "Mandatory information",
+    disclosuresIntro:
+      "Information about our partners' credit products. Veyra is not a lender — the specific terms are set by the relevant partner.",
+    termRangeLabel: "Repayment period",
+    termRangeValue: "from {min} to {max} months",
+    maxAprLabel: "Maximum APR",
+    aprCapLabel: "Statutory APR cap",
+    aprCapNote: "5 x the statutory default interest rate. Reset on 1 January and 1 July.",
+    feesLabel: "Applicable fees",
+    addressLabel: "Registered address",
+    representativeTitle: "Representative example",
+    representativeExample:
+      "Representative example: for an amount of {amount} EUR, a term of {term} months, a fixed annual borrowing rate of {rate}%, APR {apr}%, total amount repayable {total} EUR, monthly instalment {monthly} EUR.",
+    unfilledNotice:
+      "MANDATORY INFORMATION NOT FILLED IN — this page must not be published or advertised until the values are supplied. See TODO-LEGAL.md.",
+    identityTitle: "Company identification",
+    companyLabel: "Company",
+    eikLabel: "Company no.",
+    vatLabel: "VAT no.",
+    addressShortLabel: "Address",
+    phoneLabel: "Phone",
+    emailLabel: "Email",
   },
   results: {
     eyebrow: "Results",

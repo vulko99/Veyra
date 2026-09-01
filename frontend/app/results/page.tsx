@@ -8,6 +8,7 @@ import { formatEUR } from "@/lib/format";
 import { track } from "@/lib/analytics";
 import { useI18n } from "@/hooks/useI18n";
 import { AppShell } from "@/components/WizardStep";
+import { CreditWarning } from "@/components/CreditWarning";
 import type { Phase2Match } from "@/types";
 
 /** Compact dark matching motif: request → engine → matches, animated routes. */
@@ -146,6 +147,12 @@ function ResultsInner() {
             <p className="mx-auto mt-3 max-w-lg text-appmuted">{r.successSubhead}</p>
           </div>
 
+          {/* Mandatory credit warning — required on any view that advertises
+              credit, which includes the results/comparison view. */}
+          <div className="reveal mt-8">
+            <CreditWarning tone="dark" />
+          </div>
+
           <div className="reveal mt-8">
             <p className="text-xs uppercase tracking-[0.14em] text-appmuted">
               {r.successSelected}
@@ -200,6 +207,10 @@ function ResultsInner() {
           <p className="mt-3 text-appmuted">
             {matches && matches.length === 0 ? r.emptySubhead : r.subhead}
           </p>
+
+          {/* Mandatory credit warning — required on any view that advertises
+              credit, which includes the results/comparison view. */}
+          <CreditWarning tone="dark" className="mt-6" />
 
           {matches && matches.length > 0 && (
             <>

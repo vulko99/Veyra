@@ -74,6 +74,11 @@ services:
       # it MUST be set here (otherwise the app calls http://localhost:8000).
       - key: NEXT_PUBLIC_API_URL
         value: /api/v1
+      # Open the application funnel (/apply + /results). PRELAUNCH defaults to ON,
+      # which replaces the funnel with a "not accepting applications" notice. This
+      # demo needs the form live so partners can walk through it end to end.
+      - key: NEXT_PUBLIC_PRELAUNCH
+        value: "false"
       # Point the Next.js /api/* proxy at the backend. Set this to the backend
       # service URL after the first deploy (Render prompts because sync: false),
       # e.g. https://veyra-backend.onrender.com

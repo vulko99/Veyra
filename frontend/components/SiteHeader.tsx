@@ -8,6 +8,7 @@ import { LanguageToggle } from "./LanguageToggle";
 import { useMessages } from "@/hooks/useI18n";
 import { isAppFlowPath } from "@/lib/locale";
 import { PrimaryCta } from "./PrimaryCta";
+import { PRELAUNCH, PRELAUNCH_CTA_HREF } from "@/config/launch";
 
 export function SiteHeader() {
   const m = useMessages();
@@ -42,13 +43,22 @@ export function SiteHeader() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // The bar's own CTA is a PrimaryCta, which pre-launch is rewritten to point
+  // at the calculator — so a nav entry for the same page becomes the second
+  // link to it in one row, and the second in one column on the mobile panel.
+  // The entry comes back at launch, when the CTA goes to /apply instead.
+  //
+  // Matched on href rather than by dropping the calculator by name, so it
+  // follows PRELAUNCH_CTA_HREF if that ever points somewhere else. Nothing is
+  // lost by removing it: the CTA is a real link to the same page and is on
+  // every page the nav is, so the site-wide internal link survives.
   const nav = [
     { href: "/how-it-works", label: m.nav.howItWorks },
     { href: "/krediti", label: m.nav.loans },
     { href: "/kalkulator", label: m.nav.calculator },
     { href: "/faq", label: m.nav.faq },
     { href: "/responsible-borrowing", label: m.nav.responsible },
-  ];
+  ].filter((item) => !(PRELAUNCH && item.href === PRELAUNCH_CTA_HREF));
 
   if (isAppFlowPath(pathname)) return null;
 
@@ -70,7 +80,9 @@ export function SiteHeader() {
         {/* The inline nav appears only once it genuinely fits. Measured at the
             widest locale (Bulgarian): logo 96px + nav 898px = 994px, and the
             container caps content at viewport - 64px, so `lg` (1024px) would
-            still be ~34px short and the labels would wrap mid-word. */}
+            still be ~34px short and the labels would wrap mid-word. That 898px
+            is the full five-item nav; pre-launch renders one item fewer and is
+            narrower, but the breakpoint has to clear the wider case. */}
         <nav className="hidden items-center gap-1 min-[1100px]:flex">
           {nav.map((item) => (
             <Link

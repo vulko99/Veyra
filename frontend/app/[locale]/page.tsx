@@ -6,6 +6,7 @@ import { MatchingViz } from "@/components/MatchingViz";
 import { JsonLd } from "@/components/JsonLd";
 import { CreditWarning } from "@/components/CreditWarning";
 import { PrimaryCta } from "@/components/PrimaryCta";
+import { PRELAUNCH } from "@/config/launch";
 import { LegalDisclosures } from "@/components/LegalDisclosures";
 import { track } from "@/lib/analytics";
 import { SITE_URL } from "@/lib/seo";
@@ -265,11 +266,15 @@ export default function HomePage() {
       {/* CTA */}
       <section className="reveal-scroll container-x pb-4">
         <div className="surface-dark relative overflow-hidden rounded-[2rem] px-8 py-16 text-center sm:px-16">
+          {/* "Готов ли си да видиш своите възможности?" over a button that
+              goes to the calculator, and a body promising partners no visitor
+              can be referred to yet. Unlike the landing pages this block is
+              fully localized, so it swaps in the reader's own catalogue. */}
           <h2 className="relative mx-auto max-w-2xl t-h1 text-white">
-            {m.home.ctaTitle}
+            {PRELAUNCH ? m.prelaunch.closingTitle : m.home.ctaTitle}
           </h2>
           <p className="relative mx-auto mt-4 max-w-xl text-appmuted">
-            {m.home.ctaBody}
+            {PRELAUNCH ? m.prelaunch.closingBody : m.home.ctaBody}
           </p>
           <div className="relative mt-9">
             <PrimaryCta label={m.home.primaryCta} location="home_cta" />

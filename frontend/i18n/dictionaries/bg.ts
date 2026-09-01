@@ -655,6 +655,16 @@ export const bg = {
     meanwhileTitle: "Междувременно",
     calculatorCta: "Изчисли месечна вноска",
     guidesCta: "Прочети ръководствата",
+    // Closing-CTA copy. The pages' own closing headings were written for
+    // an open funnel ("кандидатствай", "една заявка"); pre-launch the button
+    // under them goes to the calculator, so they invite exactly the
+    // application this mode exists to prevent. Leads with what the visitor
+    // can do and states the constraint second — the notice page already
+    // leads with the constraint, but someone reading a landing page has not
+    // tried to apply yet.
+    closingTitle: "Изчисли месечната си вноска",
+    closingBody:
+      "Все още не приемаме заявки. Дотогава калкулаторът показва месечната вноска и общата сума за връщане по конкретна сума и срок.",
     notALender: "Veyra не е кредитор. Не отпускаме кредити и не вземаме решения за одобрение.",
   },
   legal: {

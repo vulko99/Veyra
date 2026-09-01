@@ -627,6 +627,9 @@ const en: Messages = {
     meanwhileTitle: "In the meantime",
     calculatorCta: "Work out a monthly payment",
     guidesCta: "Read the guides",
+    closingTitle: "Work out your monthly payment",
+    closingBody:
+      "We are not accepting requests yet. Until then the calculator shows the monthly payment and the total repayable for a given amount and term.",
     notALender: "Veyra is not a lender. We do not lend money or make approval decisions.",
   },
   legal: {

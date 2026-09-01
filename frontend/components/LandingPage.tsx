@@ -4,12 +4,13 @@ import { getGuideCopy } from "@/lib/guides-content";
 import { JsonLd } from "@/components/JsonLd";
 import { TrackView } from "@/components/TrackView";
 import { CreditWarning } from "@/components/CreditWarning";
-import { StartCta, CalculatorLink } from "@/components/LandingCtas";
+import { StartCta, SecondaryCta } from "@/components/LandingCtas";
 import { LegalDisclosures } from "@/components/LegalDisclosures";
 import { SITE_URL } from "@/lib/seo";
 import { getMessages } from "@/i18n";
 import { type Locale } from "@/i18n/config";
 import { localePath } from "@/lib/locale";
+import { PRELAUNCH } from "@/config/launch";
 
 // Internal links surfaced on every landing page so growth pages (which are not
 // all in the primary nav) stay linked and share crawl/link equity.
@@ -103,7 +104,7 @@ export function LandingPage({ data, locale }: { data: Landing; locale: Locale })
           <CreditWarning className="mt-6" />
           <div className="mt-8 flex flex-col gap-3 min-[480px]:flex-row">
             <StartCta location={`landing:${data.slug}`} />
-            <CalculatorLink />
+            <SecondaryCta />
           </div>
         </header>
 
@@ -184,8 +185,24 @@ export function LandingPage({ data, locale }: { data: Landing; locale: Locale })
 
         {/* CTA */}
         <div className="reveal-scroll surface-dark relative mt-14 overflow-hidden rounded-[2rem] px-8 py-12 text-center sm:px-14">
-          <h2 className="t-h2 text-appwhite">{copy.ctaTitle}</h2>
-          <p className="mx-auto mt-3 max-w-xl t-body text-appmuted">{copy.ctaBody}</p>
+          {/* Pre-launch the button below goes to the calculator, not the
+              funnel, so each page's own closing copy — "кандидатствай онлайн с
+              една заявка" and friends — would promise something the button
+              cannot do. The per-page pair returns untouched at launch.
+
+              Read from the reader's own catalogue. The version this merged with
+              deliberately read the Bulgarian one, because at the time the card
+              sat inside a `lang="bg"` article whose copy was Bulgarian in every
+              locale — a localized string there would have been English inside
+              Bulgarian prose. That is no longer true: these pages are now
+              genuinely translated and the `lang` override is gone, so the
+              Bulgarian catalogue would be the thing that looks wrong. */}
+          <h2 className="t-h2 text-appwhite">
+            {PRELAUNCH ? m.prelaunch.closingTitle : copy.ctaTitle}
+          </h2>
+          <p className="mx-auto mt-3 max-w-xl t-body text-appmuted">
+            {PRELAUNCH ? m.prelaunch.closingBody : copy.ctaBody}
+          </p>
           <div className="mt-7">
             <StartCta location={`landing_cta:${data.slug}`} />
           </div>

@@ -9,6 +9,7 @@ import { localePath } from "@/lib/locale";
 import { JsonLd } from "@/components/JsonLd";
 import { StartCta } from "@/components/LandingCtas";
 import { TrackView } from "@/components/TrackView";
+import { PRELAUNCH } from "@/config/launch";
 
 export function generateStaticParams() {
   return GUIDES.map((g) => ({ slug: g.slug }));
@@ -169,9 +170,15 @@ export default function GuidePage({
 
         {/* CTA */}
         <div className="reveal-scroll surface-dark mt-12 rounded-2xl px-7 py-9 text-center">
-          <h2 className="t-h3 text-appwhite">{m.guides.ctaTitle}</h2>
+          {/* Same swap as the landing pages: pre-launch this button goes to
+              the calculator, and "една заявка" would promise a funnel that is
+              closed. In the reader's language — the guides are translated now
+              and no longer carry a `lang="bg"` override. */}
+          <h2 className="t-h3 text-appwhite">
+            {PRELAUNCH ? m.prelaunch.closingTitle : m.guides.ctaTitle}
+          </h2>
           <p className="mx-auto mt-2 max-w-md t-small text-appmuted">
-            {m.guides.ctaBody}
+            {PRELAUNCH ? m.prelaunch.closingBody : m.guides.ctaBody}
           </p>
           <div className="mt-6">
             <StartCta location="guide" />

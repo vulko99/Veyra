@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Logo } from "./Logo";
+import { LanguageToggle } from "./LanguageToggle";
 import { useMessages } from "@/hooks/useI18n";
 import { track } from "@/lib/analytics";
 
@@ -55,6 +56,7 @@ export function SiteHeader() {
               {item.label}
             </Link>
           ))}
+          <LanguageToggle className="ml-2" />
           <Link
             href="/apply"
             className="btn-mint ml-2 px-5 py-2.5 text-sm"
@@ -63,21 +65,26 @@ export function SiteHeader() {
             {m.common.startShort}
           </Link>
         </nav>
-        <button
-          type="button"
-          aria-label={m.nav.menu}
-          aria-expanded={open}
-          className="grid h-10 w-10 place-items-center rounded-xl text-ink md:hidden"
-          onClick={() => setOpen((v) => !v)}
-        >
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            {open ? (
-              <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
-            ) : (
-              <path d="M4 7h16M4 12h16M4 17h16" strokeLinecap="round" />
-            )}
-          </svg>
-        </button>
+        {/* Mobile: the switcher sits beside the menu button rather than inside
+            the panel, so it is reachable without opening the menu first. */}
+        <div className="flex items-center gap-2 md:hidden">
+          <LanguageToggle />
+          <button
+            type="button"
+            aria-label={m.nav.menu}
+            aria-expanded={open}
+            className="grid h-10 w-10 place-items-center rounded-xl text-ink"
+            onClick={() => setOpen((v) => !v)}
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              {open ? (
+                <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
+              ) : (
+                <path d="M4 7h16M4 12h16M4 17h16" strokeLinecap="round" />
+              )}
+            </svg>
+          </button>
+        </div>
       </div>
 
       {open && (

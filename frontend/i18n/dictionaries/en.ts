@@ -26,6 +26,7 @@ const en: Messages = {
     faq: "FAQ",
     responsible: "Responsible borrowing",
     menu: "Menu",
+    language: "Language",
   },
   footer: {
     tagline: "The financial choice, made easier.",

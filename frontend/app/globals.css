@@ -453,6 +453,16 @@ body {
   .reveal > *:nth-child(3) { animation-delay: 0.16s; }
   .reveal > *:nth-child(4) { animation-delay: 0.22s; }
   .reveal > *:nth-child(5) { animation-delay: 0.28s; }
+  /* Everything past the fifth child holds the last step rather than picking up
+     the shorthand's `animation-delay: 0s`, which would send it in *ahead* of
+     the heading above it and inverse the cascade. The `animation` shorthand in
+     `.reveal > *` resets the delay, so a child with no rule of its own does not
+     inherit the ramp -- it leads. A plateau rather than more steps: the ramp
+     already ends near a second, and the tail of a long block does not need to
+     arrive one at a time, only after what it follows. `n+6` matches from the
+     sixth on and leaves 1-5 alone, at the same specificity, so no rule above
+     has to fight it. */
+  .reveal > *:nth-child(n+6) { animation-delay: 0.34s; }
 
   /* Above-the-fold content that sits *below* the hero: the first section of a
      page whose hero is short enough to leave it on screen at load. ScrollReveal
@@ -469,6 +479,10 @@ body {
   .reveal-late > *:nth-child(2) { animation-delay: 0.40s; }
   .reveal-late > *:nth-child(3) { animation-delay: 0.46s; }
   .reveal-late > *:nth-child(4) { animation-delay: 0.52s; }
+  /* Same tail guard, one step further along. Without it the fifth child of a
+     late block would fall through to `.reveal > *:nth-child(5)` at 0.28s and
+     arrive before its own siblings. */
+  .reveal-late > *:nth-child(n+5) { animation-delay: 0.58s; }
 }
 
 @layer utilities {

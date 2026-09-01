@@ -77,15 +77,34 @@ export default function ConsentStep() {
       nextLabel={submitting ? s.submitting : s.submit}
       nextDisabled={!canSubmit}
     >
+      {/* Every box starts unticked. Pre-ticked consent is explicitly
+          prohibited under the incoming Consumer Credit Act — do not change
+          these initial values. */}
       <div className="space-y-3">
         <ConsentRow checked={platform} onChange={setPlatform} required label={s.platformLabel} description={s.platformDesc} />
         <ConsentRow checked={partner} onChange={setPartner} required label={s.partnerLabel} description={s.partnerDesc} />
+
+        {/* Named recipients: each partner lender is an independent data
+            controller, so a generic "our partners" would not carry lawful
+            basis. This links the live, maintained list. */}
+        <p className="px-1 text-xs text-appmuted">
+          {s.partnerListPrefix}{" "}
+          <Link
+            href="/partners"
+            target="_blank"
+            className="font-medium text-mint-400 hover:underline"
+          >
+            {s.partnerListLink}
+          </Link>
+        </p>
         <div className="pt-1">
           <ConsentRow checked={marketing} onChange={setMarketing} label={s.marketingLabel} description={s.marketingDesc} optional />
         </div>
       </div>
 
-      <p className="mt-6 text-xs leading-relaxed text-appmuted">
+      <p className="mt-6 text-xs leading-relaxed text-appmuted">{s.ageNotice}</p>
+
+      <p className="mt-2 text-xs leading-relaxed text-appmuted">
         {s.legalPrefix}{" "}
         <Link href="/terms" className="font-medium text-mint-400 hover:underline">
           {s.terms}

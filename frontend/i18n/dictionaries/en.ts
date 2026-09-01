@@ -361,6 +361,11 @@ const en: Messages = {
       },
     ],
     cta: "Get in touch",
+    listTitle: "Partners your data may be shared with",
+    listIntro:
+      "Each of these partners is an independent data controller. Your data is passed only to the partner or partners you select on the results page.",
+    listEmpty:
+      "No partners are published yet. The list will be shown here before any data is shared with any partner.",
   },
   cookies: {
     title: "Cookie policy",
@@ -447,6 +452,9 @@ const en: Messages = {
         platformDesc: "Required so we can process your request.",
         partnerLabel:
           "I agree that Veyra may share my application information with financial partners that match my application criteria, so they can assess whether they can offer me financing",
+        partnerListPrefix: "See who the partners are:",
+        partnerListLink: "partner list",
+        ageNotice: "The service is intended for people aged 18 and over.",
         partnerDesc:
           "We show the matching options and you decide which partners to continue with. Required so we can show you options.",
         marketingLabel: "I want to receive useful updates from Veyra",
@@ -547,6 +555,13 @@ const en: Messages = {
     ],
     footnote:
       "If any of these parameters change, this page is updated alongside them.",
+  },
+  cookieBanner: {
+    title: "Cookies",
+    body: "We use essential cookies to make the site work. With your consent we would also use analytics cookies to improve it. Without consent, no analytics scripts are loaded at all.",
+    policyLink: "Cookie policy",
+    accept: "Accept analytics",
+    reject: "Essential only",
   },
   legal: {
     warningAria: "Mandatory warning",

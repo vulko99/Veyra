@@ -8,6 +8,13 @@
 // IMPORTANT: never pass personal or financial data here — no names, emails,
 // phone numbers, amounts tied to a person, or public_id. Only funnel signals
 // and coarse, non-identifying properties.
+//
+// CONSENT: track() drops every event until the visitor has granted analytics
+// consent. Events are deliberately NOT queued for later replay — a user who
+// has not consented should leave no measurement trail at all, and replaying a
+// pre-consent buffer after a grant would defeat that.
+
+import { hasAnalyticsConsent } from "@/lib/consent";
 
 export type AnalyticsEvent =
   // Requested pre-launch funnel events
@@ -43,6 +50,8 @@ declare global {
 
 export function track(event: AnalyticsEvent, props: Props = {}): void {
   if (typeof window === "undefined") return;
+  // Default-deny. No consent, no event — not even to window.dataLayer.
+  if (!hasAnalyticsConsent()) return;
   try {
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({ event, ...props });

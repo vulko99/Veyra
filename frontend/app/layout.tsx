@@ -6,6 +6,7 @@ import { I18nProvider } from "@/hooks/useI18n";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { Analytics } from "@/components/Analytics";
+import { CookieConsent } from "@/components/CookieConsent";
 import { RouteAnalytics } from "@/components/RouteAnalytics";
 import { JsonLd } from "@/components/JsonLd";
 import { defaultLocale } from "@/i18n/config";
@@ -92,6 +93,7 @@ export default function RootLayout({
             <main className="flex-1">{children}</main>
             <SiteFooter />
           </ApplicationProvider>
+          <CookieConsent />
         </I18nProvider>
         <Analytics />
         <RouteAnalytics />

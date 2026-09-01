@@ -212,6 +212,15 @@ MATCH_THRESHOLD = int(env_str("MATCH_THRESHOLD", "80"))
 PRIVACY_POLICY_VERSION = env_str("PRIVACY_POLICY_VERSION", "2026-01-01")
 TERMS_VERSION = env_str("TERMS_VERSION", "2026-01-01")
 
+# Version of the CONSENT CHECKBOX WORDING shown in the funnel — tracked
+# separately from the policy documents, because the wording can change without
+# the privacy policy changing (and vice versa). Recorded against every consent
+# so we can prove exactly what text a user agreed to.
+#
+# BUMP THIS whenever the consent copy in
+# frontend/i18n/dictionaries/*.ts -> apply.steps.consent changes.
+CONSENT_TEXT_VERSION = env_str("CONSENT_TEXT_VERSION", "2026-09-01")
+
 # Data retention (days) used by anonymization workflow.
 DATA_RETENTION_DAYS = int(env_str("DATA_RETENTION_DAYS", "365"))
 

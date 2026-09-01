@@ -20,8 +20,35 @@ the date Bulgaria's new Consumer Credit Act (transposing EU Directive
 Most values are supplied as environment variables at deploy time; a few live in
 config files. The "Where" column gives the exact location.
 
-After filling a value, re-run `npm run build` in `frontend/` — the build prints
-a warning for every placeholder still present.
+Check progress at any time:
+
+```bash
+cd frontend && npm run check:legal
+```
+
+### The build guard
+
+`frontend/scripts/check-legal-values.mjs` runs automatically before every build
+(npm `prebuild` hook). It is deliberately asymmetric, so the partner-preview
+deploy keeps working while values are still being gathered:
+
+| Build | Behaviour |
+|---|---|
+| Production | Blocking findings **fail the build** |
+| Preview, branch, local | Everything is reported as a **warning**; build proceeds |
+
+"Production" means `CONTEXT=production` (set by Netlify on production deploys),
+or an explicit override:
+
+- `REQUIRE_LEGAL_VALUES=true` — force blocking anywhere (use this in CI)
+- `REQUIRE_LEGAL_VALUES=false` — force warn-only, a deliberate escape hatch
+
+**Blocking:** company identity (§1), disclosures (§2), representative example
+(§3).
+**Warning:** VAT, empty partner list, unset domain, and the statutory warning
+wording — the last of which **becomes blocking on 20 November 2026**, when the
+Act is in force and shipping unconfirmed wording is a real breach. Confirm the
+text and set `CREDIT_WARNING_CONFIRMED = true` in `config/legal.ts` before then.
 
 ---
 

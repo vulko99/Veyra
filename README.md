@@ -299,6 +299,11 @@ by accident:
 - **Nothing regulated is invented.** Unsupplied values stay loud `[[TODO:*]]`
   placeholders — see [`TODO-LEGAL.md`](TODO-LEGAL.md).
 
+A build guard enforces the last point: `npm run check:legal` (run automatically
+before every build) **fails a production build** while regulated values are
+still unfilled, and warns on preview and local builds so the partner-preview
+deploy keeps working. Set `REQUIRE_LEGAL_VALUES=true` to enforce it in CI.
+
 ## Security & privacy
 
 - UUID public references — sequential DB IDs are never exposed.

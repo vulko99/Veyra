@@ -61,7 +61,7 @@ export function LandingPage({ data }: { data: Landing }) {
           <span className="eyebrow">{data.eyebrow}</span>
           <h1 className="t-h1 mt-4 text-ink">{data.h1}</h1>
           <p className="mt-5 t-body text-muted">{data.intro}</p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+          <div className="mt-8 flex flex-col gap-3 min-[480px]:flex-row">
             <Link href="/apply" className="btn-mint">
               Започни заявка<span aria-hidden>→</span>
             </Link>

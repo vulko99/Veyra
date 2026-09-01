@@ -10,6 +10,9 @@ import { SITE_URL } from "@/lib/seo";
 // all in the primary nav) stay linked and share crawl/link equity.
 const RELATED = [
   { href: "/krediti", label: "Кредити онлайн" },
+  { href: "/potrebitelski-kredit", label: "Потребителски кредит" },
+  { href: "/kredit-za-avtomobil", label: "Кредит за автомобил" },
+  { href: "/kredit-za-remont", label: "Кредит за ремонт" },
   { href: "/barzi-krediti", label: "Бързи кредити" },
   { href: "/loans", label: "Видове кредити" },
   { href: "/kalkulator", label: "Кредитен калкулатор" },

@@ -10,8 +10,8 @@ const en: Messages = {
   },
   common: {
     brand: "Veyra",
-    startCta: "Start in 2 minutes",
-    startShort: "Start",
+    startCta: "See your options",
+    startShort: "See options",
     howItWorks: "How it works",
     back: "Back",
     continue: "Continue",
@@ -28,7 +28,7 @@ const en: Messages = {
     menu: "Menu",
   },
   footer: {
-    tagline: "The financial choice, made easier.",
+    tagline: "Financial decisions — clearer.",
     productTitle: "Product",
     companyTitle: "Company",
     legalTitle: "Legal",
@@ -92,7 +92,7 @@ const en: Messages = {
     steps: [
       {
         title: "Tell us what you need",
-        body: "Amount, term, and a few details about you. About two minutes, no account.",
+        body: "Amount, term, and a few details about you. No registration.",
       },
       {
         title: "Veyra matches",
@@ -104,7 +104,7 @@ const en: Messages = {
       },
     ],
     ctaTitle: "Ready to see your options?",
-    ctaBody: "It takes two minutes. No obligation to continue with any partner.",
+    ctaBody: "No obligation to continue with any partner.",
     marketplace: {
       eyebrow: "Marketplace",
       title: "One application. Several options.",
@@ -309,7 +309,7 @@ const en: Messages = {
   about: {
     title: "About Veyra",
     intro:
-      "Veyra makes the financial choice easier. We connect people with relevant financial partners through one simple request.",
+      "Veyra makes the financial choice clearer. We connect people with relevant financial partners through one request.",
     sections: [
       {
         heading: "Our mission",
@@ -379,7 +379,7 @@ const en: Messages = {
   apply: {
     intro: {
       h1: "Let's find options for you",
-      sub: "About two minutes. No account and no obligation to continue with any partner.",
+      sub: "No account and no obligation to continue with any partner.",
       bullets: [
         "One short application",
         "Relevant options based on what you enter",

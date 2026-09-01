@@ -46,7 +46,7 @@ export const metadata: Metadata = {
         url: "/og.png",
         width: 1200,
         height: 630,
-        alt: "Veyra — една заявка, повече възможности",
+        alt: "Veyra — една заявка, прозрачно сравнение на възможности",
       },
     ],
   },
@@ -66,7 +66,7 @@ const orgJsonLd = {
   url: SITE_URL,
   logo: `${SITE_URL}/veyra-logo.png`,
   description: messages.meta.description,
-  slogan: "Една заявка. Повече възможности.",
+  slogan: "Една заявка. Прозрачно сравнение.",
 };
 const siteJsonLd = {
   "@context": "https://schema.org",

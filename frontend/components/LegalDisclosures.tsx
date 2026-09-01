@@ -8,6 +8,7 @@ import {
 import { COMPANY } from "@/config/company";
 import { formatAprCap, HIDE_UNFILLED, isTodo } from "@/config/legal";
 import { TodoMark } from "@/components/TodoMark";
+import { PartnerProducts } from "@/components/PartnerProducts";
 import { interpolate } from "@/i18n";
 import { useMessages } from "@/hooks/useI18n";
 
@@ -127,6 +128,11 @@ export function LegalDisclosures({
           </p>
         </div>
       )}
+
+      {/* Per-partner product & legal information. Renders one block per
+          partner cleared by validatePartnerLegal(); nothing at all while no
+          partner is fully verified, so the panel above is unaffected. */}
+      <PartnerProducts dark={dark} />
 
       <div className={`mt-6 space-y-1.5 border-t pt-5 ${rule} t-body ${label}`}>
         <p>{m.notALender}</p>

@@ -632,6 +632,12 @@ const en: Messages = {
       "MANDATORY INFORMATION NOT FILLED IN — this page must not be published or advertised until the values are supplied. See TODO-LEGAL.md.",
     pendingNotice:
       "The company is being registered. The mandatory values will be published before the site goes live.",
+    productsTitle: "Partner products",
+    productsIntro:
+      "Product and legal information for each partner, confirmed against the partner's official documents.",
+    productMaxAprLabel: "Product maximum APR",
+    noFeesConfirmed: "No additional fees (confirmed by the partner).",
+    updatedLabel: "Information last updated on {date}.",
     identityTitle: "Company identification",
     companyLabel: "Company",
     eikLabel: "Company no.",

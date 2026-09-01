@@ -24,6 +24,7 @@ export const bg = {
     faq: "Въпроси",
     responsible: "Отговорно кредитиране",
     menu: "Меню",
+    language: "Език",
   },
   footer: {
     tagline: "Финансовият избор, по-лесен.",

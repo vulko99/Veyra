@@ -57,8 +57,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
     freq: "weekly" | "monthly",
     english = hasEnglish(path)
   ) => {
+    // x-default alongside the pair. Every page's own <head> declares it, but
+    // no sitemap entry did, so the two sources disagreed about which URL serves
+    // a visitor whose language matches neither. Bulgarian is the default and
+    // the unprefixed address, so it is the fallback in both places.
     const languages = english
-      ? { bg: abs(path), en: abs(localePath("en", path)) }
+      ? {
+          bg: abs(path),
+          en: abs(localePath("en", path)),
+          "x-default": abs(path),
+        }
       : undefined;
 
     const bg = {

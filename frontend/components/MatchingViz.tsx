@@ -41,7 +41,8 @@ export function MatchingViz() {
   });
 
   return (
-    <div className="relative mx-auto aspect-[4/5] w-full max-w-[420px]">
+    <div className="mx-auto w-full max-w-[420px]">
+    <div className="relative aspect-[4/5] w-full">
       {/* soft glow field */}
       <div className="pointer-events-none absolute inset-0 -z-10 rounded-[2rem] bg-gradient-to-b from-mint/5 via-electric/5 to-transparent blur-2xl" />
 
@@ -174,6 +175,21 @@ export function MatchingViz() {
           {v.matches}
         </span>
       </div>
+    </div>
+
+      {/* Every figure above is invented: a "€2 000 · 12 месеца" request and
+          94/89/84% compatibility scores, none of them a real offer or a real
+          partner. The catalogue has always carried this caption — it says the
+          diagram is an illustration and that the values are examples — and it
+          was never rendered anywhere, so the fabricated numbers stood on the
+          home page unqualified in both languages.
+
+          Rendered inside the component rather than beside it at the call site,
+          so the figures cannot be placed on a page without the sentence that
+          qualifies them. */}
+      <p className="mt-16 text-center t-caption text-muted/70 sm:mt-10">
+        {v.illustrative}
+      </p>
     </div>
   );
 }

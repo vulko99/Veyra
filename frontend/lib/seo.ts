@@ -344,6 +344,18 @@ export function localizedMetadata(
 
 // Routes that must never be indexed (they carry an in-progress application /
 // personal data or are transient).
+/**
+ * For pages that must stay out of the index entirely: the application funnel
+ * and the results page.
+ *
+ * `alternates` is cleared as well as `robots`. Metadata merges field by field,
+ * so overriding only `robots` left these pages inheriting the ROOT layout's
+ * alternates — every one of them advertised `rel=canonical` and hreflang
+ * pointing at the home page. A noindex page claiming the home page as its
+ * canonical is a contradictory pair of signals about a URL that should simply
+ * not be described at all.
+ */
 export const NOINDEX: Metadata = {
   robots: { index: false, follow: false },
+  alternates: { canonical: null, languages: {} },
 };

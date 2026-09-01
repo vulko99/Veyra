@@ -94,7 +94,10 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
         </p>
         <p className="mt-6 t-body text-muted">{g.intro}</p>
 
-        <div className="reveal-scroll mt-8 space-y-5">
+        {/* Load, not scroll: the article body starts right under the intro, so
+            it is on screen when the page arrives and the scroll reveal would
+            stand down and leave it as the only static thing on the page. */}
+        <div className="reveal-load mt-8 space-y-5">
           {g.blocks.map((b, i) => {
             if (b.type === "h2")
               return (

@@ -84,8 +84,17 @@ export function LandingPage({ data }: { data: Landing }) {
         </header>
 
         <div className="mt-14 space-y-10">
-          {data.sections.map((s) => (
-            <section key={s.h2} className="reveal-scroll border-t border-slate-200/80 pt-7">
+          {data.sections.map((s, i) => (
+            <section
+              key={s.h2}
+              // The first section is usually at or just below the fold when the
+              // page arrives, which is exactly where the scroll reveal stands
+              // down. It gets the load animation so it is not the one block on
+              // the page that never moves.
+              className={`${
+                i === 0 ? "reveal-load" : "reveal-scroll"
+              } border-t border-slate-200/80 pt-7`}
+            >
               <h2 className="t-h3 text-ink">{s.h2}</h2>
               {s.body && <p className="mt-2 t-body text-muted">{s.body}</p>}
               {s.bullets && (

@@ -377,6 +377,27 @@ body {
     animation: blur-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 
+  /* For the block that sits at the fold on arrival — typically the first
+     section under a page header.
+
+     ScrollReveal deliberately skips anything already on screen, because the
+     server's HTML has painted before React hydrates: arming a visible section
+     from JavaScript would flash it away and animate it back. So that block got
+     no entrance at all while everything below it did.
+
+     This is the load animation instead, and it works precisely because it is
+     in the server markup rather than applied afterwards — there is no moment
+     where the section is visible and then hidden. The delay picks up after the
+     header's own stagger (which ends at 0.28s) so the page reads as one
+     sequence rather than two things starting at once.
+
+     Fail-safe the same way `.reveal` is: `both` leaves the element at the
+     animation's end state, so a browser that never runs it still shows the
+     content. */
+  .reveal-load {
+    animation: blur-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.34s both;
+  }
+
   /* Entrance for sections further down the page: they animate when scrolled
      to, rather than finishing unseen while the visitor is still on the hero.
 

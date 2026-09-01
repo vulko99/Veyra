@@ -3,10 +3,12 @@ import type { Landing } from "@/lib/landing-content";
 import { JsonLd } from "@/components/JsonLd";
 import { TrackView } from "@/components/TrackView";
 import { CreditWarning } from "@/components/CreditWarning";
-import { StartCta, CalculatorLink } from "@/components/LandingCtas";
+import { StartCta, SecondaryCta } from "@/components/LandingCtas";
 import { LegalDisclosures } from "@/components/LegalDisclosures";
 import { BgOnlyNotice } from "@/components/BgOnlyNotice";
 import { SITE_URL } from "@/lib/seo";
+import { PRELAUNCH } from "@/config/launch";
+import bg from "@/i18n/dictionaries/bg";
 
 // Internal links surfaced on every landing page so growth pages (which are not
 // all in the primary nav) stay linked and share crawl/link equity.
@@ -79,7 +81,7 @@ export function LandingPage({ data }: { data: Landing }) {
           <CreditWarning className="mt-6" />
           <div className="mt-8 flex flex-col gap-3 min-[480px]:flex-row">
             <StartCta location={`landing:${data.slug}`} />
-            <CalculatorLink />
+            <SecondaryCta />
           </div>
         </header>
 
@@ -157,8 +159,21 @@ export function LandingPage({ data }: { data: Landing }) {
 
         {/* CTA */}
         <div className="reveal-scroll surface-dark relative mt-14 overflow-hidden rounded-[2rem] px-8 py-12 text-center sm:px-14">
-          <h2 className="t-h2 text-appwhite">{data.ctaTitle}</h2>
-          <p className="mx-auto mt-3 max-w-xl t-body text-appmuted">{data.ctaBody}</p>
+          {/* Pre-launch the button below goes to the calculator, not the
+              funnel, so each page's own closing copy — "кандидатствай онлайн с
+              една заявка" and friends — would promise something the button
+              cannot do. The per-page pair returns untouched at launch.
+
+              Read from the Bulgarian catalogue rather than the reader's: this
+              card sits inside the lang="bg" article, and data.ctaTitle is
+              Bulgarian in every locale, so a localized string here would read
+              English now and Bulgarian after launch. */}
+          <h2 className="t-h2 text-appwhite">
+            {PRELAUNCH ? bg.prelaunch.closingTitle : data.ctaTitle}
+          </h2>
+          <p className="mx-auto mt-3 max-w-xl t-body text-appmuted">
+            {PRELAUNCH ? bg.prelaunch.closingBody : data.ctaBody}
+          </p>
           <div className="mt-7">
             <StartCta location={`landing_cta:${data.slug}`} />
           </div>

@@ -8,6 +8,8 @@ import { defaultLocale, type Locale } from "@/i18n/config";
 import { JsonLd } from "@/components/JsonLd";
 import { StartCta } from "@/components/LandingCtas";
 import { TrackView } from "@/components/TrackView";
+import { PRELAUNCH } from "@/config/launch";
+import bg from "@/i18n/dictionaries/bg";
 
 export function generateStaticParams() {
   return GUIDES.map((g) => ({ slug: g.slug }));
@@ -148,9 +150,19 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
 
         {/* CTA */}
         <div className="reveal-scroll surface-dark mt-12 rounded-2xl px-7 py-9 text-center">
-          <h2 className="t-h3 text-appwhite">Виж подходящите възможности за теб</h2>
+          {/* Same swap as the landing pages: pre-launch this button goes to
+              the calculator, and "една заявка" would promise a funnel that is
+              closed. Bulgarian for the same reason — the guide is lang="bg" in
+              every locale. */}
+          <h2 className="t-h3 text-appwhite">
+            {PRELAUNCH
+              ? bg.prelaunch.closingTitle
+              : "Виж подходящите възможности за теб"}
+          </h2>
           <p className="mx-auto mt-2 max-w-md t-small text-appmuted">
-            Една заявка, няколко възможности. Без регистрация и без ангажимент.
+            {PRELAUNCH
+              ? bg.prelaunch.closingBody
+              : "Една заявка, няколко възможности. Без регистрация и без ангажимент."}
           </p>
           <div className="mt-6">
             <StartCta location="guide" />

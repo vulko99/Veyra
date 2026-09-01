@@ -30,3 +30,14 @@ export const PRELAUNCH = process.env.NEXT_PUBLIC_PRELAUNCH !== "false";
 
 /** Where a primary call-to-action should point while the funnel is closed. */
 export const PRELAUNCH_CTA_HREF = "/kalkulator";
+
+/**
+ * Where a *secondary* call-to-action should point while the funnel is closed.
+ *
+ * Must never equal PRELAUNCH_CTA_HREF. Pre-launch rewrites the primary CTA to
+ * the calculator, so a secondary that also pointed there would render two
+ * buttons, side by side, to the same page — which is what the landing hero did
+ * before this existed. The pairing here matches PrelaunchNotice: calculator
+ * first, guides as the alternative.
+ */
+export const PRELAUNCH_SECONDARY_HREF = "/guides";

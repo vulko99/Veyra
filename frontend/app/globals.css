@@ -365,10 +365,16 @@ body {
     box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.15), 0 0 0 2px #21c7a8;
   }
 
-  /* Staggered entrance for step content / result cards. Fires on load, so it
-     is for content that is already in view: the hero and the top of a page. */
+  /* Staggered entrance for content that is already in view on arrival: the
+     hero and the top of a page. Fires on load rather than on scroll.
+
+     Same rise out of a blur as .reveal-scroll, so the hero resolves into focus
+     exactly as the sections below it do and the whole page shares one entrance
+     language. Slightly quicker than the scroll version: this one sits in front
+     of first paint, and the hero headline is the largest element on the page,
+     so it should not be held out of focus any longer than it has to be. */
   .reveal > * {
-    animation: fade-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation: blur-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 
   /* Entrance for sections further down the page: they animate when scrolled
@@ -476,6 +482,26 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* Written out by hand rather than declared in tailwind.config's `keyframes`.
+   Tailwind only emits a themed @keyframes block when the matching `animate-*`
+   utility is actually found in the scanned markup, so a themed keyframe that is
+   referenced only from a raw `animation:` declaration in this file is silently
+   dropped — the rule resolves to a name with nothing behind it and the element
+   simply appears. That is what had happened to the hero's previous `fade-up`:
+   the declaration was there, the animation never was. Keep these here. */
+@keyframes blur-up {
+  from {
+    opacity: 0;
+    transform: translateY(26px);
+    filter: blur(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
   }
 }
 

@@ -18,7 +18,6 @@ const en: Messages = {
     disclaimer:
       "Veyra is not a lender. The final decision is made by the partner.",
     optional: "optional",
-    bgOnlyContent: "This page is available in Bulgarian only.",
   },
   nav: {
     howItWorks: "How it works",
@@ -191,6 +190,31 @@ const en: Messages = {
       "We do not present partners we are not authorised to display.",
       "We do not make the final decision — the partner does.",
     ],
+  },
+  landing: {
+    breadcrumbHome: "Home",
+    relatedLabel: "Related pages",
+    readingTitle: "Further reading",
+    faqTitle: "Frequently asked questions",
+    notLender:
+      "Veyra is not a lender. The final decision and the terms are set by the partner concerned.",
+    links: {
+      loanTypes: "Types of credit",
+      calculator: "Credit calculator",
+      guides: "Guides",
+    },
+  },
+  guides: {
+    eyebrow: "Useful",
+    title: "Guides to credit",
+    intro:
+      "Clear answers to the questions people ask before they borrow — no jargon, and nothing glossed over.",
+    breadcrumb: "Guides",
+    readingTime: "{minutes} min read",
+    updated: "Updated {date}",
+    faqTitle: "Questions and answers",
+    ctaTitle: "See the options that fit you",
+    ctaBody: "One request, several options. No sign-up and no obligation.",
   },
   faq: {
     title: "Frequently asked questions",

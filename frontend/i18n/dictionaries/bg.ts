@@ -28,8 +28,6 @@ export const bg = {
     // Secondary, low-emphasis disclaimer (used sparingly).
     disclaimer: "Veyra не е кредитор. Окончателното решение се взема от партньора.",
     optional: "незадължително",
-    // Shown on /en twins of pages whose article text exists only in Bulgarian.
-    bgOnlyContent: "Тази страница е налична само на български.",
   },
   nav: {
     howItWorks: "Как работи",
@@ -207,6 +205,37 @@ export const bg = {
       "Не показваме партньори, които не сме упълномощени да показваме.",
       "Не вземаме крайното решение — това прави партньорът.",
     ],
+  },
+  // Chrome around the SEO landing pages. The article copy itself lives in
+  // `lib/landing-content.ts`, per locale; only the furniture is here.
+  landing: {
+    breadcrumbHome: "Начало",
+    relatedLabel: "Свързани страници",
+    readingTitle: "Полезно четиво",
+    faqTitle: "Често задавани въпроси",
+    notLender:
+      "Veyra не е кредитор. Окончателното решение и условията се определят от съответния партньор.",
+    // Labels for the related links that are not themselves landing pages —
+    // a landing page's own link label comes from its eyebrow.
+    links: {
+      loanTypes: "Видове кредити",
+      calculator: "Кредитен калкулатор",
+      guides: "Ръководства",
+    },
+  },
+  // Chrome around /guides and the guide articles; the articles are in
+  // `lib/guides-content.ts`.
+  guides: {
+    eyebrow: "Полезно",
+    title: "Ръководства за кредити",
+    intro:
+      "Ясни отговори на въпросите, които хората задават преди да вземат кредит — без сложни термини и без заблуда.",
+    breadcrumb: "Ръководства",
+    readingTime: "{minutes} мин четене",
+    updated: "Обновено {date}",
+    faqTitle: "Въпроси и отговори",
+    ctaTitle: "Виж подходящите възможности за теб",
+    ctaBody: "Една заявка, няколко възможности. Без регистрация и без ангажимент.",
   },
   faq: {
     title: "Често задавани въпроси",

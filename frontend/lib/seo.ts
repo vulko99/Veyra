@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { defaultLocale, type Locale } from "@/i18n/config";
 import { localePath } from "@/lib/locale";
-import { isBgOnlyPath } from "@/lib/bg-only";
 
 // Single source of truth for the deployed origin. Everything absolute —
 // canonical tags, OG URLs, sitemap entries, robots — derives from this one
@@ -209,36 +208,85 @@ export const PAGE_SEO_EN: Record<string, Seo> = {
     description:
       "Work out an indicative monthly instalment and total cost by amount, term and interest rate. Free calculator — no application, no sign-up.",
   },
+  "/krediti": {
+    title: "Loans online — compare options | Veyra",
+    description:
+      "One request, several credit options that fit. Veyra compares the details you enter against partners' criteria. The final decision rests with the lender.",
+  },
+  "/barzi-krediti": {
+    title: "Quick loans online — compare quick loans | Veyra",
+    description:
+      "Compare quick loans from our partners with one request. See which criteria you meet and choose for yourself where to continue. Veyra is not a lender.",
+  },
+  "/guides": {
+    title: "Credit explained — guides | Veyra",
+    description:
+      "Clear answers to the questions people ask before borrowing: the APR, the monthly instalment, the credit register, total cost, and what to look for in the contract.",
+  },
+  "/kredit-online": {
+    title: "Loan online — apply with one request | Veyra",
+    description:
+      "Apply for a loan online with one request. Veyra compares the details you enter against partners' criteria and shows the options that fit. Veyra is not a lender.",
+  },
+  "/kredit-s-losho-ckr": {
+    title: "Credit with a poor ЦКР record — what to know | Veyra",
+    description:
+      "What the ЦКР is and how it bears on a credit application. Veyra does not guarantee approval — we compare your details against partners' published criteria.",
+  },
+  "/kredit-do-zaplata": {
+    title: "Payday loan — a short term, careful judgement | Veyra",
+    description:
+      "Payday loans: small amounts over a short period. See what to look out for, and compare options. Veyra is not a lender and does not guarantee approval.",
+  },
+  "/kredit-bez-trudov-dogovor": {
+    title: "Credit without an employment contract — options | Veyra",
+    description:
+      "Self-employed people, freelancers and pensioners have demonstrable income too. Veyra compares your details against partners' criteria. Approval rests with the lender.",
+  },
+  "/potrebitelski-kredit": {
+    title: "Consumer credit — compare terms | Veyra",
+    description:
+      "What determines the cost of consumer credit, what lenders assess, and what to check before you sign. Veyra is not a lender — we compare options.",
+  },
+  "/kredit-za-avtomobil": {
+    title: "Car finance — consumer credit, a car loan or leasing | Veyra",
+    description:
+      "The three ways to finance a car and what sets them apart, and what to compare beyond the interest rate. Veyra compares options — the decision rests with the lender.",
+  },
+  "/kredit-za-remont": {
+    title: "A loan for home renovation — how to judge it | Veyra",
+    description:
+      "How to settle on a realistic amount for a renovation, how to choose the term, and what to compare between offers. Veyra is not a lender — we compare options.",
+  },
+  "/obedinyavane-na-zadalzheniya": {
+    title: "Debt consolidation — how it works | Veyra",
+    description:
+      "Bringing several commitments together into one, with a single instalment. How it works, when it makes sense and what to watch. Veyra is not a lender.",
+  },
 };
 
 /**
  * Build Next Metadata for a static path, in a given locale.
  *
  * Canonical and hreflang follow the URL shape in `lib/locale.ts`: Bulgarian is
- * unprefixed, English lives under `/en`. Three cases:
+ * unprefixed, English lives under `/en`. Two cases:
  *
- *  - Bulgarian-only content (landing pages, guides): canonical always points at
- *    the Bulgarian URL and no alternates are advertised, because no English
- *    version of that prose exists. The `/en` twin is noindex, so an English
- *    reader who follows a link still gets English chrome without a
- *    near-duplicate page entering the index.
- *  - A translated page with English SEO copy: canonical is the page's own URL
- *    and both languages are cross-declared, with Bulgarian as x-default.
- *  - A translated page without English SEO copy yet: noindex in English.
+ *  - A page with English SEO copy: canonical is the page's own URL and both
+ *    languages are cross-declared, with Bulgarian as x-default.
+ *  - A page without English SEO copy yet: noindex in English, and no alternates
+ *    are advertised — never claim a twin in a language that has none.
  */
 export function buildMetadata(
   path: string,
   locale: Locale = defaultLocale,
   overrides: Partial<Metadata> = {}
 ): Metadata {
-  const bgOnly = isBgOnlyPath(path);
   const english = locale !== defaultLocale;
   const hasEnglishSeo = Boolean(PAGE_SEO_EN[path]);
 
   const seo = english ? PAGE_SEO_EN[path] ?? PAGE_SEO[path] : PAGE_SEO[path];
-  // A Bulgarian-only page canonicalises to its Bulgarian URL from either locale.
-  const canonical = bgOnly ? path : localePath(locale, path);
-  const indexable = !english || (hasEnglishSeo && !bgOnly);
+  const canonical = localePath(locale, path);
+  const indexable = !english || hasEnglishSeo;
 
   return {
     title: seo?.title,
@@ -246,14 +294,13 @@ export function buildMetadata(
     alternates: {
       canonical,
       // Only claim an alternate that actually exists in that language.
-      languages:
-        bgOnly || !hasEnglishSeo
-          ? undefined
-          : {
-              bg: path,
-              en: localePath("en", path),
-              "x-default": path,
-            },
+      languages: hasEnglishSeo
+        ? {
+            bg: path,
+            en: localePath("en", path),
+            "x-default": path,
+          }
+        : undefined,
     },
     robots: indexable ? undefined : { index: false, follow: true },
     openGraph: seo

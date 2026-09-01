@@ -25,10 +25,14 @@ export function MatchingViz() {
   // Node centres in the 0..100 (x) / 0..125 (y) space.
   const req = { x: 50, y: 15 };
   const eng = { x: 50, y: 62 };
+  // The outer two sit wider and the middle one drops further, so three chips
+  // that are as wide as their Bulgarian labels stop colliding. Previously they
+  // overlapped and the right-hand one wrapped to an extra line, which read as
+  // a taller pill rather than a matching set.
   const out = [
-    { x: 19, y: 108 },
-    { x: 50, y: 112 },
-    { x: 81, y: 108 },
+    { x: 15, y: 103 },
+    { x: 50, y: 119 },
+    { x: 85, y: 103 },
   ];
 
   const pct = (n: { x: number; y: number }) => ({
@@ -48,7 +52,21 @@ export function MatchingViz() {
         aria-hidden="true"
       >
         <defs>
-          <linearGradient id="routeGrad" x1="0" y1="0" x2="0" y2="1">
+          {/* userSpaceOnUse, not the default objectBoundingBox. A perfectly
+              vertical path has a zero-width bounding box, and a gradient in
+              bounding-box units is undefined there, so the browser skips
+              painting the stroke entirely. That is why the request-to-engine
+              line and the line to the middle option were invisible while the
+              two curved ones drew fine. In user space the gradient is defined
+              by the viewBox, so straight and curved paths behave the same. */}
+          <linearGradient
+            id="routeGrad"
+            gradientUnits="userSpaceOnUse"
+            x1="50"
+            y1="15"
+            x2="50"
+            y2="118"
+          >
             <stop offset="0%" stopColor="#6C63FF" />
             <stop offset="100%" stopColor="#21C7A8" />
           </linearGradient>
@@ -124,22 +142,23 @@ export function MatchingViz() {
       {/* Match chips — one request fans out into several scored matches. The
           percentages are illustrative demo compatibility, never real terms. */}
       {out.map((o, i) => (
-        <Chip key={i} style={pct(o)} tone={i === 0 ? "mint" : "light"}>
+        <Chip key={i} style={pct(o)} tone={i === 0 ? "mint" : "light"} compact>
           <div className="flex items-center gap-2">
             <span
-              className={`grid h-6 w-6 place-items-center rounded-md text-[0.7rem] font-bold ${
+              className={`grid h-6 w-6 flex-none place-items-center rounded-md text-[0.7rem] font-bold ${
                 i === 0 ? "bg-ink text-mint" : "bg-slate-100 text-ink"
               }`}
             >
               {i + 1}
             </span>
+            {/* Nowrap on both lines: the three chips must stay the same height,
+                and a wrapped label is what made one of them look thicker. */}
             <span className="flex flex-col leading-tight">
-              <span className="text-[0.72rem] font-semibold text-ink">
+              <span className="whitespace-nowrap text-[0.7rem] font-semibold text-ink">
                 {v.option} {i + 1}
               </span>
-              <span className="text-[0.64rem] font-bold text-mint-600">
-                {DEMO_SCORES[i]}%{" "}
-                <span className="font-medium text-muted">{v.compatibility}</span>
+              <span className="whitespace-nowrap text-[0.62rem] font-bold text-mint-600">
+                {DEMO_SCORES[i]}%
               </span>
             </span>
           </div>
@@ -164,11 +183,13 @@ function Chip({
   style,
   tone = "light",
   tall = false,
+  compact = false,
 }: {
   children: React.ReactNode;
   style: React.CSSProperties;
   tone?: "ink" | "mint" | "light";
   tall?: boolean;
+  compact?: boolean;
 }) {
   const toneCls =
     tone === "ink"
@@ -178,8 +199,8 @@ function Chip({
         : "bg-white border-slate-200";
   return (
     <div
-      className={`absolute -translate-x-1/2 -translate-y-1/2 rounded-2xl border px-4 shadow-card ${toneCls} ${
-        tall ? "py-3" : "py-2.5"
+      className={`absolute -translate-x-1/2 -translate-y-1/2 rounded-2xl border shadow-card ${toneCls} ${
+        tall ? "px-4 py-3" : compact ? "px-2.5 py-2" : "px-4 py-2.5"
       }`}
       style={style}
     >

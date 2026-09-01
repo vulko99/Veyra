@@ -44,6 +44,7 @@ const en: Messages = {
       privacy: "Privacy",
       terms: "Terms",
       cookies: "Cookies",
+      ranking: "How we rank offers",
     },
     rights: "All rights reserved.",
     disclaimer:
@@ -495,6 +496,58 @@ const en: Messages = {
   },
   // --- Mandatory legal / regulatory strings --------------------------------
   // See the Bulgarian catalog for the authoritative comment. Labels only.
+  // See the Bulgarian catalog for the authoritative comment (ЗЗП чл. 47а).
+  ranking: {
+    eyebrow: "Transparency",
+    title: "How we rank offers",
+    intro:
+      "Veyra orders the options you see, so we think it is right to explain exactly which parameters determine that order — and where a commercial interest exists.",
+    paramsTitle: "What determines the order",
+    paramsIntro:
+      "Every suitable option is given a compatibility score from 0 to 100, calculated from the following factors with the weights shown:",
+    params: [
+      {
+        label: "Requested amount (25%)",
+        body: "How well the amount you requested sits within the product's range. An amount near the middle of the range scores higher than one at the very edge.",
+      },
+      {
+        label: "Requested term (20%)",
+        body: "The same logic for the repayment term against the product's range.",
+      },
+      {
+        label: "Income against the minimum (20%)",
+        body: "How far the income you stated exceeds the product's published minimum.",
+      },
+      {
+        label: "Employment type (20%)",
+        body: "How the employment type you stated relates to the product's requirements.",
+      },
+      {
+        label: "Product suitability (15%)",
+        body: "How well the product type matches the purpose you stated.",
+      },
+    ],
+    orderTitle: "The display order",
+    orderBody:
+      "Options are ordered by compatibility score, highest first.",
+    commercialTitle: "Do our commercial arrangements influence this",
+    commercialBody:
+      "Yes, but only on a tie. When two options receive the same compatibility score, their order is decided by a priority value Veyra sets for each partner and product. That value may reflect our commercial agreement with the partner. It cannot outrank a higher compatibility score — it only orders equal results.",
+    moneyTitle: "How Veyra is paid",
+    moneyBody:
+      "We are paid by the partners, not by you. If you continue to a partner and are subsequently approved, the partner may pay us a commission. The service is free for you and there is no mark-up on the partner's terms.",
+    notLenderTitle: "Veyra is not a lender",
+    notLenderBody:
+      "We do not lend money and do not make approval decisions. The compatibility score reflects a match against a partner's published criteria — it is not a credit score and not a probability of approval. The final decision and terms are set entirely by the relevant partner.",
+    notUsedTitle: "What we do not use",
+    notUsed: [
+      "We do not perform a credit assessment and do not query the ЦКР credit register.",
+      "We do not use hidden factors beyond those listed above.",
+      "We do not accept payment to place an option above an objectively more suitable one.",
+    ],
+    footnote:
+      "If any of these parameters change, this page is updated alongside them.",
+  },
   legal: {
     warningAria: "Mandatory warning",
     notALender: "Veyra is not a lender. The final decision is made by the partner.",

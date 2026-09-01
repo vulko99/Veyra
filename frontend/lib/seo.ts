@@ -57,6 +57,11 @@ export const PAGE_SEO: Record<string, Seo> = {
     title: "Общи условия | Veyra",
     description: "Общите условия за ползване на Veyra.",
   },
+  "/kak-podrezhdame-ofertite": {
+    title: "Как подреждаме офертите | Veyra",
+    description:
+      "По какви параметри Veyra подрежда показаните възможности, влияят ли търговските договорки върху реда и как печелим. Пълна прозрачност на класирането.",
+  },
   "/kalkulator": {
     title: "Кредитен калкулатор — месечна вноска и обща цена | Veyra",
     description:

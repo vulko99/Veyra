@@ -212,6 +212,17 @@ function ResultsInner() {
               credit, which includes the results/comparison view. */}
           <CreditWarning tone="dark" className="mt-6" />
 
+          {/* ЗЗП чл. 47а — the ranking disclosure has to be reachable from the
+              ranked view itself, not only from the footer. */}
+          <p className="mt-4 text-sm">
+            <Link
+              href="/kak-podrezhdame-ofertite"
+              className="font-medium text-mint-400 underline underline-offset-4 hover:text-mint"
+            >
+              {m.footer.links.ranking}
+            </Link>
+          </p>
+
           {matches && matches.length > 0 && (
             <>
               <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-mint/25 bg-mint/10 px-3.5 py-1.5 text-sm font-semibold text-mint-400">

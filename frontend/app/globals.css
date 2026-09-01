@@ -36,14 +36,149 @@ body {
   .btn {
     @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-[0.95rem] font-semibold transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas disabled:cursor-not-allowed disabled:opacity-45;
   }
+
+  /* Buttons lift under the cursor and press back down on click. Behind a
+     motion query so it does not become an instant jump for anyone who has
+     asked for less movement, and skipped on touch, where there is no hover
+     state to speak of and :hover can stick after a tap. */
+  @media (prefers-reduced-motion: no-preference) and (hover: hover) {
+    .btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+    }
+    .btn:active:not(:disabled) {
+      transform: translateY(0);
+      transition-duration: 80ms;
+    }
+  }
+  /* Frosted-glass character on the buttons.
+     Same colours, same pill shape, same type. What is added is the material:
+     a lit top edge, a darker bottom edge, and a blur behind the translucent
+     parts, so the button reads as a physical piece of glass rather than a flat
+     fill. This is a web approximation of that look, not Apple's Liquid Glass,
+     which is an Apple-platform material with no web equivalent.
+
+     The fills stay opaque enough to hold their contrast: the label on a mint
+     button is still ink on mint, not ink on whatever happens to be behind it. */
   .btn-primary {
-    @apply btn bg-ink text-white hover:bg-ink-700 focus-visible:ring-ink;
+    @apply btn text-white focus-visible:ring-ink;
+    background-image: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.16),
+      rgba(255, 255, 255, 0) 46%
+    );
+    background-color: rgba(11, 23, 42, 0.92);
+    backdrop-filter: blur(14px) saturate(150%);
+    -webkit-backdrop-filter: blur(14px) saturate(150%);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.22),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.25),
+      0 10px 26px -14px rgba(11, 23, 42, 0.65);
   }
+  .btn-primary:hover {
+    background-color: rgba(27, 44, 73, 0.94);
+  }
+
   .btn-mint {
-    @apply btn bg-mint text-ink hover:bg-mint-400 focus-visible:ring-mint shadow-[0_10px_30px_-10px_rgba(33,199,168,0.7)];
+    @apply btn text-ink focus-visible:ring-mint;
+    background-image: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.34),
+      rgba(255, 255, 255, 0) 52%
+    );
+    background-color: rgba(33, 199, 168, 0.92);
+    backdrop-filter: blur(14px) saturate(160%);
+    -webkit-backdrop-filter: blur(14px) saturate(160%);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.5),
+      inset 0 -1px 0 rgba(10, 90, 76, 0.28),
+      0 10px 30px -12px rgba(33, 199, 168, 0.6);
   }
+  .btn-mint:hover {
+    background-color: rgba(61, 214, 186, 0.95);
+  }
+
   .btn-ghost {
-    @apply btn bg-transparent text-ink ring-1 ring-inset ring-ink/15 hover:ring-ink/30 hover:bg-white;
+    @apply btn text-ink ring-1 ring-inset ring-ink/15 hover:ring-ink/30;
+    background-color: rgba(255, 255, 255, 0.42);
+    backdrop-filter: blur(14px) saturate(150%);
+    -webkit-backdrop-filter: blur(14px) saturate(150%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  }
+  .btn-ghost:hover {
+    background-color: rgba(255, 255, 255, 0.72);
+  }
+
+  /* Without backdrop support, or when the visitor asks for less transparency,
+     fall back to the original solid fills rather than a washed-out button. */
+  @supports not (backdrop-filter: blur(4px)) {
+    .btn-primary { background-color: #0b172a; }
+    .btn-mint { background-color: #21c7a8; }
+    .btn-ghost { background-color: #ffffff; }
+  }
+  @media (prefers-reduced-transparency: reduce) {
+    .btn-primary { background-color: #0b172a; backdrop-filter: none; }
+    .btn-mint { background-color: #21c7a8; backdrop-filter: none; }
+    .btn-ghost { background-color: #ffffff; backdrop-filter: none; }
+  }
+
+  /* The navigation bar as a sheet of frosted glass the page passes behind.
+     Kept light so the ink logo and nav labels hold their contrast against it;
+     the tint deepens on scroll, when busier content is running underneath. */
+  .glass-bar {
+    background-color: rgba(245, 247, 250, 0.55);
+    backdrop-filter: blur(18px) saturate(170%);
+    -webkit-backdrop-filter: blur(18px) saturate(170%);
+    border-bottom: 1px solid transparent;
+    box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.5);
+  }
+  .glass-bar--scrolled {
+    background-color: rgba(245, 247, 250, 0.78);
+    border-bottom-color: rgba(203, 213, 225, 0.6);
+    box-shadow:
+      inset 0 -1px 0 rgba(255, 255, 255, 0.55),
+      0 10px 30px -22px rgba(11, 23, 42, 0.5);
+  }
+
+  /* Controls sitting on the bar: the menu button and the language toggle.
+     Same shapes and colours, given the same material as the bar so they read
+     as part of it rather than as flat chips pasted on top. */
+  .glass-control {
+    background-color: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(12px) saturate(150%);
+    -webkit-backdrop-filter: blur(12px) saturate(150%);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.75),
+      inset 0 0 0 1px rgba(11, 23, 42, 0.06);
+  }
+  .glass-control:hover {
+    background-color: rgba(255, 255, 255, 0.72);
+  }
+
+  @supports not (backdrop-filter: blur(4px)) {
+    .glass-bar { background-color: rgba(245, 247, 250, 0.97); }
+    .glass-control { background-color: #ffffff; }
+  }
+  @media (prefers-reduced-transparency: reduce) {
+    .glass-bar {
+      background-color: rgba(245, 247, 250, 0.98);
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+    .glass-control {
+      background-color: #ffffff;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+  }
+
+  /* Runs a page's background up behind the navigation bar instead of stopping
+     at a hard edge below it, so the glass has something to refract. The bar's
+     height is given straight back as padding, so content still begins below
+     it. Applied to every page wrapper, which is what makes the bar behave the
+     same everywhere rather than only on the home page. */
+  .under-nav {
+    margin-top: -68px;
+    padding-top: 68px;
   }
 
   /* Controlled surfaces — used deliberately, not everywhere. */
@@ -230,9 +365,82 @@ body {
     box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.15), 0 0 0 2px #21c7a8;
   }
 
-  /* Staggered entrance for step content / result cards. */
+  /* Staggered entrance for step content / result cards. Fires on load, so it
+     is for content that is already in view: the hero and the top of a page. */
   .reveal > * {
     animation: fade-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  /* Entrance for sections further down the page: they animate when scrolled
+     to, rather than finishing unseen while the visitor is still on the hero.
+
+     Driven by IntersectionObserver rather than `animation-timeline: view()`.
+     The CSS feature is Chromium-only, and worse, `CSS.supports()` reports it
+     as available in builds where it does not actually run, so @supports
+     cannot gate it safely.
+
+     Fail-safe by construction: a section is only hidden once script has armed
+     it AND confirmed it is below the fold. With no JavaScript, no observer, or
+     reduced motion, nothing is ever hidden and every section renders normally.
+     That matters more than the animation on a page carrying legal disclosures. */
+  /* Rises out of a blur: the section resolves into focus as it lifts, which is
+     what gives the effect its weight rather than a plain fade. Blur is the
+     expensive part, so it is dropped the moment the transition ends via
+     `is-settled`, leaving no filter on the element while it is just sitting
+     there being read. */
+  .reveal-scroll.reveal-armed {
+    opacity: 0;
+    transform: translateY(26px);
+    filter: blur(10px);
+    will-change: opacity, transform, filter;
+  }
+  .reveal-scroll.reveal-armed.is-revealed {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+    transition:
+      opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.85s cubic-bezier(0.16, 1, 0.3, 1),
+      filter 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  /* No settled state is needed: the script removes reveal-armed once the
+     transition finishes, which drops every one of these properties at once. */
+
+  /* Mobile menu panel: slides and fades rather than appearing instantly. */
+  .menu-panel {
+    animation: menu-in 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+    transform-origin: top center;
+  }
+
+  /* Properly frosted rather than merely tinted. The bar's 18px blur is enough
+     for a thin strip, but across a full panel it left the hero headline
+     readable through the menu. A much heavier blur does the work instead of
+     opacity, so the panel stays genuinely translucent — colour and light from
+     the page still come through and shift as you scroll — while nothing behind
+     it resolves into readable shapes. */
+  .menu-panel.glass-bar {
+    background-color: rgba(245, 247, 250, 0.72);
+    backdrop-filter: blur(40px) saturate(180%);
+    -webkit-backdrop-filter: blur(40px) saturate(180%);
+  }
+  .menu-panel.glass-bar--scrolled {
+    background-color: rgba(245, 247, 250, 0.78);
+  }
+  @supports not (backdrop-filter: blur(4px)) {
+    /* No blur available, so opacity has to carry it on its own. */
+    .menu-panel.glass-bar {
+      background-color: rgba(245, 247, 250, 0.98);
+    }
+  }
+  @media (prefers-reduced-transparency: reduce) {
+    .menu-panel.glass-bar {
+      background-color: rgba(245, 247, 250, 0.98);
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+  }
+  .menu-panel--closing {
+    animation: menu-out 0.2s cubic-bezier(0.4, 0, 1, 1) both;
   }
   .reveal > *:nth-child(1) { animation-delay: 0.04s; }
   .reveal > *:nth-child(2) { animation-delay: 0.10s; }
@@ -268,5 +476,27 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+@keyframes menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scaleY(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes menu-out {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-6px) scaleY(0.98);
   }
 }

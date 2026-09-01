@@ -54,7 +54,7 @@ export function LandingPage({ data }: { data: Landing }) {
   };
 
   return (
-    <div className="relative">
+    <div className="under-nav relative">
       <JsonLd data={faqJsonLd} />
       <JsonLd data={breadcrumb} />
       <TrackView event="landing_view" page={data.slug} />

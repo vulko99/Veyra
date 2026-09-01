@@ -9,9 +9,11 @@ type Tone = "light" | "dark";
 
 const TONES: Record<Tone, { group: string; active: string; idle: string }> = {
   light: {
-    group: "border-slate-200/80 bg-white/70",
+    // glass-control gives this the same frosted material as the bar it sits
+    // on, so it reads as part of the chrome rather than a chip on top of it.
+    group: "glass-control border-slate-200/70",
     active: "bg-ink text-white",
-    idle: "text-ink/55 hover:bg-white hover:text-ink",
+    idle: "text-ink/55 hover:bg-white/70 hover:text-ink",
   },
   dark: {
     group: "border-appborder bg-white/5",

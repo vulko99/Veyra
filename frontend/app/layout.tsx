@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Manrope, Inter } from "next/font/google";
 import "./globals.css";
 import { ApplicationProvider } from "@/hooks/useApplication";
+import { ScrollReveal } from "@/components/ScrollReveal";
 import { I18nProvider } from "@/hooks/useI18n";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -101,6 +102,7 @@ export default function RootLayout({
         <JsonLd data={siteJsonLd} />
         <I18nProvider initialLocale={defaultLocale}>
           <ApplicationProvider>
+            <ScrollReveal />
             <SiteHeader />
             <main className="flex-1">{children}</main>
             <SiteFooter />

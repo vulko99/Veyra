@@ -12,7 +12,7 @@ export default function FaqPage() {
   }, [m.faq.title]);
 
   return (
-    <div className="relative">
+    <div className="under-nav relative">
       <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-60 grid-lines mask-fade-b opacity-50" />
       <div className="container-x max-w-3xl py-20">
         <div className="reveal">

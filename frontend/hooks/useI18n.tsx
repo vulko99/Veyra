@@ -1,8 +1,15 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+
 import { defaultLocale, type Locale } from "@/i18n/config";
 import { getMessages, interpolate, resolveLocale, type Messages } from "@/i18n";
+
 
 const LOCALE_STORAGE_KEY = "veyra_locale";
 
@@ -25,7 +32,16 @@ export function I18nProvider({
 }) {
   const [locale, setLocaleState] = useState<Locale>(initialLocale);
 
-  // Honour a previously chosen locale (prepared for a future language switch).
+  // Honour a previously chosen locale.
+  //
+  // This runs after paint, which is why a visitor whose stored locale is not
+  // the default sees one frame of Bulgarian before it swaps. That is not fixable
+  // here: pages are prerendered in the default locale, so applying the stored
+  // locale any earlier (useLayoutEffect) changes the tree React is hydrating
+  // against and throws a hydration error, which tears down the client tree and
+  // takes every other effect with it. Removing the flash for real needs the
+  // server to know the locale — locale-prefixed routes, or a cookie with
+  // dynamic rendering. Do not "optimise" this into a layout effect.
   useEffect(() => {
     try {
       const stored = window.localStorage.getItem(LOCALE_STORAGE_KEY);

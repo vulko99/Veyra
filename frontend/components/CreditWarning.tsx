@@ -18,10 +18,16 @@ import { useMessages } from "@/hooks/useI18n";
  * The wording itself is NOT inlined here: it comes from CREDIT_WARNING in
  * config/legal.ts, so the final statutory text can be corrected in one edit.
  *
- * NOTE: only the aria-label follows the active locale. CREDIT_WARNING itself
- * stays Bulgarian in every locale — it is statutory wording mandated in
- * Bulgarian, not copy to be translated. Do not "fix" that by moving it into
- * the message catalogs.
+ * CREDIT_WARNING is rendered in EVERY locale. It is statutory wording mandated
+ * in Bulgarian, not copy to be translated, so it must never be moved into the
+ * message catalogues and must never be swapped out for a translation of it.
+ *
+ * A locale may supply `legal.warningGloss` — the same warning in the reader's
+ * language. That is an ADDITION, not a replacement: the gloss leads, and the
+ * Bulgarian follows beneath it, labelled by `legal.warningGlossNote`. If you
+ * find yourself writing `warningGloss || CREDIT_WARNING`, that is the bug this
+ * comment exists to prevent — it takes the mandated sentence off the page
+ * entirely for every non-Bulgarian reader.
  */
 export function CreditWarning({
   tone = "light",
@@ -69,10 +75,41 @@ export function CreditWarning({
           locale the reader's language leads and the mandated Bulgarian follows,
           labelled as the binding wording, so the warning still appears on the
           page in the form the Act requires rather than being replaced.
-          t-body, not t-small: the leading line may never be fine print. */}
-      {/* One line, in the reader's language. t-body, not t-small: this may
-          never be rendered as fine print. */}
-      <p className="t-body font-semibold">{m.warningGloss || CREDIT_WARNING}</p>
+          t-body, not t-small: the leading line may never be fine print.
+
+          This was an `||`, which made the gloss REPLACE the statutory sentence:
+          every English page carried the warning only in translation, and the
+          mandated Bulgarian text appeared nowhere on it. `warningGlossNote`
+          existed for the label and was never rendered. The requirement is on
+          the wording itself, so a translation of it does not discharge the
+          obligation — the Bulgarian has to be present. */}
+      <div>
+        <p className="t-body font-semibold">
+          {m.warningGloss || CREDIT_WARNING}
+        </p>
+        {m.warningGloss && (
+          // Only when a gloss led. `lang` is set because this sentence is
+          // Bulgarian inside an otherwise English document, and a screen
+          // reader should not read it with English pronunciation.
+          //
+          // Smaller and lighter than the line above, but deliberately not
+          // `t-caption`: this is the binding text, and the Act's prominence
+          // requirement does not stop applying because a translation sits
+          // above it.
+          <p className="mt-1 t-small">
+            {/* `lang` covers the statutory sentence ONLY. The note beside it is
+                written in the reader's language, so including it here would
+                have a screen reader announce English with Bulgarian
+                pronunciation rules. */}
+            <span lang="bg" className="font-semibold">
+              {CREDIT_WARNING}
+            </span>
+            {m.warningGlossNote && (
+              <span className="text-muted"> — {m.warningGlossNote}</span>
+            )}
+          </p>
+        )}
+      </div>
     </div>
   );
 }

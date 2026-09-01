@@ -4,6 +4,22 @@ import { useI18n } from "@/hooks/useI18n";
 import { locales, localeNames } from "@/i18n/config";
 import { track } from "@/lib/analytics";
 
+/** Light site chrome vs. the dark application-flow shell. */
+type Tone = "light" | "dark";
+
+const TONES: Record<Tone, { group: string; active: string; idle: string }> = {
+  light: {
+    group: "border-slate-200/80 bg-white/70",
+    active: "bg-ink text-white",
+    idle: "text-ink/55 hover:bg-white hover:text-ink",
+  },
+  dark: {
+    group: "border-appborder bg-white/5",
+    active: "bg-appwhite text-midnight",
+    idle: "text-appmuted hover:bg-white/10 hover:text-appwhite",
+  },
+};
+
 /** Bulgarian/English switcher.
  *
  *  Bulgarian is the primary language; English is the secondary convenience
@@ -15,14 +31,21 @@ import { track } from "@/lib/analytics";
  *  readable at a glance, which matters when the label you can read is the one
  *  you are switching away from.
  */
-export function LanguageToggle({ className = "" }: { className?: string }) {
+export function LanguageToggle({
+  className = "",
+  tone = "light",
+}: {
+  className?: string;
+  tone?: Tone;
+}) {
   const { locale, setLocale, m } = useI18n();
+  const t = TONES[tone];
 
   return (
     <div
       role="group"
       aria-label={m.nav.language}
-      className={`inline-flex items-center rounded-full border border-slate-200/80 bg-white/70 p-0.5 ${className}`}
+      className={`inline-flex items-center rounded-full border p-0.5 ${t.group} ${className}`}
     >
       {locales.map((code) => {
         const active = locale === code;
@@ -38,9 +61,7 @@ export function LanguageToggle({ className = "" }: { className?: string }) {
               track("language_changed", { locale: code });
             }}
             className={`rounded-full px-2.5 py-1 text-xs font-semibold uppercase tracking-wide transition ${
-              active
-                ? "bg-ink text-white"
-                : "text-ink/55 hover:bg-white hover:text-ink"
+              active ? t.active : t.idle
             }`}
           >
             <span aria-hidden="true">{code}</span>

@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { useApplication } from "@/hooks/useApplication";
 import { useMessages } from "@/hooks/useI18n";
 import { Logo } from "@/components/Logo";
+import { LanguageToggle } from "@/components/LanguageToggle";
 
 export default function ApplyIntroPage() {
   const { update } = useApplication();
@@ -27,7 +28,13 @@ export default function ApplyIntroPage() {
   }, []);
 
   return (
-    <div className="app-shell">
+    <div className="app-shell relative">
+      {/* This page has its own bare shell rather than AppShell, so the
+          switcher is placed by hand — same top-right corner and edge
+          padding the wizard header uses. */}
+      <div className="absolute right-5 top-6 sm:right-10">
+        <LanguageToggle tone="dark" />
+      </div>
       <div className="container-x flex min-h-screen max-w-xl flex-col justify-center py-14 text-center">
         <div className="reveal">
           <div className="mx-auto flex justify-center">

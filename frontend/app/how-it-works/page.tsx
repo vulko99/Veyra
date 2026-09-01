@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect } from "react";
 import { useMessages } from "@/hooks/useI18n";
+import { PrimaryCta } from "@/components/PrimaryCta";
 
 export default function HowItWorksPage() {
   const m = useMessages();
@@ -76,10 +77,7 @@ export default function HowItWorksPage() {
         </div>
 
         <div className="mt-14">
-          <Link href="/apply" className="btn-mint">
-            {m.common.startCta}
-            <span aria-hidden>→</span>
-          </Link>
+          <PrimaryCta label={m.common.startCta} location="how_it_works" />
         </div>
       </div>
     </div>

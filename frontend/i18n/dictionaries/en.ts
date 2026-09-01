@@ -573,6 +573,19 @@ const en: Messages = {
     accept: "Accept analytics",
     reject: "Essential only",
   },
+  prelaunch: {
+    cta: "Credit calculator",
+    eyebrow: "Coming soon",
+    title: "We are not accepting requests yet.",
+    body:
+      "Veyra is preparing to launch. Until our partner agreements are finalised we are not accepting credit requests.",
+    noData:
+      "We collect no personal data on this page — there is no form, and we are not asking for an email or phone number.",
+    meanwhileTitle: "In the meantime",
+    calculatorCta: "Work out a monthly payment",
+    guidesCta: "Read the guides",
+    notALender: "Veyra is not a lender. We do not lend money or make approval decisions.",
+  },
   legal: {
     warningAria: "Mandatory warning",
     notALender: "Veyra is not a lender. The final decision is made by the partner.",

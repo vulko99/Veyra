@@ -3,6 +3,7 @@ import type { Landing } from "@/lib/landing-content";
 import { JsonLd } from "@/components/JsonLd";
 import { TrackView } from "@/components/TrackView";
 import { CreditWarning } from "@/components/CreditWarning";
+import { PrimaryCta } from "@/components/PrimaryCta";
 import { LegalDisclosures } from "@/components/LegalDisclosures";
 import { SITE_URL } from "@/lib/seo";
 
@@ -71,9 +72,7 @@ export function LandingPage({ data }: { data: Landing }) {
               the body flow, above the fold-ish, never as footer fine print. */}
           <CreditWarning className="mt-6" />
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Link href="/apply" className="btn-mint">
-              Започни заявка<span aria-hidden>→</span>
-            </Link>
+            <PrimaryCta label="Започни заявка" location={`landing:${data.slug}`} />
             <Link href="/kalkulator" className="btn-ghost">
               Кредитен калкулатор
             </Link>
@@ -148,9 +147,7 @@ export function LandingPage({ data }: { data: Landing }) {
           <h2 className="t-h2 text-appwhite">{data.ctaTitle}</h2>
           <p className="mx-auto mt-3 max-w-xl t-body text-appmuted">{data.ctaBody}</p>
           <div className="mt-7">
-            <Link href="/apply" className="btn-mint">
-              Започни заявка<span aria-hidden>→</span>
-            </Link>
+            <PrimaryCta label="Започни заявка" location={`landing_cta:${data.slug}`} />
           </div>
           <p className="mt-5 t-caption text-appmuted">
             Veyra не е кредитор. Окончателното решение и условията се определят от съответния партньор.

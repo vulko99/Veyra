@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { GUIDES, getGuide } from "@/lib/guides-content";
 import { SITE_URL } from "@/lib/seo";
 import { JsonLd } from "@/components/JsonLd";
+import { PrimaryCta } from "@/components/PrimaryCta";
 import { TrackView } from "@/components/TrackView";
 
 export function generateStaticParams() {
@@ -137,9 +138,7 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
             Една заявка, няколко възможности. Без регистрация и без ангажимент.
           </p>
           <div className="mt-6">
-            <Link href="/apply" className="btn-mint">
-              Започни заявка<span aria-hidden>→</span>
-            </Link>
+            <PrimaryCta label="Започни заявка" location="guide" />
           </div>
         </div>
       </article>

@@ -26,6 +26,29 @@ Check progress at any time:
 cd frontend && npm run check:legal
 ```
 
+### Pre-launch mode
+
+While `NEXT_PUBLIC_PRELAUNCH` is unset or `true` (the default), `/apply` and
+`/results` are closed and every primary CTA points at the calculator. The rest
+of the site — calculator, guides, loan-purpose pages, legal pages — stays fully
+live and indexable, so the SEO clock runs while the items below are gathered.
+
+This exists because the funnel collects a name, phone, email and income, and
+the consent text names Veyra as the data controller. **Until a registered
+entity exists to be that controller, the funnel must not take real
+submissions.** The default is ON so that forgetting a variable cannot result in
+collecting personal data on behalf of a company that does not exist.
+
+Set `NEXT_PUBLIC_PRELAUNCH=false` only when all of these hold:
+
+1. the company is registered and §1 below is supplied;
+2. at least one partner is signed and published in `config/partners.ts`;
+3. the disclosures in §2 are filled in;
+4. `NEXT_PUBLIC_API_URL` points at the real backend — otherwise the funnel
+   collects a phone number and then fails at submit.
+
+The build guard blocks the combination of an open funnel and a missing ЕИК.
+
 ### The build guard
 
 `frontend/scripts/check-legal-values.mjs` runs automatically before every build

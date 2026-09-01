@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useMemo, useRef, useState } from "react";
 import { track } from "@/lib/analytics";
 import { APR_CAP, formatAprCap } from "@/config/legal";
+import { PRELAUNCH } from "@/config/launch";
 import { useMessages } from "@/hooks/useI18n";
 
 const EUR = new Intl.NumberFormat("bg-BG", {
@@ -96,17 +97,19 @@ export function CreditCalculator() {
           <p className="mt-4 t-caption text-muted">
             {c.aprCapRef} {formatAprCap()}
           </p>
-          <Link
-            href="/apply"
-            className="btn-mint mt-6 w-full justify-center"
-            onClick={() => {
-              track("calculator_completed", { amount, months });
-              track("cta_click", { location: "calculator", amount, months });
-            }}
-          >
-            {c.cta}
-            <span aria-hidden>→</span>
-          </Link>
+          {!PRELAUNCH && (
+            <Link
+              href="/apply"
+              className="btn-mint mt-6 w-full justify-center"
+              onClick={() => {
+                track("calculator_completed", { amount, months });
+                track("cta_click", { location: "calculator", amount, months });
+              }}
+            >
+              {c.cta}
+              <span aria-hidden>→</span>
+            </Link>
+          )}
           <p className="mt-3 t-caption leading-relaxed text-muted">{c.disclaimer}</p>
         </div>
       </div>

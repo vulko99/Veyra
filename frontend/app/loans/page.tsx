@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { PageShell, Section } from "@/components/PageShell";
 import { useMessages } from "@/hooks/useI18n";
+import { PrimaryCta } from "@/components/PrimaryCta";
 
 export default function LoansPage() {
   const m = useMessages();
@@ -24,10 +25,7 @@ export default function LoansPage() {
         </ul>
       </Section>
       <div className="pt-2">
-        <Link href="/apply" className="btn-mint">
-          {m.common.startCta}
-          <span aria-hidden>→</span>
-        </Link>
+        <PrimaryCta label={m.common.startCta} location="loans" />
       </div>
     </PageShell>
   );

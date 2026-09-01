@@ -66,6 +66,20 @@ function todosIn(rel) {
 const blocking = [];
 const warnings = [];
 
+// 0. The combination that matters most: the funnel is accepting applications
+// while no legal entity exists to be the data controller. Pre-launch mode
+// (config/launch.ts) defaults to ON precisely so this cannot happen by
+// forgetting a variable — this catches someone turning it off too early.
+const funnelOpen = process.env.NEXT_PUBLIC_PRELAUNCH === "false";
+if (funnelOpen && envMissing("NEXT_PUBLIC_COMPANY_EIK")) {
+  blocking.push(
+    "FUNNEL IS OPEN (NEXT_PUBLIC_PRELAUNCH=false) but no company ЕИК is set. " +
+      "The funnel collects name, phone, email and income, and the consent text " +
+      "names Veyra as the data controller. Do not accept submissions before the " +
+      "entity is registered — set NEXT_PUBLIC_PRELAUNCH=true until it is."
+  );
+}
+
 // 1. Company identity — env-backed. TODO-LEGAL.md §1.
 const COMPANY_ENV = [
   ["NEXT_PUBLIC_COMPANY_LEGAL_NAME", "Legal entity name"],

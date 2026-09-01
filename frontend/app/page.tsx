@@ -5,6 +5,7 @@ import { useMessages } from "@/hooks/useI18n";
 import { MatchingViz } from "@/components/MatchingViz";
 import { JsonLd } from "@/components/JsonLd";
 import { CreditWarning } from "@/components/CreditWarning";
+import { PrimaryCta } from "@/components/PrimaryCta";
 import { LegalDisclosures } from "@/components/LegalDisclosures";
 import { track } from "@/lib/analytics";
 import { SITE_URL } from "@/lib/seo";
@@ -54,14 +55,7 @@ export default function HomePage() {
               {m.home.subhead}
             </p>
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-              <Link
-                href="/apply"
-                className="btn-mint"
-                onClick={() => track("cta_click", { location: "hero" })}
-              >
-                {m.home.primaryCta}
-                <span aria-hidden>→</span>
-              </Link>
+              <PrimaryCta label={m.home.primaryCta} location="hero" />
               <Link href="/how-it-works" className="btn-ghost">
                 {m.home.secondaryCta}
               </Link>
@@ -221,14 +215,7 @@ export default function HomePage() {
             {m.home.ctaBody}
           </p>
           <div className="relative mt-9">
-            <Link
-              href="/apply"
-              className="btn-mint"
-              onClick={() => track("cta_click", { location: "home_cta" })}
-            >
-              {m.home.primaryCta}
-              <span aria-hidden>→</span>
-            </Link>
+            <PrimaryCta label={m.home.primaryCta} location="home_cta" />
           </div>
         </div>
       </section>

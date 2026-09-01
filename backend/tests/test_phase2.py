@@ -191,6 +191,31 @@ def test_consent_records_and_event(api_client):
     assert app.events.filter(event_type=ApplicationEventType.CONSENT_GRANTED).exists()
 
 
+def test_consent_records_wording_version_not_policy_version(api_client, settings):
+    """The consent WORDING version is stored, distinct from the policy versions.
+
+    Regression guard: consent_text_version used to be filled with
+    PRIVACY_POLICY_VERSION, so changing the consent checkbox copy left no trace
+    and we could not prove what text a user had actually agreed to.
+    """
+    settings.CONSENT_TEXT_VERSION = "wording-2026-09-01"
+    settings.PRIVACY_POLICY_VERSION = "policy-2026-01-01"
+    settings.TERMS_VERSION = "terms-2026-01-01"
+
+    data = _create_application(api_client)
+    _grant_consent(api_client, data["id"], marketing=True)
+
+    app = Application.objects.get(public_id=data["id"])
+    consents = list(app.consents.all())
+    assert len(consents) == 3  # platform, partner transfer, marketing
+
+    for consent in consents:
+        assert consent.consent_text_version == "wording-2026-09-01"
+        # The three versions are tracked independently of one another.
+        assert consent.privacy_policy_version == "policy-2026-01-01"
+        assert consent.terms_version == "terms-2026-01-01"
+
+
 # --------------------------------------------------------------------------
 # Matching
 # --------------------------------------------------------------------------

@@ -50,6 +50,36 @@ def test_income_eligibility_below_minimum(product):
     assert eligible is False
 
 
+def test_ad_eligible_defaults_to_true(product):
+    """Products are advertisable unless explicitly marked otherwise."""
+    assert product.ad_eligible is True
+
+
+def test_ad_eligible_does_not_affect_matching(product):
+    """ad_eligible governs the ADVERTISING surface only.
+
+    Google prohibits advertising personal loans repayable within 60 days, so
+    such products are flagged out of paid landing pages. That must never change
+    which options a borrower is shown: a product that cannot be featured in a
+    paid campaign is still a legitimate match.
+    """
+    app = _application(requested_amount=Decimal("1000"))
+
+    def summary(result):
+        return [(m["product_id"], m["score"], m["rank"]) for m in result["matches"]]
+
+    # match_application replaces prior matches, so running it twice is safe.
+    before = summary(match_application(app))
+    assert before, "fixture product must match, otherwise this proves nothing"
+
+    product.ad_eligible = False
+    product.save(update_fields=["ad_eligible"])
+    after = summary(match_application(app))
+
+    assert after == before
+    assert str(product.id) in [row[0] for row in after]
+
+
 def test_multiple_lenders_and_ranking(product_factory, lender):
     from apps.lenders.models import Lender
 

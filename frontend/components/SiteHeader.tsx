@@ -6,12 +6,8 @@ import { useEffect, useState } from "react";
 import { Logo } from "./Logo";
 import { LanguageToggle } from "./LanguageToggle";
 import { useMessages } from "@/hooks/useI18n";
+import { isAppFlowPath } from "@/lib/locale";
 import { PrimaryCta } from "./PrimaryCta";
-
-// The application flow is a distinct dark product experience with its own chrome.
-function isAppFlow(pathname: string | null): boolean {
-  return !!pathname && (pathname.startsWith("/apply") || pathname.startsWith("/results"));
-}
 
 export function SiteHeader() {
   const m = useMessages();
@@ -54,7 +50,7 @@ export function SiteHeader() {
     { href: "/responsible-borrowing", label: m.nav.responsible },
   ];
 
-  if (isAppFlow(pathname)) return null;
+  if (isAppFlowPath(pathname)) return null;
 
   return (
     // The header itself carries NO backdrop-filter. An element with one becomes

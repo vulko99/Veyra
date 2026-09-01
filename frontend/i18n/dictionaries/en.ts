@@ -122,6 +122,23 @@ const en: Messages = {
       explainer:
         "Compatibility shows how well the data you entered matches the partner's configured criteria. It is not an approval probability. The final decision is made by the respective lender.",
     },
+    tools: {
+      title: "Tools",
+      open: "Open",
+      intro: "Everything here is usable without submitting an application.",
+      calculator: {
+        title: "Credit calculator",
+        body: "Work out an indicative monthly instalment and total cost by amount, term and interest rate.",
+      },
+      guides: {
+        title: "Guides",
+        body: "What APR is, what instalment you can afford, and what to look for in the agreement.",
+      },
+      ranking: {
+        title: "How we order the options",
+        body: "Which parameters we use to order the options shown, and how we earn.",
+      },
+    },
   },
   howItWorks: {
     title: "How Veyra works",

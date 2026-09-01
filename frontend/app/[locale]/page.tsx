@@ -219,6 +219,42 @@ export default function HomePage() {
         </p>
       </section>
 
+      {/* Tools.
+          The application is one way into Veyra, not the only one. These three
+          are usable without starting one, which matters for a visitor who is
+          still working out what they can afford — and it gives the calculator a
+          home on the front page rather than only in the nav. */}
+      <section className="reveal-scroll container-x pb-20">
+        <div className="max-w-2xl">
+          <h2 className="text-3xl font-bold tracking-tight text-ink sm:text-[2.6rem]">
+            {m.home.tools.title}
+          </h2>
+          <p className="mt-4 leading-relaxed text-muted">{m.home.tools.intro}</p>
+        </div>
+        <div className="mt-10 grid gap-4 sm:grid-cols-3">
+          {[
+            { href: "/kalkulator", ...m.home.tools.calculator },
+            { href: "/guides", ...m.home.tools.guides },
+            { href: "/kak-podrezhdame-ofertite", ...m.home.tools.ranking },
+          ].map((tool) => (
+            <Link
+              key={tool.href}
+              href={tool.href}
+              className="card-outline group flex flex-col p-6"
+            >
+              <h3 className="t-h3 text-ink">{tool.title}</h3>
+              <p className="mt-2 t-small flex-1 text-muted">{tool.body}</p>
+              <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-mint-600">
+                {m.home.tools.open}
+                <span aria-hidden className="transition-transform group-hover:translate-x-0.5">
+                  →
+                </span>
+              </span>
+            </Link>
+          ))}
+        </div>
+      </section>
+
       {/* Mandatory disclosures — required by the Google Ads financial
           products policy and by ЗПК чл. 25. Plain page content: no accordion,
           no modal, no footer-only placement. */}

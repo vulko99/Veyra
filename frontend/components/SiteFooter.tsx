@@ -4,6 +4,7 @@ import Link from "@/components/LocaleLink";
 import { usePathname } from "next/navigation";
 import { Logo } from "./Logo";
 import { useMessages } from "@/hooks/useI18n";
+import { isAppFlowPath } from "@/lib/locale";
 import { CompanyIdentity } from "./CompanyIdentity";
 
 export function SiteFooter() {
@@ -12,7 +13,7 @@ export function SiteFooter() {
   const f = m.footer;
 
   // Hidden on the dark application flow (it has its own chrome).
-  if (pathname && (pathname.startsWith("/apply") || pathname.startsWith("/results"))) {
+  if (isAppFlowPath(pathname)) {
     return null;
   }
 

@@ -85,7 +85,7 @@ export function LandingPage({ data }: { data: Landing }) {
 
         <div className="mt-14 space-y-10">
           {data.sections.map((s) => (
-            <section key={s.h2} className="border-t border-slate-200/80 pt-7">
+            <section key={s.h2} className="reveal-scroll border-t border-slate-200/80 pt-7">
               <h2 className="t-h3 text-ink">{s.h2}</h2>
               {s.body && <p className="mt-2 t-body text-muted">{s.body}</p>}
               {s.bullets && (
@@ -103,7 +103,7 @@ export function LandingPage({ data }: { data: Landing }) {
         </div>
 
         {/* Related internal links (keeps growth pages linked, spreads equity) */}
-        <nav aria-label="Свързани страници" className="mt-12 flex flex-wrap gap-2.5">
+        <nav aria-label="Свързани страници" className="reveal-scroll mt-12 flex flex-wrap gap-2.5">
           {RELATED.filter((r) => r.href !== `/${data.slug}`).map((r) => (
             <Link
               key={r.href}
@@ -116,7 +116,7 @@ export function LandingPage({ data }: { data: Landing }) {
         </nav>
 
         {/* Relevant guides */}
-        <section className="mt-12 border-t border-slate-200/80 pt-8">
+        <section className="reveal-scroll mt-12 border-t border-slate-200/80 pt-8">
           <h2 className="t-h3 text-ink">Полезно четиво</h2>
           <ul className="mt-4 space-y-2">
             {GUIDE_LINKS.map((g) => (
@@ -131,10 +131,10 @@ export function LandingPage({ data }: { data: Landing }) {
 
         {/* Mandatory disclosures — required by the Google Ads financial
             products policy and by ЗПК чл. 25. */}
-        <LegalDisclosures className="mt-14" />
+        <LegalDisclosures className="reveal-scroll mt-14" />
 
         {/* FAQ */}
-        <section className="mt-14 border-t border-slate-200/80 pt-8">
+        <section className="reveal-scroll mt-14 border-t border-slate-200/80 pt-8">
           <h2 className="t-h3 text-ink">Често задавани въпроси</h2>
           <div className="mt-5 space-y-5">
             {data.faq.map((f) => (
@@ -147,7 +147,7 @@ export function LandingPage({ data }: { data: Landing }) {
         </section>
 
         {/* CTA */}
-        <div className="surface-dark relative mt-14 overflow-hidden rounded-[2rem] px-8 py-12 text-center sm:px-14">
+        <div className="reveal-scroll surface-dark relative mt-14 overflow-hidden rounded-[2rem] px-8 py-12 text-center sm:px-14">
           <h2 className="t-h2 text-appwhite">{data.ctaTitle}</h2>
           <p className="mx-auto mt-3 max-w-xl t-body text-appmuted">{data.ctaBody}</p>
           <div className="mt-7">

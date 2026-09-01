@@ -16,7 +16,7 @@ export default function FaqPage() {
           <h1 className="t-h1 mt-4 text-ink">{m.faq.title}</h1>
         </div>
 
-        <div className="mt-12 space-y-3">
+        <div className="reveal-scroll mt-12 space-y-3">
           {m.faq.items.map((item, i) => {
             const isOpen = open === i;
             return (

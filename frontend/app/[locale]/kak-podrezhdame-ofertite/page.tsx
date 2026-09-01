@@ -35,7 +35,7 @@ export default function RankingPage() {
         </header>
 
         {/* The scoring factors and their weights. */}
-        <section className="mt-14 border-t border-slate-200/80 pt-7">
+        <section className="reveal-scroll mt-14 border-t border-slate-200/80 pt-7">
           <h2 className="t-h3 text-ink">{m.paramsTitle}</h2>
           <p className="mt-2 t-body text-muted">{m.paramsIntro}</p>
           <dl className="mt-6 space-y-5">
@@ -50,29 +50,29 @@ export default function RankingPage() {
           </dl>
         </section>
 
-        <section className="mt-10 border-t border-slate-200/80 pt-7">
+        <section className="reveal-scroll mt-10 border-t border-slate-200/80 pt-7">
           <h2 className="t-h3 text-ink">{m.orderTitle}</h2>
           <p className="mt-2 t-body text-muted">{m.orderBody}</p>
         </section>
 
         {/* The commercial disclosure. Highlighted deliberately: this is the
             part a reader is entitled to find without hunting for it. */}
-        <section className="mt-10 rounded-2xl border border-slate-200 bg-white p-6 sm:p-7">
+        <section className="reveal-scroll mt-10 rounded-2xl border border-slate-200 bg-white p-6 sm:p-7">
           <h2 className="t-h3 text-ink">{m.commercialTitle}</h2>
           <p className="mt-2 t-body text-ink">{m.commercialBody}</p>
         </section>
 
-        <section className="mt-10 border-t border-slate-200/80 pt-7">
+        <section className="reveal-scroll mt-10 border-t border-slate-200/80 pt-7">
           <h2 className="t-h3 text-ink">{m.moneyTitle}</h2>
           <p className="mt-2 t-body text-muted">{m.moneyBody}</p>
         </section>
 
-        <section className="mt-10 border-t border-slate-200/80 pt-7">
+        <section className="reveal-scroll mt-10 border-t border-slate-200/80 pt-7">
           <h2 className="t-h3 text-ink">{m.notLenderTitle}</h2>
           <p className="mt-2 t-body text-muted">{m.notLenderBody}</p>
         </section>
 
-        <section className="mt-10 border-t border-slate-200/80 pt-7">
+        <section className="reveal-scroll mt-10 border-t border-slate-200/80 pt-7">
           <h2 className="t-h3 text-ink">{m.notUsedTitle}</h2>
           <ul className="mt-3 space-y-2">
             {m.notUsed.map((item) => (

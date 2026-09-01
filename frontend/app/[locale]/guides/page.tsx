@@ -22,7 +22,7 @@ export default function GuidesIndex() {
           </p>
         </header>
 
-        <div className="mt-12 grid gap-4 sm:grid-cols-2">
+        <div className="reveal-scroll mt-12 grid gap-4 sm:grid-cols-2">
           {GUIDES.map((g) => (
             <Link
               key={g.slug}

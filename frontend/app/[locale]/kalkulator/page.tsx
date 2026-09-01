@@ -19,11 +19,15 @@ export default function CalculatorPage() {
 
         <CreditWarning className="mt-8" />
 
-        <div className="mt-8">
+        {/* The mandatory warning above is deliberately left un-animated: it is
+            regulated copy that must be readable the instant the page is, and it
+            sits high enough that ScrollReveal would not arm it on most screens
+            anyway. */}
+        <div className="reveal-scroll mt-8">
           <CreditCalculator />
         </div>
 
-        <section className="mt-14 max-w-2xl border-t border-slate-200/80 pt-8">
+        <section className="reveal-scroll mt-14 max-w-2xl border-t border-slate-200/80 pt-8">
           <h2 className="t-h3 text-ink">{c.seoHeading}</h2>
           <p className="mt-2 t-body text-muted">{c.seoBody}</p>
         </section>

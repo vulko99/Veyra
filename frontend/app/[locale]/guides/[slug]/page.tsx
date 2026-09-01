@@ -94,7 +94,7 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
         </p>
         <p className="mt-6 t-body text-muted">{g.intro}</p>
 
-        <div className="mt-8 space-y-5">
+        <div className="reveal-scroll mt-8 space-y-5">
           {g.blocks.map((b, i) => {
             if (b.type === "h2")
               return (
@@ -131,7 +131,7 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
         </div>
 
         {/* FAQ */}
-        <section className="mt-12 border-t border-slate-200/80 pt-8">
+        <section className="reveal-scroll mt-12 border-t border-slate-200/80 pt-8">
           <h2 className="t-h3 text-ink">Въпроси и отговори</h2>
           <div className="mt-5 space-y-5">
             {g.faq.map((f) => (
@@ -144,7 +144,7 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
         </section>
 
         {/* CTA */}
-        <div className="surface-dark mt-12 rounded-2xl px-7 py-9 text-center">
+        <div className="reveal-scroll surface-dark mt-12 rounded-2xl px-7 py-9 text-center">
           <h2 className="t-h3 text-appwhite">Виж подходящите възможности за теб</h2>
           <p className="mx-auto mt-2 max-w-md t-small text-appmuted">
             Една заявка, няколко възможности. Без регистрация и без ангажимент.

@@ -1,10 +1,11 @@
-import Link from "next/link";
+import Link from "@/components/LocaleLink";
 import type { Landing } from "@/lib/landing-content";
 import { JsonLd } from "@/components/JsonLd";
 import { TrackView } from "@/components/TrackView";
 import { CreditWarning } from "@/components/CreditWarning";
-import { PrimaryCta } from "@/components/PrimaryCta";
+import { StartCta, CalculatorLink } from "@/components/LandingCtas";
 import { LegalDisclosures } from "@/components/LegalDisclosures";
+import { BgOnlyNotice } from "@/components/BgOnlyNotice";
 import { SITE_URL } from "@/lib/seo";
 
 // Internal links surfaced on every landing page so growth pages (which are not
@@ -62,8 +63,13 @@ export function LandingPage({ data }: { data: Landing }) {
       <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-72 grid-lines mask-fade-b opacity-60" />
       <div className="pointer-events-none absolute inset-0 -z-10 atmos-light" />
 
-      <div className="container-x max-w-3xl py-16 sm:py-20">
+      {/* Every string below is Bulgarian, including the headings and CTAs, so
+          the element is marked as such. On /en/<slug> the document is
+          `lang="en"` for the chrome; without this a screen reader would read
+          Bulgarian prose with English pronunciation rules. */}
+      <div lang="bg" className="container-x max-w-3xl py-16 sm:py-20">
         <header className="reveal">
+          <BgOnlyNotice className="mb-6" />
           <span className="eyebrow">{data.eyebrow}</span>
           <h1 className="t-h1 mt-4 text-ink">{data.h1}</h1>
           <p className="mt-5 t-body text-muted">{data.intro}</p>
@@ -72,10 +78,8 @@ export function LandingPage({ data }: { data: Landing }) {
               the body flow, above the fold-ish, never as footer fine print. */}
           <CreditWarning className="mt-6" />
           <div className="mt-8 flex flex-col gap-3 min-[480px]:flex-row">
-            <PrimaryCta label="Започни заявка" location={`landing:${data.slug}`} />
-            <Link href="/kalkulator" className="btn-ghost">
-              Кредитен калкулатор
-            </Link>
+            <StartCta location={`landing:${data.slug}`} />
+            <CalculatorLink />
           </div>
         </header>
 
@@ -147,7 +151,7 @@ export function LandingPage({ data }: { data: Landing }) {
           <h2 className="t-h2 text-appwhite">{data.ctaTitle}</h2>
           <p className="mx-auto mt-3 max-w-xl t-body text-appmuted">{data.ctaBody}</p>
           <div className="mt-7">
-            <PrimaryCta label="Започни заявка" location={`landing_cta:${data.slug}`} />
+            <StartCta location={`landing_cta:${data.slug}`} />
           </div>
           <p className="mt-5 t-caption text-appmuted">
             Veyra не е кредитор. Окончателното решение и условията се определят от съответния партньор.

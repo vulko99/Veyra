@@ -1,7 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
-
+// The title is NOT set here. It used to be, in an effect, because the locale
+// was only known in the browser — which meant the server's <title> was written
+// in the default language and then rewritten after hydration, exactly the flash
+// this page's text no longer has. The locale is in the URL now, so each route's
+// layout renders the correct, SEO-tuned title from PAGE_SEO up front. Setting
+// document.title here again would overwrite it with a worse one.
 export function PageShell({
   title,
   intro,
@@ -11,12 +15,6 @@ export function PageShell({
   intro?: string;
   children: React.ReactNode;
 }) {
-  useEffect(() => {
-    if (typeof document !== "undefined") {
-      document.title = `${title} — Veyra`;
-    }
-  }, [title]);
-
   return (
     <div className="under-nav relative">
       <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-64 grid-lines mask-fade-b opacity-50" />

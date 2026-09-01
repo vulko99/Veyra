@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
+import Link from "@/components/LocaleLink";
 
 // Real Veyra lockup (V ribbon + wordmark). Two prepared variants:
 //   /veyra-logo.png        dark wordmark — for light surfaces

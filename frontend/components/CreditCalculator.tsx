@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/LocaleLink";
 import { useMemo, useRef, useState } from "react";
 import { track } from "@/lib/analytics";
 import { APR_CAP, formatAprCap } from "@/config/legal";

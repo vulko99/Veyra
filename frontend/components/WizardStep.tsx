@@ -6,6 +6,7 @@ import { WIZARD_STEPS, prevStep, stepIndex } from "@/lib/wizard";
 import { useI18n } from "@/hooks/useI18n";
 import { Logo } from "./Logo";
 import { AppRail, AppRailMobile, progressCounter } from "./AppRail";
+import { LanguageToggle } from "./LanguageToggle";
 
 type StepSlug = keyof ReturnType<typeof useI18n>["m"]["apply"]["steps"];
 
@@ -43,8 +44,14 @@ export function AppShell({
               <span className="hidden text-sm font-medium text-appmuted lg:block">
                 {label}
               </span>
-              <span className="font-display text-sm font-semibold tabular-nums text-appmuted">
-                <span className="text-appwhite">{counter.current}</span> / {counter.total}
+              {/* The site header is hidden in this flow, so the switcher
+                  lives here — the funnel is where an English-reading
+                  applicant most needs it. */}
+              <span className="flex items-center gap-3">
+                <LanguageToggle tone="dark" />
+                <span className="font-display text-sm font-semibold tabular-nums text-appmuted">
+                  <span className="text-appwhite">{counter.current}</span> / {counter.total}
+                </span>
               </span>
             </div>
             <div className="mt-4">

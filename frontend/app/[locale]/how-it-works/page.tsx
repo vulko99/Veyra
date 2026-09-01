@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "@/components/LocaleLink";
+import { useId } from "react";
 import { useMessages } from "@/hooks/useI18n";
 import { PrimaryCta } from "@/components/PrimaryCta";
 
@@ -127,23 +128,83 @@ function Node({
   );
 }
 
+// Geometry of the diagram this connects, in the same units as the viewBox.
+// The options below are `grid-cols-3 gap-3` inside a `max-w-lg` column, so the
+// legs of the fan have to land on those three column centres — not on
+// arbitrary coordinates in a box narrower than the grid, which is why they used
+// to stop in mid-air above the gaps between the cards.
+const W = 512; // max-w-lg
+const GAP = 12; // gap-3
+const COL = (W - GAP * 2) / 3;
+const CENTRES = [COL / 2, W / 2, W - COL / 2];
+const [LEFT, MID, RIGHT] = CENTRES;
+const TOP = 2;
+const BOTTOM = 44;
+const H = 46;
+
 function Connector({ fan = false }: { fan?: boolean }) {
+  // Two Connectors render on this page, so the gradient cannot use a fixed id:
+  // duplicate ids in one document are invalid and every `url(#…)` resolves to
+  // whichever came first.
+  //
+  // Punctuation is stripped because useId embeds colons, which are legal in an
+  // HTML id but not in a CSS selector — so the raw value would work in this
+  // `stroke` attribute and then break the moment anyone referenced the gradient
+  // from a stylesheet or looked it up with querySelector.
+  const gradientId = `cg-${useId().replace(/[^a-zA-Z0-9_-]/g, "")}`;
+
+  // userSpaceOnUse, NOT the default objectBoundingBox. A straight vertical path
+  // has a zero-width bounding box, which makes an objectBoundingBox gradient
+  // undefined — the browser then paints nothing at all, silently. That is why
+  // the request-to-engine line and the centre leg of the fan were missing while
+  // the two curved legs (which have width, so a real box) drew fine.
+  const stroke = `url(#${gradientId})`;
+  const line = {
+    stroke,
+    strokeWidth: 1.5,
+    fill: "none",
+    strokeDasharray: "4 7",
+    // The x axis stretches to the container while the height stays fixed, so
+    // the stroke must opt out of that scaling or it thins out as it widens.
+    vectorEffect: "non-scaling-stroke" as const,
+    className: "animate-dash-flow",
+  };
+
   return (
-    <svg width="120" height="46" viewBox="0 0 120 46" className="my-1" aria-hidden>
+    <svg
+      viewBox={`0 0 ${W} ${H}`}
+      preserveAspectRatio="none"
+      className="my-1 w-full"
+      height={H}
+      aria-hidden
+    >
       <defs>
-        <linearGradient id="cg" x1="0" y1="0" x2="0" y2="1">
+        <linearGradient
+          id={gradientId}
+          gradientUnits="userSpaceOnUse"
+          x1="0"
+          y1={TOP}
+          x2="0"
+          y2={BOTTOM}
+        >
           <stop offset="0%" stopColor="#6C63FF" />
           <stop offset="100%" stopColor="#21C7A8" />
         </linearGradient>
       </defs>
       {fan ? (
         <>
-          <path d="M60 2 C60 20, 22 22, 22 44" stroke="url(#cg)" strokeWidth="1.5" fill="none" strokeDasharray="4 7" className="animate-dash-flow" />
-          <path d="M60 2 L60 44" stroke="url(#cg)" strokeWidth="1.5" fill="none" strokeDasharray="4 7" className="animate-dash-flow" />
-          <path d="M60 2 C60 20, 98 22, 98 44" stroke="url(#cg)" strokeWidth="1.5" fill="none" strokeDasharray="4 7" className="animate-dash-flow" />
+          <path
+            d={`M${MID} ${TOP} C${MID} ${TOP + 22}, ${LEFT} ${BOTTOM - 24}, ${LEFT} ${BOTTOM}`}
+            {...line}
+          />
+          <path d={`M${MID} ${TOP} L${MID} ${BOTTOM}`} {...line} />
+          <path
+            d={`M${MID} ${TOP} C${MID} ${TOP + 22}, ${RIGHT} ${BOTTOM - 24}, ${RIGHT} ${BOTTOM}`}
+            {...line}
+          />
         </>
       ) : (
-        <path d="M60 2 L60 44" stroke="url(#cg)" strokeWidth="1.5" fill="none" strokeDasharray="4 7" className="animate-dash-flow" />
+        <path d={`M${MID} ${TOP} L${MID} ${BOTTOM}`} {...line} />
       )}
     </svg>
   );

@@ -32,7 +32,20 @@ function ResultsViz({ count, requestValue }: { count: number; requestValue: stri
 
         <svg viewBox="0 0 200 40" preserveAspectRatio="none" className="h-10 w-full" aria-hidden>
           <defs>
-            <linearGradient id="rg" x1="0" y1="0" x2="1" y2="0">
+            {/* userSpaceOnUse: the path below is a straight horizontal line, so
+                its bounding box has zero height and an objectBoundingBox
+                gradient would be undefined — the browser paints nothing, and
+                the animated dashes silently disappear against the static track
+                underneath. Same failure as the vertical connectors on
+                /how-it-works. */}
+            <linearGradient
+              id="rg"
+              gradientUnits="userSpaceOnUse"
+              x1="0"
+              y1="0"
+              x2="200"
+              y2="0"
+            >
               <stop offset="0%" stopColor="#6C63FF" />
               <stop offset="100%" stopColor="#21C7A8" />
             </linearGradient>

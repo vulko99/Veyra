@@ -305,32 +305,82 @@ const en: Messages = {
     ],
   },
   privacy: {
-    title: "Privacy policy",
+    title: "Privacy and personal data protection notice",
     intro:
-      "This summary explains, in plain language, how Veyra handles your data. It is not a substitute for the full legal policy, published before launch.",
+      "This notice explains how Veyra processes your personal data. Fields marked “[LEGAL REVIEW REQUIRED]” are pending confirmation by legal counsel before final publication.",
     sections: [
       {
-        heading: "Data minimisation",
-        body: "We collect only what we need to show you options. We do not require an account, and we store metadata such as IP address and device only as one-way hashes.",
+        heading: "1. Who we are",
+        body: "The data controller is the company operating Veyra. The exact legal name, company number and registered address are shown in the “Company identification” section and are supplied before launch. Veyra is a financial marketplace and is not a lender.",
       },
       {
-        heading: "Consent",
-        body: "We process and share your data based on the explicit, versioned consent you give. Marketing consent is separate and optional.",
+        heading: "2. What personal data we process",
+        body: "Application data: amount and term; income and employment; contact details (name, email, phone). Technical metadata (IP address, device) is stored only as one-way hashes. EGN is collected only after you select a partner that requires it, and only for that partner's processing.",
       },
       {
-        heading: "Sharing with partners",
-        body: "If you continue to a partner, relevant data is shared with them to process your enquiry. We only share with partners you choose to continue to.",
+        heading: "3. Why we process the data",
+        body: "To compare your input against partners' published criteria, show you relevant options and — only if you choose — pass your application to the selected partner.",
       },
       {
-        heading: "Retention",
-        body: "We keep personal data only as long as necessary and anonymise records past the retention window. An audit trail is kept for accountability.",
+        heading: "4. Legal basis",
+        body: "The legal basis for each processing purpose is to be determined and confirmed by legal counsel: [LEGAL REVIEW REQUIRED]. Marketing consent is always separate and optional.",
       },
       {
-        heading: "Your rights",
-        body: "Subject to applicable law, you may request access to, correction of, or deletion of your personal data via the contact page.",
+        heading: "5. Who we share data with",
+        body: "Your data is provided only to the partner or partners you explicitly select. We never automatically send data to every matched partner. The list of potential recipients is below.",
+      },
+      {
+        heading: "6. Our partners",
+        body: "The categories of recipients and the specific partners that may receive personal data are listed in the “Partners — data recipients” section below. Each partner's legal details are pending confirmation.",
+      },
+      {
+        heading: "7. How we protect the data",
+        body: "We apply technical and organisational measures: one-way hashing of technical metadata, encryption of EGN at rest, restricted access and an audit trail. EGN is never returned to the browser in clear and is never written to logs.",
+      },
+      {
+        heading: "8. How long we keep it",
+        body: "Specific retention periods are to be determined and confirmed by legal counsel: [LEGAL REVIEW REQUIRED]. No automatic deletion is performed until the policy is confirmed.",
+      },
+      {
+        heading: "9. Your rights",
+        body: "Subject to applicable law, you have the right to access, rectification, erasure, restriction and portability, as well as the right to object and to withdraw consent at any time.",
+      },
+      {
+        heading: "10. How to contact us",
+        body: "You can exercise your rights via the contact page. Contact details for the Data Protection Officer (DPO), where applicable, are pending confirmation: [LEGAL REVIEW REQUIRED].",
+      },
+      {
+        heading: "11. Cookies and analytics",
+        body: "Analytics tools load only after explicit analytics consent. Without consent, no analytics cookies are set.",
+      },
+      {
+        heading: "12. Automated decision-making / profiling",
+        body: "Veyra matches against pre-published criteria — a compatibility check, not credit scoring or an automated decision with legal effect. The final credit decision is made by the partner. The legal characterisation is pending confirmation: [LEGAL REVIEW REQUIRED].",
+      },
+      {
+        heading: "13. Changes to this notice",
+        body: "We may update this notice. The version in force at the time of each consent is recorded, so historical consents remain traceable.",
       },
     ],
-    footNote: "The policy version is recorded with each consent you provide.",
+    partnerDisclosure: {
+      heading: "Partners — data recipients",
+      intro:
+        "The following companies are potential recipients of personal data if you choose to continue to them. Legal details are pending confirmation and no company is presented as a finally confirmed partner until its agreement is finalised.",
+      pendingLabel: "Pending confirmation",
+      demoLabel: "DEMO",
+      egnLabel: "EGN",
+      egnYes: "May receive EGN",
+      egnNo: "No EGN",
+      colLegalName: "Legal name",
+      colRegistration: "Company no.",
+      colAddress: "Registered address",
+      colRole: "Role",
+      colPrivacy: "Privacy policy",
+      notice:
+        "The list is not final. Data will be provided only to the partners you explicitly select.",
+    },
+    versionLabel: "Notice version: {version}",
+    footNote: "The notice version is recorded with each consent you provide.",
   },
   terms: {
     title: "Terms of use",

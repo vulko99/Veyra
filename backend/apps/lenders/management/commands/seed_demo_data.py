@@ -34,6 +34,7 @@ DEMO = [
         "description": "Fictional demonstration partner (demo data only).",
         "priority": 30,
         "display_order": 1,
+        "egn_required": True,  # demo: exercises the EGN identity step
         "product": {
             "name": "Demo Consumer Credit A",
             "slug": "demo-consumer-a",
@@ -55,6 +56,7 @@ DEMO = [
         "description": "Fictional demonstration partner (demo data only).",
         "priority": 20,
         "display_order": 2,
+        "egn_required": False,
         "product": {
             "name": "Demo Consumer Credit B",
             "slug": "demo-consumer-b",
@@ -76,6 +78,7 @@ DEMO = [
         "description": "Fictional demonstration partner (demo data only).",
         "priority": 10,
         "display_order": 3,
+        "egn_required": False,
         "product": {
             "name": "Demo Consumer Credit C",
             "slug": "demo-consumer-c",
@@ -114,6 +117,7 @@ class Command(BaseCommand):
                     "contact_email": f"partners+{entry['slug']}@example.com",
                     "notes": "Demo partner — not a real company. Illustrative data only.",
                     "is_demo": True,
+                    "egn_required": entry.get("egn_required", False),
                     "minimum_match_score": 80,  # demo threshold
                     "active": True,
                     "priority": entry["priority"],

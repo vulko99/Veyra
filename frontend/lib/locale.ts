@@ -55,5 +55,24 @@ export function isAppFlowPath(pathname: string | null | undefined): boolean {
   return path.startsWith("/apply") || path.startsWith("/results");
 }
 
+/**
+ * Routes whose hero is a dark surface running up behind the navigation bar.
+ *
+ * The bar's glass is a near-white panel, which is right on every other page and
+ * wrong on these: painted over a dark hero it reads as a white band above it,
+ * as though the hero started below the bar rather than behind it.
+ *
+ * This answers the question at render time, so the first paint is already in
+ * the right tone — a flash of light bar over a dark hero is the exact defect
+ * being fixed here, and an effect can only ever correct it after the fact. The
+ * hero itself carries `data-dark-hero`, which is what the bar measures to know
+ * when it has scrolled off it; this list only seeds that first paint.
+ */
+export function hasDarkHeroPath(pathname: string | null | undefined): boolean {
+  if (!pathname) return false;
+  const { path } = splitLocale(pathname);
+  return path.startsWith("/responsible-borrowing");
+}
+
 export { locales, defaultLocale };
 export type { Locale };

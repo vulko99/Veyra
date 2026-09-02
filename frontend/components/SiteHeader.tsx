@@ -6,9 +6,13 @@ import { useEffect, useState } from "react";
 import { Logo } from "./Logo";
 import { LanguageToggle } from "./LanguageToggle";
 import { useMessages } from "@/hooks/useI18n";
-import { isAppFlowPath } from "@/lib/locale";
+import { hasDarkHeroPath, isAppFlowPath } from "@/lib/locale";
 import { PrimaryCta } from "./PrimaryCta";
 import { PRELAUNCH, PRELAUNCH_CTA_HREF } from "@/config/launch";
+
+/** The bar's own height, and so the line a dark hero has to stay below to
+ *  still be behind the bar. Matches the h-[68px] row and .under-nav. */
+const BAR_HEIGHT = 68;
 
 export function SiteHeader() {
   const m = useMessages();
@@ -16,6 +20,9 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const [closing, setClosing] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  // Seeded from the route so the very first paint is already dark — see
+  // hasDarkHeroPath. The scroll handler below then measures the hero itself.
+  const [onDark, setOnDark] = useState(() => hasDarkHeroPath(pathname));
 
   // The panel has to stay mounted while it animates out, so closing is a state
   // of its own rather than an immediate unmount. Under reduced motion the exit
@@ -37,11 +44,30 @@ export function SiteHeader() {
   };
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
+    const darkHeroRoute = hasDarkHeroPath(pathname);
+    const onScroll = () => {
+      setScrolled(window.scrollY > 8);
+      if (!darkHeroRoute) {
+        setOnDark(false);
+        return;
+      }
+      // Dark only while the hero is still under the bar. Once it has scrolled
+      // past, the content behind is light again and light ink would vanish
+      // into it. A missing marker falls back to light for the same reason:
+      // the wrong tone is survivable, unreadable navigation is not.
+      const hero = document.querySelector("[data-dark-hero]");
+      setOnDark(
+        hero ? hero.getBoundingClientRect().bottom > BAR_HEIGHT : false
+      );
+    };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, [pathname]);
 
   // The bar's own CTA is a PrimaryCta, which pre-launch is rewritten to point
   // at the calculator — so a nav entry for the same page becomes the second
@@ -62,6 +88,11 @@ export function SiteHeader() {
 
   if (isAppFlowPath(pathname)) return null;
 
+  // The open menu panel is its own light surface, so the bar goes back to
+  // light ink while it is down — otherwise the panel's links would be the
+  // only readable half of an open menu.
+  const dark = onDark && !open;
+
   return (
     // The header itself carries NO backdrop-filter. An element with one becomes
     // a backdrop root for its descendants, which meant the dropdown panel had
@@ -72,11 +103,11 @@ export function SiteHeader() {
       <div
         aria-hidden
         className={`glass-bar pointer-events-none absolute inset-0 transition-all duration-300 ${
-          scrolled ? "glass-bar--scrolled" : ""
+          dark ? "glass-bar--over-dark" : scrolled ? "glass-bar--scrolled" : ""
         }`}
       />
       <div className="container-x relative flex h-[68px] items-center justify-between">
-        <Logo priority />
+        <Logo priority light={dark} />
         {/* The inline nav appears only once it genuinely fits. Measured at the
             widest locale (Bulgarian): logo 96px + nav 898px = 994px, and the
             container caps content at viewport - 64px, so `lg` (1024px) would
@@ -88,12 +119,16 @@ export function SiteHeader() {
             <Link
               key={item.href}
               href={item.href}
-              className="whitespace-nowrap rounded-full px-3.5 py-2 text-sm font-medium text-ink/70 transition hover:bg-white hover:text-ink"
+              className={`whitespace-nowrap rounded-full px-3.5 py-2 text-sm font-medium transition ${
+                dark
+                  ? "text-appmuted hover:bg-white/10 hover:text-appwhite"
+                  : "text-ink/70 hover:bg-white hover:text-ink"
+              }`}
             >
               {item.label}
             </Link>
           ))}
-          <LanguageToggle className="ml-2" />
+          <LanguageToggle className="ml-2" tone={dark ? "dark" : "light"} />
           <PrimaryCta
             label={m.common.startShort}
             className="btn-mint ml-2 whitespace-nowrap px-5 py-2.5 text-sm"
@@ -104,12 +139,16 @@ export function SiteHeader() {
         {/* Mobile: the switcher sits beside the menu button rather than inside
             the panel, so it is reachable without opening the menu first. */}
         <div className="flex items-center gap-2 min-[1100px]:hidden">
-          <LanguageToggle />
+          <LanguageToggle tone={dark ? "dark" : "light"} />
           <button
             type="button"
             aria-label={m.nav.menu}
             aria-expanded={open}
-            className="glass-control grid h-10 w-10 place-items-center rounded-xl text-ink transition-colors"
+            className={`grid h-10 w-10 place-items-center rounded-xl transition-colors ${
+              dark
+                ? "border border-appborder bg-white/5 text-appwhite"
+                : "glass-control text-ink"
+            }`}
             onClick={() => (open ? closeMenu() : setOpen(true))}
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

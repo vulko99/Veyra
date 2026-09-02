@@ -100,9 +100,11 @@ export const PAGE_SEO: Record<string, Seo> = {
       "Ясни отговори на въпросите преди да вземеш кредит: ГПР, месечна вноска, ЦКР, обща цена и на какво да обърнеш внимание в договора.",
   },
   "/kredit-online": {
-    title: "Кредит онлайн — кандидатствай с една заявка | Veyra",
+    // Matches the page's own H1, and for the same reason: Veyra takes a
+    // request and compares it, it does not take an application.
+    title: "Кредит онлайн — една заявка, няколко възможности | Veyra",
     description:
-      "Кандидатствай за кредит онлайн с една заявка. Veyra сравнява въведените данни с критериите на партньорите и показва подходящите възможности. Veyra не е кредитор.",
+      "Една заявка онлайн, няколко подходящи възможности. Veyra сравнява въведените данни с критериите на партньорите. Veyra не е кредитор.",
   },
   "/kredit-s-losho-ckr": {
     title: "Кредит при лошо ЦКР — какво е важно да знаеш | Veyra",
@@ -224,9 +226,9 @@ export const PAGE_SEO_EN: Record<string, Seo> = {
       "Clear answers to the questions people ask before borrowing: the APR, the monthly instalment, the credit register, total cost, and what to look for in the contract.",
   },
   "/kredit-online": {
-    title: "Loan online — apply with one request | Veyra",
+    title: "Loan online — one request, several options | Veyra",
     description:
-      "Apply for a loan online with one request. Veyra compares the details you enter against partners' criteria and shows the options that fit. Veyra is not a lender.",
+      "One request online, several options that fit. Veyra compares the details you enter against partners' criteria. Veyra is not a lender.",
   },
   "/kredit-s-losho-ckr": {
     title: "Credit with a poor ЦКР record — what to know | Veyra",
@@ -342,6 +344,18 @@ export function localizedMetadata(
 
 // Routes that must never be indexed (they carry an in-progress application /
 // personal data or are transient).
+/**
+ * For pages that must stay out of the index entirely: the application funnel
+ * and the results page.
+ *
+ * `alternates` is cleared as well as `robots`. Metadata merges field by field,
+ * so overriding only `robots` left these pages inheriting the ROOT layout's
+ * alternates — every one of them advertised `rel=canonical` and hreflang
+ * pointing at the home page. A noindex page claiming the home page as its
+ * canonical is a contradictory pair of signals about a URL that should simply
+ * not be described at all.
+ */
 export const NOINDEX: Metadata = {
   robots: { index: false, follow: false },
+  alternates: { canonical: null, languages: {} },
 };

@@ -122,8 +122,57 @@ export function ScrollReveal() {
     document.addEventListener("visibilitychange", armFailsafe);
     armFailsafe();
 
+    // Second safety net, and the one that actually matters.
+    //
+    // The check above asks whether the observer is alive, and `observerIsLive`
+    // is set by the FIRST callback — which `observe()` always delivers for
+    // every target, intersecting or not. So it is true within a frame of
+    // arming, the timeout above stands down permanently, and an observer that
+    // delivers its initial callbacks and then stops tracking scroll leaves
+    // every armed section hidden for the rest of the visit. Reproduced: eight
+    // sections at opacity 0 with one of them 363px inside the viewport.
+    //
+    // Liveness was the wrong question. What matters is whether an element is
+    // ON SCREEN and still hidden, which needs no observer to answer. This
+    // sweeps the armed set on a slow interval and reveals anything the
+    // observer should have caught, then stops itself once nothing is left
+    // armed — so it costs nothing on a page the visitor has read through.
+    //
+    // It reveals rather than strips, so the animation still plays: the visitor
+    // sees the same entrance, just driven by the sweep instead of the observer.
+    const REVEAL_MS = 900; // longer than the 850ms transition
+    let sweep = 0;
+    const sweepOnce = () => {
+      if (document.hidden) return;
+      let remaining = 0;
+      for (const el of armed) {
+        if (!el.classList.contains("reveal-armed")) continue;
+        remaining += 1;
+        const r = el.getBoundingClientRect();
+        const onScreen = r.top < window.innerHeight && r.bottom > 0;
+        if (!onScreen) continue;
+        if (!el.classList.contains("is-revealed")) {
+          el.classList.add("is-revealed");
+          // Do not rely on transitionend here: if the environment is not
+          // running the transition at all, that event never fires and the
+          // element would keep both classes forever. A plain timeout strips
+          // them either way, leaving clean markup.
+          window.setTimeout(
+            () => el.classList.remove("reveal-armed", "is-revealed"),
+            REVEAL_MS
+          );
+        }
+      }
+      if (remaining === 0) {
+        window.clearInterval(sweep);
+        sweep = 0;
+      }
+    };
+    sweep = window.setInterval(sweepOnce, 400);
+
     return () => {
       window.clearTimeout(failsafe);
+      window.clearInterval(sweep);
       document.removeEventListener("visibilitychange", armFailsafe);
       observer.disconnect();
       for (const el of armed) {

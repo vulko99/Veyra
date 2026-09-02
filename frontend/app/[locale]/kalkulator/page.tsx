@@ -17,12 +17,17 @@ export default function CalculatorPage() {
           <p className="mt-5 t-body text-muted">{c.intro}</p>
         </div>
 
-        <CreditWarning className="mt-8" />
+        {/* Reveals like everything else. It was left static on the argument
+            that regulated copy should be readable the instant the page is —
+            but the home page has always revealed the same component, so the
+            two pages contradicted each other and this one looked unfinished.
 
-        {/* The mandatory warning above is deliberately left un-animated: it is
-            regulated copy that must be readable the instant the page is, and it
-            sits high enough that ScrollReveal would not arm it on most screens
-            anyway. */}
+            Nothing is at risk: ScrollReveal only hides a block after script has
+            run AND found it below the fold, unarms anything the observer misses,
+            and never ships a hidden state in the server HTML. This warning also
+            sits high on the page, so on most screens it is never armed at all. */}
+        <CreditWarning className="reveal-scroll mt-8" />
+
         <div className="reveal-scroll mt-8">
           <CreditCalculator />
         </div>

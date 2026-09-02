@@ -7,6 +7,8 @@ const en: Messages = {
     title: "Veyra — One request. Transparent comparison.",
     description:
       "Veyra compares our partners' options against publicly published criteria and shows why an option fits your profile. You decide who to continue with. Veyra is not a lender.",
+    slogan: "One request. Transparent comparison.",
+    ogImageAlt: "Veyra — one request, a transparent comparison of options",
   },
   common: {
     brand: "Veyra",

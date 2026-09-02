@@ -8,8 +8,14 @@ export default function ResponsibleBorrowingPage() {
 
   return (
     <div>
-      {/* dark editorial hero */}
-      <section className="under-nav surface-dark relative overflow-hidden">
+      {/* Dark editorial hero. under-nav already runs it up behind the bar;
+          data-dark-hero is what tells the bar to drop its light panel while
+          it is there, so the hero reads as one surface from the top of the
+          page rather than starting below a white band. */}
+      <section
+        data-dark-hero
+        className="under-nav surface-dark relative overflow-hidden"
+      >
         <div className="pointer-events-none absolute inset-0 opacity-[0.06] grid-lines" />
         <div className="container-x max-w-4xl py-20 sm:py-28">
           <div className="reveal">

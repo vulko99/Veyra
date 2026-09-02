@@ -17,6 +17,11 @@ export const bg = {
     title: "Veyra — Една заявка. Прозрачно сравнение.",
     description:
       "Veyra сравнява възможностите на партньорите ни по публично обявени критерии и показва защо дадена възможност отговаря на профила ти. Ти решаваш с кого да продължиш. Veyra не е кредитор.",
+    // Used for the Organization slogan and the share-image alt text. Both used
+    // to be hard-coded Bulgarian in the layout, so every English page carried
+    // them in the wrong language.
+    slogan: "Една заявка. Прозрачно сравнение.",
+    ogImageAlt: "Veyra — една заявка, прозрачно сравнение на възможности",
   },
   common: {
     brand: "Veyra",

@@ -228,9 +228,14 @@ const KREDIT_ONLINE: Landing = {
   copy: {
     bg: {
       eyebrow: "Кредит онлайн",
-      h1: "Кредит онлайн — кандидатствай с една заявка",
+      // Not "кандидатствай": this is the only landing page that instructed the
+      // reader to apply, and you do not apply TO Veyra — you submit one request
+      // that is compared against partners' published criteria. The other nine
+      // pages all say "сравни" or describe. It also sat directly above a button
+      // that leads to the calculator while the funnel is closed.
+      h1: "Кредит онлайн — една заявка, няколко възможности",
       intro:
-        "Кандидатстването онлайн ти спестява обикаляне. С Veyra попълваш една заявка от телефон или компютър, а ние сравняваме въведените данни с публикуваните критерии на партньорите и ти показваме подходящите възможности. Veyra не е кредитор и не взема решение за одобрение.",
+        "Онлайн подаването ти спестява обикаляне. С Veyra попълваш една заявка от телефон или компютър, а ние сравняваме въведените данни с публикуваните критерии на партньорите и ти показваме подходящите възможности. Veyra не е кредитор и не взема решение за одобрение.",
       sections: [
         {
           h2: "Как става онлайн кандидатстването",
@@ -264,9 +269,9 @@ const KREDIT_ONLINE: Landing = {
     },
     en: {
       eyebrow: "Loan online",
-      h1: "Loan online — apply with one request",
+      h1: "Loan online — one request, several options",
       intro:
-        "Applying online saves you going from place to place. With Veyra you fill in one request from your phone or your computer, and we compare the details you enter against partners' published criteria and show you the options that fit. Veyra is not a lender and does not make approval decisions.",
+        "Submitting online saves you going from place to place. With Veyra you fill in one request from your phone or your computer, and we compare the details you enter against partners' published criteria and show you the options that fit. Veyra is not a lender and does not make approval decisions.",
       sections: [
         {
           h2: "How applying online works",

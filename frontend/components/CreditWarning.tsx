@@ -18,10 +18,24 @@ import { useMessages } from "@/hooks/useI18n";
  * The wording itself is NOT inlined here: it comes from CREDIT_WARNING in
  * config/legal.ts, so the final statutory text can be corrected in one edit.
  *
- * NOTE: only the aria-label follows the active locale. CREDIT_WARNING itself
- * stays Bulgarian in every locale — it is statutory wording mandated in
- * Bulgarian, not copy to be translated. Do not "fix" that by moving it into
- * the message catalogs.
+ * CREDIT_WARNING is the statutory wording, mandated in Bulgarian. It must never
+ * be moved into the message catalogues — it is not copy to be translated, and
+ * keeping it in config/legal.ts is what makes the final text one edit.
+ *
+ * A locale may supply `legal.warningGloss`: the same warning in the reader's
+ * language. Where a gloss exists it REPLACES the Bulgarian rather than leading
+ * it, so an English page shows one English sentence and no Bulgarian.
+ *
+ * That is the owner's decision, taken twice, most recently after reviewing the
+ * supplementing version on the live site. It is contested: ЗПК чл. 8, ал. 1
+ * puts the requirement on the wording itself, so a translation of it arguably
+ * does not discharge it. See the note at the render below before changing this
+ * — the question belongs with the ЗПК adviser, not with a code review.
+ *
+ * `legal.warningGlossNote` ("Statutory wording, binding in Bulgarian") is
+ * deliberately still carried in both catalogues. It is unused today and is the
+ * label the supplementing version needs, so restoring that version stays a
+ * small edit.
  */
 export function CreditWarning({
   tone = "light",
@@ -65,13 +79,27 @@ export function CreditWarning({
         <path d="M12 17h.01" />
         <path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" />
       </svg>
-      {/* In Bulgarian the statutory sentence is the only line. In any other
-          locale the reader's language leads and the mandated Bulgarian follows,
-          labelled as the binding wording, so the warning still appears on the
-          page in the form the Act requires rather than being replaced.
-          t-body, not t-small: the leading line may never be fine print. */}
-      {/* One line, in the reader's language. t-body, not t-small: this may
-          never be rendered as fine print. */}
+      {/* ONE line, in the reader's language. A locale supplying
+          `legal.warningGloss` shows that INSTEAD of the statutory Bulgarian,
+          not alongside it.
+          t-body, not t-small: this may never be rendered as fine print.
+
+          ── This is a deliberate owner decision, not an oversight ───────────
+          A verification pass flagged it as a defect, and the objection is
+          sound: ЗПК чл. 8, ал. 1 places the requirement on the WORDING, so a
+          translation of it arguably does not discharge the obligation, and on
+          this branch the mandated Bulgarian sentence appears nowhere on an /en
+          page. It was implemented as a supplement for exactly that reason —
+          English leading, Bulgarian beneath it, labelled by
+          `legal.warningGlossNote` — and the owner reviewed that version live
+          and chose the single English line instead.
+
+          So: if you are here because a review flagged the missing Bulgarian,
+          it has already been flagged and decided. Raise it with the ЗПК
+          adviser rather than reverting the code. Restoring the supplement is
+          the block removed in commit history — it is a small edit, and
+          `warningGlossNote` is still carried in both catalogues for it.
+          ─────────────────────────────────────────────────────────────────── */}
       <p className="t-body font-semibold">{m.warningGloss || CREDIT_WARNING}</p>
     </div>
   );

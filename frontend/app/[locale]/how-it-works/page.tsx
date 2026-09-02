@@ -28,8 +28,19 @@ export default function HowItWorksPage() {
         <div className="reveal-scroll mt-16 grid gap-6 md:grid-cols-3">
           {j.map((step, i) => (
             <div key={step.title} className="relative">
+              {/* Connector to the NEXT card, so the last card has none: three
+                  cards, two gaps. A third would dangle off the right edge.
+
+                  `left-full`, not `calc(100% - 0.75rem)`. The old value started
+                  the line 12px before the card's right edge and ran it 24px, so
+                  half of it lay over the card and it stopped halfway across the
+                  24px gap — a dash floating beside the number rather than a
+                  line joining two steps. Starting at the edge and running the
+                  gap's own width spans it exactly, touching both cards. Both
+                  numbers derive from `gap-6`; if that changes, `w-6` changes
+                  with it. */}
               {i < j.length - 1 && (
-                <span className="absolute left-[calc(100%-0.75rem)] top-7 hidden h-px w-6 bg-gradient-to-r from-mint to-transparent md:block" />
+                <span className="absolute left-full top-7 hidden h-px w-6 bg-gradient-to-r from-mint to-transparent md:block" />
               )}
               <div className="card-outline h-full p-6">
                 <div className="flex items-baseline gap-2">
@@ -90,7 +101,10 @@ export default function HowItWorksPage() {
           })}
         </div>
 
-        <div className="mt-14">
+        {/* The closing call to action was the one block on this page with no
+            entrance at all — every section above it reveals on scroll and this
+            sat static at the bottom of the page. */}
+        <div className="reveal-scroll mt-14">
           <PrimaryCta label={m.common.startCta} location="how_it_works" />
         </div>
       </div>

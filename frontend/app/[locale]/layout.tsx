@@ -60,7 +60,10 @@ export function generateMetadata({
     applicationName: "Veyra",
     alternates: {
       canonical: home,
-      languages: { bg: "/", en: "/en" },
+      // x-default alongside the two languages. Every other page declares it
+      // (buildMetadata does), so the home page was the one URL on the site that
+      // did not tell a crawler which locale to serve an unmatched visitor.
+      languages: { bg: "/", en: "/en", "x-default": "/" },
     },
     openGraph: {
       type: "website",
@@ -74,7 +77,9 @@ export function generateMetadata({
           url: "/og.png",
           width: 1200,
           height: 630,
-          alt: "Veyra — една заявка, прозрачно сравнение на възможности",
+          // Was hard-coded Bulgarian, so an English share card described its
+          // image in Bulgarian.
+          alt: messages.meta.ogImageAlt,
         },
       ],
     },
@@ -113,7 +118,10 @@ export default function RootLayout({
     url: SITE_URL,
     logo: `${SITE_URL}/veyra-logo.png`,
     description: messages.meta.description,
-    slogan: "Една заявка. Прозрачно сравнение.",
+    // From the catalogue, not a literal: this was hard-coded Bulgarian, so the
+    // Organization entity on every English page carried a Bulgarian slogan
+    // beside an English description — mixed-language brand data.
+    slogan: messages.meta.slogan,
     // Legal identity, but only the fields actually supplied — a placeholder
     // ЕИК or address must never reach structured data.
     ...companyJsonLdFields(),

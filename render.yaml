@@ -81,13 +81,32 @@ services:
       # Know what it costs before leaving it on: the funnel collects a name,
       # phone, email, income and employment status, and its consent text names
       # Veyra as the data controller — which is why the default is ON until the
-      # entity is registered. The prebuild guard does NOT catch it here:
-      # check-legal-values.mjs only blocks when CONTEXT=production, a Netlify
-      # variable Render never sets, so on Render it warns and builds anyway.
+      # entity is registered.
       # For the demo, use fictional data only — do not enter a real person's
       # details. Set back to "true" once the walkthrough is done.
+      #
+      # The note that used to sit here said the prebuild guard "does not catch
+      # it, so on Render it warns and builds anyway". That stopped being true:
+      # check-legal-values.mjs now treats an open funnel with no company ЕИК as
+      # FATAL, which is refused in EVERY environment regardless of CONTEXT —
+      # precisely because this blueprint had shipped an open funnel unchallenged.
+      # So the override below is now required for this service to build at all.
       - key: NEXT_PUBLIC_PRELAUNCH
         value: "false"
+      # Required by the line above. Without it the build is refused, since the
+      # regulated company values are still unfilled. Deliberate for a demo:
+      # nothing is invented, `npm run check:legal` still reports every
+      # outstanding value, and the disclosures panel still says they are yet to
+      # be published. Remove both this and the line above once the entity is
+      # registered.
+      - key: REQUIRE_LEGAL_VALUES
+        value: "false"
+      # Omit rows whose regulated value is unfilled instead of rendering the
+      # loud red [[TODO:*]] marker in their place — without this the demo shows
+      # ten of them on /about alone. Presentation only; no figure is ever
+      # substituted for a missing one.
+      - key: NEXT_PUBLIC_HIDE_UNFILLED
+        value: "true"
       # Point the Next.js /api/* proxy at the backend. Set this to the backend
       # service URL after the first deploy (Render prompts because sync: false),
       # e.g. https://veyra-backend.onrender.com

@@ -33,11 +33,40 @@
   # be published, and companyJsonLdFields() still omits unfilled identifiers
   # rather than publishing placeholder ones.
   #
-  # It does NOT weaken the guard that matters: `prebuild` runs
+  # It does NOT weaken the guard: `prebuild` runs
   # scripts/check-legal-values.mjs, which exits 1 on a production deploy
-  # (CONTEXT === "production") while any blocking value is unfilled. A real
-  # launch is refused at build time regardless of what this flag renders.
+  # (CONTEXT === "production") while any blocking value is unfilled. What this
+  # flag renders has no bearing on that.
+  #
+  # That guard is, however, overridden immediately below — see the note there.
   NEXT_PUBLIC_HIDE_UNFILLED = "true"
+
+  # ---------------------------------------------------------------------
+  # OVERRIDE — this is the only thing standing between an unfinished legal
+  # configuration and a public URL. Read before touching.
+  # ---------------------------------------------------------------------
+  #
+  # Netlify sets CONTEXT=production on production deploys, so
+  # check-legal-values.mjs refuses the build while any regulated value is
+  # unfilled — 16 of them are: ЕИК, seat address, contact phone, and the
+  # representative-example figures. That refusal is why production served a
+  # months-old build: Deploy Previews are not CONTEXT=production, so they built
+  # happily while every production build failed at prebuild.
+  #
+  # Set to "false" deliberately, so the current site is visible at its public
+  # URL. It does not invent anything: no figure is substituted for a missing
+  # one, `npm run check:legal` still reports all 16 outstanding, the
+  # disclosures panel still states that the mandatory values are yet to be
+  # published, and companyJsonLdFields() still omits unfilled identifiers.
+  #
+  # What it DOES mean: a publicly reachable, indexable Bulgarian consumer-credit
+  # site whose mandatory ЗПК disclosures are incomplete. The application funnel
+  # stays closed (NEXT_PUBLIC_PRELAUNCH is unset here, and defaults to closed),
+  # so no personal data is collected — that is a separate switch and it is off.
+  #
+  # REMOVE THIS LINE once the company values are supplied. It is not a setting
+  # to leave in place; it is a hold-open while the entity is registered.
+  REQUIRE_LEGAL_VALUES = "false"
 
 # Official Next.js runtime: handles SSR/routing for the App Router on Netlify.
 [[plugins]]

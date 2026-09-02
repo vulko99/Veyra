@@ -166,16 +166,20 @@ export function MatchingViz() {
         </Chip>
       ))}
 
-      {/* matches caption */}
-      <div
-        className="absolute left-1/2 w-max -translate-x-1/2"
-        style={{ top: "99%" }}
-      >
+    </div>
+
+      {/* The matches pill, in normal flow rather than absolutely positioned.
+          It used to sit at `top: 99%` inside the diagram box while the option
+          chip above it is centre-anchored at y=119/125 — two independent
+          calculations, so their edges met and the pill touched the middle
+          chip. Tuning the percentage would only move the collision to another
+          width; below the box it cannot happen at all, and the gap is one
+          margin instead of a coordinate. */}
+      <div className="mt-3 flex justify-center">
         <span className="rounded-full bg-ink px-3 py-1 text-[0.68rem] font-semibold text-white">
           {v.matches}
         </span>
       </div>
-    </div>
 
       {/* Every figure above is invented: a "€2 000 · 12 месеца" request and
           94/89/84% compatibility scores, none of them a real offer or a real
@@ -187,7 +191,7 @@ export function MatchingViz() {
           Rendered inside the component rather than beside it at the call site,
           so the figures cannot be placed on a page without the sentence that
           qualifies them. */}
-      <p className="mt-16 text-center t-caption text-muted/70 sm:mt-10">
+      <p className="mt-4 text-center t-caption text-muted/70">
         {v.illustrative}
       </p>
     </div>

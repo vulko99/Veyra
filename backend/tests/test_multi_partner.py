@@ -356,8 +356,9 @@ def test_referral_status_lifecycle_values():
 # --------------------------------------------------------------------------
 def test_send_referral_email_respects_allowed_fields(settings):
     from django.core import mail
-    from apps.leads.referrals import create_referral
+
     from apps.leads.delivery import send_referral_email
+    from apps.leads.referrals import create_referral
 
     settings.MATCH_THRESHOLD = 70
     partner = make_partner(
@@ -386,8 +387,9 @@ def test_send_referral_email_respects_allowed_fields(settings):
 
 def test_send_referral_email_uses_template(settings):
     from django.core import mail
-    from apps.leads.referrals import create_referral
+
     from apps.leads.delivery import send_referral_email
+    from apps.leads.referrals import create_referral
 
     settings.MATCH_THRESHOLD = 70
     partner = make_partner(

@@ -5,9 +5,12 @@ from .phase2_views import (
     ApplicationCreateView,
     ApplicationDetailView,
     ConsentView,
+    IdentityView,
     MatchesView,
     MatchRunView,
+    SelectionView,
     SelectPartnerView,
+    SubmitView,
 )
 
 urlpatterns = [
@@ -43,5 +46,23 @@ urlpatterns = [
         "applications/<str:public_id>/referrals/",
         SelectPartnerView.as_view(),
         name="p2-application-referrals",
+    ),
+    # Selected partners + what extra data they require (drives EGN + confirm).
+    path(
+        "applications/<str:public_id>/selection/",
+        SelectionView.as_view(),
+        name="p2-application-selection",
+    ),
+    # EGN collection (after partner selection).
+    path(
+        "applications/<str:public_id>/identity/",
+        IdentityView.as_view(),
+        name="p2-application-identity",
+    ),
+    # Final confirmation → submit to selected partner(s).
+    path(
+        "applications/<str:public_id>/submit/",
+        SubmitView.as_view(),
+        name="p2-application-submit",
     ),
 ]

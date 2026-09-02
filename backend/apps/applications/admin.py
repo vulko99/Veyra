@@ -5,10 +5,37 @@ from apps.matching.models import Match
 
 from .models import (
     Applicant,
+    ApplicantIdentity,
     Application,
     ApplicationEvent,
     FinancialProfile,
 )
+
+
+@admin.register(ApplicantIdentity)
+class ApplicantIdentityAdmin(admin.ModelAdmin):
+    """EGN is NEVER shown in clear. Only the masked value and metadata."""
+
+    list_display = ("application", "masked_egn", "egn_verified", "egn_collected_at")
+    search_fields = ("application__public_id",)
+    # The encrypted token and raw fields are never editable/visible in admin.
+    readonly_fields = (
+        "application",
+        "masked_egn",
+        "egn_verified",
+        "egn_collected_at",
+        "created_at",
+        "updated_at",
+    )
+    exclude = ("egn_encrypted", "egn_last4")
+
+    def masked_egn(self, obj):
+        return obj.masked_egn or "—"
+
+    masked_egn.short_description = "EGN"
+
+    def has_add_permission(self, request):
+        return False
 
 
 class ConsentInline(admin.TabularInline):

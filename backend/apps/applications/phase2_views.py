@@ -38,6 +38,7 @@ from .phase2_serializers import (
     ApplicationReadSerializer,
     ApplicationWriteSerializer,
     ConsentInputSerializer,
+    EgnInputSerializer,
     SelectPartnerSerializer,
 )
 
@@ -264,5 +265,140 @@ class SelectPartnerView(APIView):
                 "product": match.product.name,
                 "referral_status": lead.referral_status,
                 "outbound_url": referral_outbound_url(lead),
+            }
+        )
+
+
+def _selected_leads(application):
+    """The referrals (Leads) representing partners the applicant selected."""
+    from apps.leads.models import Lead
+
+    return list(
+        Lead.objects.filter(application=application)
+        .select_related("lender", "product")
+        .order_by("created_at")
+    )
+
+
+class SelectionView(APIView):
+    """Which partners the applicant selected, and what extra data they require.
+
+    Drives the identity (EGN) step and the final confirmation screen. Returns no
+    sensitive data; EGN status is only whether one has been provided.
+    """
+
+    permission_classes = [AllowAny]
+
+    def get(self, request, public_id=None):
+        application = _get_application(public_id)
+        leads = _selected_leads(application)
+        partners = [
+            {
+                "lender_id": str(lead.lender_id),
+                "partner": lead.lender.public_name,
+                "product": lead.product.name,
+                "egn_required": lead.lender.egn_required,
+                "is_demo": lead.lender.is_demo,
+            }
+            for lead in leads
+        ]
+        identity = getattr(application, "identity", None)
+        return Response(
+            {
+                "application_id": application.public_id,
+                "selected_partners": partners,
+                "egn_required": any(p["egn_required"] for p in partners),
+                "egn_provided": bool(identity and identity.egn_encrypted),
+                "egn_masked": identity.masked_egn if identity else "",
+                "privacy_notice_version": settings.PRIVACY_NOTICE_VERSION,
+            }
+        )
+
+
+class IdentityView(APIView):
+    """Collect the applicant's EGN AFTER partner selection.
+
+    Validates (exactly 10 digits), encrypts and stores it; returns only the
+    masked value. The plaintext is never stored in clear, never logged, never
+    returned.
+    """
+
+    permission_classes = [AllowAny]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = "application_submit"
+
+    def post(self, request, public_id=None):
+        from .identity import set_application_egn
+
+        application = _get_application(public_id)
+        # EGN can only be supplied once at least one partner has been selected.
+        if not _selected_leads(application):
+            raise VeyraAPIError(
+                code="PARTNER_SELECTION_REQUIRED",
+                message="Избери поне един партньор, преди да предоставиш ЕГН.",
+                http_status=400,
+            )
+        serializer = EgnInputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        identity = set_application_egn(application, serializer.validated_data["egn"])
+        return Response(
+            {
+                "application_id": application.public_id,
+                "egn_provided": True,
+                "egn_masked": identity.masked_egn,
+            }
+        )
+
+
+class SubmitView(APIView):
+    """Final confirmation: submit the application to the selected partner(s).
+
+    Records an append-only consent snapshot referencing the exact partners and
+    Privacy Notice version, then runs the submission service (which handles EGN
+    transiently and enforces demo isolation). Never returns sensitive data.
+    """
+
+    permission_classes = [AllowAny]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = "application_submit"
+
+    def post(self, request, public_id=None):
+        from apps.consents.models import ConsentRecord, ConsentType
+        from apps.leads.submissions import submit_to_selected_partners
+
+        application = _get_application(public_id)
+        leads = _selected_leads(application)
+        if not leads:
+            raise VeyraAPIError(
+                code="PARTNER_SELECTION_REQUIRED",
+                message="Избери поне един партньор, преди да продължиш.",
+                http_status=400,
+            )
+
+        # Append-only consent evidence: which partners, which notice version.
+        ConsentRecord.objects.create(
+            application=application,
+            consent_type=ConsentType.PARTNER_DATA_TRANSFER,
+            consent_version=settings.CONSENT_TEXT_VERSION,
+            privacy_notice_version=settings.PRIVACY_NOTICE_VERSION,
+            selected_partner_ids=[str(lead.lender_id) for lead in leads],
+            source="final_confirmation",
+            ip_hash=hash_value(client_ip(request)),
+            user_agent_hash=hash_value(request.META.get("HTTP_USER_AGENT", "")),
+        )
+
+        submissions = submit_to_selected_partners(application, leads)
+        return Response(
+            {
+                "application_id": application.public_id,
+                "submissions": [
+                    {
+                        "partner": s.lender.public_name,
+                        "status": s.status,
+                        "external_application_id": s.external_application_id,
+                        "demo": s.demo,
+                    }
+                    for s in submissions
+                ],
             }
         )

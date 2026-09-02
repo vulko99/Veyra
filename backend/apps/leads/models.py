@@ -163,3 +163,85 @@ class LeadEvent(UUIDModel):
 
     def __str__(self) -> str:
         return f"{self.event_type}@{self.timestamp:%Y-%m-%d %H:%M}"
+
+
+class SubmissionStatus(models.TextChoices):
+    """Lifecycle of an application's submission to one selected partner."""
+
+    PENDING = "PENDING", "Pending"
+    SUBMITTED = "SUBMITTED", "Submitted"
+    ACCEPTED = "ACCEPTED", "Accepted by partner"
+    APPROVED = "APPROVED", "Approved"
+    FUNDED = "FUNDED", "Funded"
+    REJECTED = "REJECTED", "Rejected"
+    FAILED = "FAILED", "Submission failed"
+    DEMO_SIMULATED = "DEMO_SIMULATED", "Demo (simulated)"
+
+
+class PartnerSubmission(UUIDTimeStampedModel):
+    """A record of an application submitted to ONE user-selected partner.
+
+    Created only for partners the applicant explicitly selected. Carries the
+    partner-side identifiers, status and (where reported) the funded amount so
+    application -> partner -> approval -> funded amount -> commission can be
+    reconciled.
+
+    EGN is NOT stored here — it lives once on ApplicantIdentity. The submission
+    layer decrypts it transiently only when actually building the payload for
+    the selected partner, and never persists it on this record.
+    """
+
+    application = models.ForeignKey(
+        Application, on_delete=models.CASCADE, related_name="partner_submissions"
+    )
+    lender = models.ForeignKey(
+        Lender, on_delete=models.PROTECT, related_name="partner_submissions"
+    )
+    product = models.ForeignKey(
+        LenderProduct,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="partner_submissions",
+    )
+    # The referral (Lead) this submission corresponds to, when one exists.
+    lead = models.ForeignKey(
+        Lead,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="partner_submissions",
+    )
+
+    status = models.CharField(
+        max_length=20,
+        choices=SubmissionStatus.choices,
+        default=SubmissionStatus.PENDING,
+        db_index=True,
+    )
+    submitted_at = models.DateTimeField(null=True, blank=True)
+    external_application_id = models.CharField(max_length=160, blank=True)
+    # Safe, non-sensitive status metadata from the partner adapter. NEVER an EGN
+    # or a payload containing one, never credentials, never a raw error body.
+    response_metadata = models.JSONField(default=dict, blank=True)
+
+    funded_amount_eur = models.DecimalField(
+        max_digits=12, decimal_places=2, null=True, blank=True
+    )
+    # Whether EGN was included in this submission (audit/reconciliation only —
+    # the value itself is never stored here).
+    egn_included = models.BooleanField(default=False)
+    # True when created for a demo partner / DEMO_MODE (never sent externally).
+    demo = models.BooleanField(default=False, db_index=True)
+
+    class Meta:
+        ordering = ("-created_at",)
+        constraints = [
+            models.UniqueConstraint(
+                fields=["application", "lender"],
+                name="uniq_submission_per_application_lender",
+            )
+        ]
+
+    def __str__(self) -> str:
+        return f"Submission<{self.application.public_id} -> {self.lender.name}: {self.status}>"

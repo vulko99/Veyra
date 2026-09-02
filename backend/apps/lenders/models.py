@@ -71,6 +71,14 @@ class Lender(UUIDTimeStampedModel):
     # only while settings.DEMO_MODE is on; referrals to it are simulated.
     is_demo = models.BooleanField(default=False, db_index=True)
 
+    # Whether this partner requires the applicant's EGN to process an
+    # application. Partner-specific — NEVER assume EGN is globally required. The
+    # identity step is shown only when at least one selected partner needs it.
+    egn_required = models.BooleanField(
+        default=False,
+        help_text="If set, this partner requires the applicant's EGN to submit.",
+    )
+
     # --- Lead distribution policy (Phase: multi-partner marketplace) ---
     # Whether this partner accepts leads that may also be shared with other
     # matching partners. A partner may still MATCH regardless; this governs the
@@ -342,3 +350,74 @@ class EligibilityRule(UUIDTimeStampedModel):
         if self.operator == RuleOperator.BETWEEN:
             if not (isinstance(self.value, list) and len(self.value) == 2):
                 raise ValidationError("BETWEEN requires a [low, high] list value.")
+
+
+class RecipientRole(models.TextChoices):
+    """The partner's role for the personal data it receives (GDPR)."""
+
+    CONTROLLER = "CONTROLLER", "Independent controller"
+    JOINT_CONTROLLER = "JOINT_CONTROLLER", "Joint controller"
+    PROCESSOR = "PROCESSOR", "Processor"
+    UNKNOWN = "UNKNOWN", "Not yet determined"
+
+
+class PartnerPrivacyProfile(UUIDTimeStampedModel):
+    """Structured privacy profile for a partner that may receive personal data.
+
+    Powers the partner-disclosure section of the Privacy Notice. Every value is
+    VERIFIED partner data or left blank — nothing here may be invented (legal
+    name, registration number, address, privacy URL). A profile is only fit to
+    be listed publicly when it is ``active`` and its verified fields are present
+    (see ``is_publishable``). Demo partners are always marked demo and must
+    never be presented as real production partners.
+    """
+
+    partner = models.OneToOneField(
+        Lender, on_delete=models.CASCADE, related_name="privacy_profile"
+    )
+
+    # Verified legal identity — blank until confirmed; never fabricated.
+    legal_name = models.CharField(max_length=250, blank=True)
+    trading_name = models.CharField(max_length=200, blank=True)
+    company_registration_number = models.CharField(max_length=40, blank=True)
+    registered_address = models.CharField(max_length=400, blank=True)
+    privacy_url = models.URLField(blank=True)
+
+    recipient_role = models.CharField(
+        max_length=20, choices=RecipientRole.choices, default=RecipientRole.UNKNOWN
+    )
+    # Structured lists (verified). e.g. ["credit assessment", "onboarding"].
+    processing_purposes = models.JSONField(default=list, blank=True)
+    data_categories_shared = models.JSONField(default=list, blank=True)
+    # Whether EGN is among the data shared with this partner.
+    egn_shared = models.BooleanField(default=False)
+    contact_information = models.CharField(max_length=400, blank=True)
+
+    active = models.BooleanField(default=False)
+    # Versioning: the partner-privacy config version and when it last changed.
+    partner_privacy_version = models.CharField(max_length=40, default="1.0")
+    partner_privacy_last_updated = models.DateField(null=True, blank=True)
+
+    class Meta:
+        ordering = ("partner__display_order", "partner__name")
+
+    def __str__(self) -> str:
+        return f"PrivacyProfile<{self.partner.name}>"
+
+    @property
+    def is_demo(self) -> bool:
+        return self.partner.is_demo
+
+    @property
+    def is_publishable(self) -> bool:
+        """Fit to be listed publicly: active, verified identity present, and
+        (except for demo partners) not a fictional demo record."""
+        if not self.active:
+            return False
+        required = [
+            self.legal_name,
+            self.company_registration_number,
+            self.registered_address,
+            self.privacy_url,
+        ]
+        return all(bool(v) for v in required)

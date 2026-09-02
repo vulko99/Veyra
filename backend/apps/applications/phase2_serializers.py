@@ -128,3 +128,16 @@ class ConsentInputSerializer(serializers.Serializer):
 
 class SelectPartnerSerializer(serializers.Serializer):
     product_id = serializers.UUIDField()
+
+
+class EgnInputSerializer(serializers.Serializer):
+    """EGN input. Exactly 10 digits; validated again server-side in the service.
+
+    ``write_only`` and never echoed: the response returns only the masked value.
+    """
+
+    egn = serializers.RegexField(
+        r"^\d{10}$",
+        write_only=True,
+        error_messages={"invalid": "Моля, въведи валидно ЕГН от 10 цифри."},
+    )

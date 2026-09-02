@@ -1,6 +1,26 @@
 from django.contrib import admin
 
-from .models import EligibilityRule, Lender, LenderProduct
+from .models import EligibilityRule, Lender, LenderProduct, PartnerPrivacyProfile
+
+
+@admin.register(PartnerPrivacyProfile)
+class PartnerPrivacyProfileAdmin(admin.ModelAdmin):
+    list_display = (
+        "partner",
+        "recipient_role",
+        "egn_shared",
+        "active",
+        "is_publishable",
+        "partner_privacy_version",
+        "partner_privacy_last_updated",
+    )
+    list_filter = ("active", "egn_shared", "recipient_role")
+    search_fields = ("partner__name", "legal_name", "company_registration_number")
+
+    def is_publishable(self, obj):
+        return obj.is_publishable
+
+    is_publishable.boolean = True
 
 
 class EligibilityRuleInline(admin.TabularInline):

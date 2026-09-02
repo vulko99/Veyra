@@ -52,3 +52,38 @@ class Consent(UUIDModel):
 
     def __str__(self) -> str:
         return f"{self.consent_type} ({'accepted' if self.accepted else 'declined'})"
+
+
+class ConsentRecord(UUIDModel):
+    """Append-only evidence of a consent action, referencing the exact context.
+
+    Distinct from ``Consent`` (which gates the funnel): this preserves, per
+    action, WHAT the user agreed to and WHICH partners were selected at that
+    moment, tied to the exact Privacy Notice version presented. Historical
+    records are never mutated when partner configuration later changes.
+
+    NEVER stores EGN or any payload containing it — only references.
+    """
+
+    application = models.ForeignKey(
+        Application, on_delete=models.CASCADE, related_name="consent_records"
+    )
+    applicant_ref = models.CharField(max_length=64, blank=True)
+    consent_type = models.CharField(max_length=32, choices=ConsentType.choices)
+    consent_version = models.CharField(max_length=40, blank=True)
+    privacy_notice_version = models.CharField(max_length=40, blank=True)
+    # Snapshot of the partners the user selected at consent time (lender ids).
+    selected_partner_ids = models.JSONField(default=list, blank=True)
+    source = models.CharField(max_length=120, blank=True)
+
+    timestamp = models.DateTimeField(auto_now_add=True, db_index=True)
+    withdrawn_at = models.DateTimeField(null=True, blank=True)
+
+    ip_hash = models.CharField(max_length=64, blank=True)
+    user_agent_hash = models.CharField(max_length=64, blank=True)
+
+    class Meta:
+        ordering = ("-timestamp",)
+
+    def __str__(self) -> str:
+        return f"ConsentRecord<{self.application_id}:{self.consent_type}>"

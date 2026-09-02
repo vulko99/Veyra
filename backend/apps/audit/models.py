@@ -24,6 +24,13 @@ class AuditAction(models.TextChoices):
     RULE_UPDATED = "RULE_UPDATED"
     WEBHOOK_RECEIVED = "WEBHOOK_RECEIVED"
     DATA_ANONYMIZED = "DATA_ANONYMIZED"
+    # EGN lifecycle. Metadata NEVER contains the EGN, encrypted EGN, or any
+    # payload carrying it — only application/partner references and outcomes.
+    EGN_COLLECTED = "EGN_COLLECTED"
+    EGN_UPDATED = "EGN_UPDATED"
+    EGN_SUBMITTED_TO_PARTNER = "EGN_SUBMITTED_TO_PARTNER"
+    EGN_SUBMISSION_FAILED = "EGN_SUBMISSION_FAILED"
+    PARTNER_SUBMISSION_CREATED = "PARTNER_SUBMISSION_CREATED"
 
 
 class AuditLog(UUIDModel):

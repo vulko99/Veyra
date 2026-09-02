@@ -232,6 +232,35 @@ CONSENT_TEXT_VERSION = env_str("CONSENT_TEXT_VERSION", "2026-09-01")
 DATA_RETENTION_DAYS = int(env_str("DATA_RETENTION_DAYS", "365"))
 
 # --------------------------------------------------------------------------
+# EGN (Bulgarian national id) — sensitive identity data
+# --------------------------------------------------------------------------
+# Reversible encryption key for EGN at rest (see apps.core.crypto). Read from
+# the environment; NEVER hardcoded, NEVER exposed to the frontend. In DEBUG a
+# key is derived from SECRET_KEY so dev/tests run without config; production
+# (DEBUG=False) requires an explicit value.
+EGN_ENCRYPTION_KEY = env_str("EGN_ENCRYPTION_KEY", "")
+
+# Retention window (days) for stored EGN. Deletion is NOT performed
+# automatically until a retention policy is legally approved and a cleanup task
+# is enabled — this value only records the intended period. 0 = unset.
+EGN_RETENTION_DAYS = int(env_str("EGN_RETENTION_DAYS", "0"))
+
+# --------------------------------------------------------------------------
+# Partner integrations (server-side only; NEVER exposed to the frontend)
+# --------------------------------------------------------------------------
+# Iute partner API configuration. Endpoints/credentials are NOT invented here —
+# blank until a real integration is provisioned. The frontend never calls a
+# partner API directly; all traffic goes Frontend -> Veyra -> Partner Adapter.
+IUTE_API_BASE_URL = env_str("IUTE_API_BASE_URL", "")
+IUTE_API_KEY = env_str("IUTE_API_KEY", "")
+IUTE_CLIENT_ID = env_str("IUTE_CLIENT_ID", "")
+IUTE_CLIENT_SECRET = env_str("IUTE_CLIENT_SECRET", "")
+
+# Current Privacy Notice version presented to users and recorded against
+# consent. Bump when the notice content materially changes.
+PRIVACY_NOTICE_VERSION = env_str("PRIVACY_NOTICE_VERSION", "1.0")
+
+# --------------------------------------------------------------------------
 # Logging (structured, PII-safe; see apps.core.logging)
 # --------------------------------------------------------------------------
 LOGGING = {

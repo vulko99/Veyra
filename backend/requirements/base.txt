@@ -9,3 +9,5 @@ psycopg2-binary>=2.9
 python-dotenv>=1.0
 Pillow>=10.0
 gunicorn>=21.2
+# Reversible field encryption for sensitive identity data (EGN). Fernet.
+cryptography>=41.0

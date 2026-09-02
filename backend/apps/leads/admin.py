@@ -1,6 +1,40 @@
 from django.contrib import admin
 
-from .models import Lead, LeadEvent
+from .models import Lead, LeadEvent, PartnerSubmission
+
+
+@admin.register(PartnerSubmission)
+class PartnerSubmissionAdmin(admin.ModelAdmin):
+    """No EGN is stored here; only the egn_included flag and safe metadata."""
+
+    list_display = (
+        "application",
+        "lender",
+        "status",
+        "egn_included",
+        "demo",
+        "submitted_at",
+    )
+    list_filter = ("status", "demo", "egn_included")
+    search_fields = ("application__public_id", "lender__name", "external_application_id")
+    readonly_fields = (
+        "application",
+        "lender",
+        "product",
+        "lead",
+        "status",
+        "submitted_at",
+        "external_application_id",
+        "response_metadata",
+        "funded_amount_eur",
+        "egn_included",
+        "demo",
+        "created_at",
+        "updated_at",
+    )
+
+    def has_add_permission(self, request):
+        return False
 
 
 class LeadEventInline(admin.TabularInline):

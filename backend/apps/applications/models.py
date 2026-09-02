@@ -248,6 +248,62 @@ class FinancialProfile(UUIDTimeStampedModel):
         return f"FinancialProfile<{self.application.public_reference}>"
 
 
+EGN_LENGTH = 10
+
+
+def is_valid_egn(value: str) -> bool:
+    """A Veyra-accepted EGN is exactly 10 digits (numeric only).
+
+    The full Bulgarian EGN checksum is intentionally not enforced here (the
+    business requirement is exactly 10 digits); checksum validation can be
+    layered on later without changing storage.
+    """
+    return bool(value) and value.isdigit() and len(value) == EGN_LENGTH
+
+
+class ApplicantIdentity(UUIDTimeStampedModel):
+    """Sensitive identity data for an application, isolated from the rest.
+
+    Holds the EGN (Bulgarian national id) ENCRYPTED AT REST — the plaintext is
+    never stored, never logged, and never returned to the frontend. Only the
+    last four digits are kept in clear for masked internal display
+    (``******1234``). Created lazily only when the applicant reaches the
+    identity step after selecting partner(s); nullable/absent until then, so
+    existing applications without EGN keep working.
+
+    EGN lives here, once per application — never duplicated per partner
+    submission. The submission layer decrypts it server-side only when actually
+    building a payload for a partner the user selected.
+    """
+
+    application = models.OneToOneField(
+        Application, on_delete=models.CASCADE, related_name="identity"
+    )
+    # Fernet token (opaque). Never the plaintext EGN.
+    egn_encrypted = models.TextField(blank=True, default="")
+    # Last four digits only, for masked display. Never the full value.
+    egn_last4 = models.CharField(max_length=4, blank=True, default="")
+    egn_verified = models.BooleanField(default=False)
+    egn_collected_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = "applicant identity"
+        verbose_name_plural = "applicant identities"
+
+    def __str__(self) -> str:
+        return f"Identity<{self.application.public_id}: {self.masked_egn or 'none'}>"
+
+    @property
+    def has_egn(self) -> bool:
+        return bool(self.egn_encrypted)
+
+    @property
+    def masked_egn(self) -> str:
+        from apps.core.crypto import mask_egn
+
+        return mask_egn(self.egn_last4)
+
+
 class ApplicationEventType(models.TextChoices):
     APPLICATION_STARTED = "application_started"
     STEP_COMPLETED = "step_completed"

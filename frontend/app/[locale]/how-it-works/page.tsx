@@ -101,7 +101,10 @@ export default function HowItWorksPage() {
           })}
         </div>
 
-        <div className="mt-14">
+        {/* The closing call to action was the one block on this page with no
+            entrance at all — every section above it reveals on scroll and this
+            sat static at the bottom of the page. */}
+        <div className="reveal-scroll mt-14">
           <PrimaryCta label={m.common.startCta} location="how_it_works" />
         </div>
       </div>

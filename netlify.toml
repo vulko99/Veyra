@@ -68,6 +68,31 @@
   # to leave in place; it is a hold-open while the entity is registered.
   REQUIRE_LEGAL_VALUES = "false"
 
+  # ---------------------------------------------------------------------
+  # FUNNEL OPEN — and there is no backend for it to talk to. Read this.
+  # ---------------------------------------------------------------------
+  #
+  # Opens /apply and /results so the deploy matches the local build, where the
+  # CTAs read "Виж своите възможности" instead of being rewritten to the
+  # calculator.
+  #
+  # THE FORM CANNOT SUBMIT HERE. lib/api.ts falls back to
+  # "http://localhost:8000/api/v1" when NEXT_PUBLIC_API_URL is unset, so every
+  # visitor's browser tries to reach a Django on THEIR OWN machine. The first
+  # Continue fails. Nothing leaks — no data reaches any server because there is
+  # no server — but the funnel is visibly broken rather than honestly closed.
+  #
+  # To make it actually work, both of these are needed, and neither is set:
+  #   NEXT_PUBLIC_API_URL = "/api/v1"     (baked at build time; makes the
+  #                                        browser call this same origin)
+  #   API_PROXY_TARGET    = "https://…"   (the deployed Django origin; the Next
+  #                                        server proxies /api/* to it)
+  # render.yaml describes a deploy that provides that backend.
+  #
+  # Revert by deleting this line: PRELAUNCH defaults to closed in
+  # config/launch.ts, and the site goes back to a working pre-launch state.
+  NEXT_PUBLIC_PRELAUNCH = "false"
+
 # Official Next.js runtime: handles SSR/routing for the App Router on Netlify.
 [[plugins]]
   package = "@netlify/plugin-nextjs"

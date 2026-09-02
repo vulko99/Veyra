@@ -249,7 +249,10 @@ def test_ranking_by_score_multiple_partners(api_client, partner_a, partner_b):
 
 
 def test_amount_below_minimum_excluded(api_client, partner_b):
-    data = _create_application(api_client, desired_amount_eur="100", desired_term_months=12)
+    # partner_b product range is 500-5000; 200 is valid at the funnel level
+    # (>= AMOUNT_MIN_EUR, on-step) but below the product minimum, so matching
+    # must exclude it.
+    data = _create_application(api_client, desired_amount_eur="200", desired_term_months=12)
     _fill_profile(api_client, data["id"], monthly_income_eur="2000")
     _grant_consent(api_client, data["id"])
     body = api_client.post(reverse("p2-application-match", args=[data["id"]]), {}, format="json").json()
@@ -257,7 +260,9 @@ def test_amount_below_minimum_excluded(api_client, partner_b):
 
 
 def test_amount_above_maximum_excluded(api_client, partner_b):
-    data = _create_application(api_client, desired_amount_eur="99999", desired_term_months=12)
+    # 6000 is valid at the funnel level but above the product maximum (5000),
+    # so matching must exclude it.
+    data = _create_application(api_client, desired_amount_eur="6000", desired_term_months=12)
     _fill_profile(api_client, data["id"], monthly_income_eur="2000")
     _grant_consent(api_client, data["id"])
     body = api_client.post(reverse("p2-application-match", args=[data["id"]]), {}, format="json").json()

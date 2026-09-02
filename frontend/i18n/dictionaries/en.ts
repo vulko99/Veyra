@@ -456,6 +456,11 @@ const en: Messages = {
         title: "How much do you need?",
         subtitle: "Choose an amount. You can change it later.",
         inputLabel: "Amount",
+        manualLabel: "How much do you need?",
+        belowMin: "The minimum amount is {min}.",
+        aboveMax: "The maximum amount is {max}.",
+        invalidStep: "The amount must be a multiple of {step}.",
+        invalid: "Please enter a valid amount.",
       },
       term: {
         label: "Term",

@@ -208,6 +208,13 @@ MATCHING_TOP_N = int(env_str("MATCHING_TOP_N", "3"))
 # with a higher (or lower) minimum_match_score. Never hard-code this elsewhere.
 MATCH_THRESHOLD = int(env_str("MATCH_THRESHOLD", "80"))
 
+# Loan-amount bounds (EUR). Single source of truth for backend validation;
+# the frontend mirrors these via NEXT_PUBLIC_AMOUNT_* (see frontend/lib/amount.ts).
+# The API validates amount independently of the frontend against these values.
+AMOUNT_MIN_EUR = int(env_str("AMOUNT_MIN_EUR", "200"))
+AMOUNT_MAX_EUR = int(env_str("AMOUNT_MAX_EUR", "15000"))
+AMOUNT_STEP_EUR = int(env_str("AMOUNT_STEP_EUR", "100"))
+
 # Current document versions surfaced to consent capture.
 PRIVACY_POLICY_VERSION = env_str("PRIVACY_POLICY_VERSION", "2026-01-01")
 TERMS_VERSION = env_str("TERMS_VERSION", "2026-01-01")

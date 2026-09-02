@@ -1,9 +1,12 @@
 import type {
   ApplicationDraft,
   ConsentFlags,
+  IdentityResponse,
   Phase2Application,
   Phase2MatchResponse,
   ReferralResponse,
+  SelectionResponse,
+  SubmitResponse,
 } from "@/types";
 import { track } from "@/lib/analytics";
 
@@ -161,6 +164,37 @@ export function selectPartner(
     body: JSON.stringify({ product_id: productId }),
   }).then((res) => {
     track("referral_created");
+    return res;
+  });
+}
+
+/** Selected partners + what extra data they require (drives EGN + confirm). */
+export function getSelection(publicId: string): Promise<SelectionResponse> {
+  return request<SelectionResponse>(`/applications/${publicId}/selection/`);
+}
+
+/**
+ * Submit the applicant's EGN AFTER partner selection. The EGN is sent in the
+ * POST body only (never a URL/query param) and is never stored in the browser;
+ * the response returns only the masked value.
+ */
+export function submitEgn(
+  publicId: string,
+  egn: string
+): Promise<IdentityResponse> {
+  return request<IdentityResponse>(`/applications/${publicId}/identity/`, {
+    method: "POST",
+    body: JSON.stringify({ egn }),
+  });
+}
+
+/** Final confirmation: submit the application to the selected partner(s). */
+export function submitApplication(publicId: string): Promise<SubmitResponse> {
+  return request<SubmitResponse>(`/applications/${publicId}/submit/`, {
+    method: "POST",
+    body: JSON.stringify({}),
+  }).then((res) => {
+    track("application_submitted", { partners: res.submissions.length });
     return res;
   });
 }

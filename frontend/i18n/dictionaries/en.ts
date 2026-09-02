@@ -728,6 +728,23 @@ const en: Messages = {
     noReference: "No application reference was provided.",
     routeError: "We could not open the partner link. Please try again.",
     loading: "Loading…",
+    // --- Identity (EGN) step, shown after partner selection when required ---
+    egnTitle: "We need one more piece of information",
+    egnBody:
+      "To continue to the selected partner, you need to provide your EGN. It will be used to process the application by the selected partner.",
+    egnLabel: "EGN",
+    egnPlaceholder: "Enter your 10-digit EGN",
+    egnInvalid: "Please enter a valid 10-digit EGN.",
+    egnPrivacyNotice:
+      "Your EGN will be sent only to the partner you selected and will not be used for the preliminary comparison of options.",
+    privacyLink: "Personal data protection",
+    egnContinue: "Continue",
+    // --- Final confirmation ---
+    recipientsTitle: "Your data will be provided to:",
+    confirmSinglePrefix: "You will continue to ",
+    confirmMultiInfo: "Your application will be sent to the selected partners.",
+    confirmSubmit: "Confirm and send",
+    submitError: "There was a problem sending your application. Please try again.",
     productTypes: {
       SHORT_TERM_LOAN: "Short-term loan",
       CONSUMER_LOAN: "Consumer loan",

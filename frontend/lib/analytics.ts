@@ -36,6 +36,7 @@ export type AnalyticsEvent =
   | "multiple_matches_generated"
   | "partner_selected"
   | "referral_created"
+  | "application_submitted"
   | "partner_clicked"
   // Additional existing signals (kept for continuity)
   | "landing_view"

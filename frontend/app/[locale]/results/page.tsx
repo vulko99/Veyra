@@ -3,7 +3,13 @@
 import { Suspense, useEffect, useState } from "react";
 import Link from "@/components/LocaleLink";
 import { useSearchParams } from "next/navigation";
-import { getApplication, getMatches, selectPartner } from "@/lib/api";
+import {
+  getApplication,
+  getMatches,
+  selectPartner,
+  submitEgn,
+  submitApplication,
+} from "@/lib/api";
 import { formatEUR } from "@/lib/format";
 import { track } from "@/lib/analytics";
 import { useI18n } from "@/hooks/useI18n";
@@ -92,9 +98,16 @@ function ResultsInner() {
   const [matches, setMatches] = useState<Phase2Match[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [selected, setSelected] = useState<Set<string>>(new Set());
-  const [confirming, setConfirming] = useState(false);
+  const [phase, setPhase] = useState<"browse" | "egn" | "confirm" | "success">("browse");
+  const [chosen, setChosen] = useState<Phase2Match[]>([]);
+  const [referrals, setReferrals] = useState<Referral[]>([]);
+  const [egn, setEgn] = useState("");
+  const [egnError, setEgnError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState<Referral[] | null>(null);
+
+  // Whether any selected partner needs the EGN (identity) step.
+  const egnNeeded = chosen.some((c) => c.egn_required);
 
   useEffect(() => {
     if (!applicationId) {
@@ -144,22 +157,64 @@ function ResultsInner() {
     });
   };
 
-  // Create a referral for each selected partner, then show the success screen.
-  async function confirmSelection() {
+  // Step 1: persist the partner selection (creates a referral per chosen
+  // partner), then route to the EGN step if any selected partner needs it,
+  // otherwise straight to final confirmation.
+  async function beginContinue() {
     if (!applicationId || !matches) return;
     setSubmitting(true);
+    setError(null);
     try {
-      const chosen = matches.filter((m) => selected.has(m.product_id));
+      const picked = matches.filter((m) => selected.has(m.product_id));
       const created: Referral[] = [];
-      for (const m of chosen) {
+      for (const m of picked) {
         const res = await selectPartner(applicationId, m.product_id);
         created.push({ partner: res.partner, outbound_url: res.outbound_url });
       }
-      setDone(created);
-      setConfirming(false);
+      setChosen(picked);
+      setReferrals(created);
+      setEgn("");
+      setEgnError(null);
+      setPhase(picked.some((m) => m.egn_required) ? "egn" : "confirm");
     } catch {
       setError(r.routeError);
-      setConfirming(false);
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  // Step 2 (only when required): submit the EGN, then go to confirmation. The
+  // EGN lives only in component state — never localStorage/sessionStorage/URL.
+  async function submitIdentity() {
+    if (!applicationId) return;
+    if (!/^\d{10}$/.test(egn)) {
+      setEgnError(r.egnInvalid);
+      return;
+    }
+    setSubmitting(true);
+    setEgnError(null);
+    try {
+      await submitEgn(applicationId, egn);
+      setEgn(""); // drop the plaintext from memory once accepted
+      setPhase("confirm");
+    } catch {
+      setEgnError(r.egnInvalid);
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  // Step 3: final confirmation → submit to the selected partner(s) → success.
+  async function confirmAndSubmit() {
+    if (!applicationId) return;
+    setSubmitting(true);
+    setError(null);
+    try {
+      await submitApplication(applicationId);
+      setDone(referrals);
+      setPhase("success");
+    } catch {
+      setError(r.submitError);
     } finally {
       setSubmitting(false);
     }
@@ -239,6 +294,160 @@ function ResultsInner() {
             <p className="mt-6 text-center text-xs leading-relaxed text-appmuted">
               {r.successDisclaimer}
             </p>
+          </div>
+        </div>
+      </AppShell>
+    );
+  }
+
+  // ----- Identity (EGN) step — only when a selected partner requires it -----
+  if (phase === "egn") {
+    return (
+      <AppShell current="results">
+        <div className="mx-auto w-full max-w-xl pt-10 sm:pt-16">
+          <div className="reveal">
+            <h1 className="text-[1.9rem] font-bold leading-[1.1] tracking-tight text-appwhite sm:text-[2.3rem]">
+              {r.egnTitle}
+            </h1>
+            <p className="mt-3 text-appmuted">{r.egnBody}</p>
+
+            <div className="mt-8">
+              <label htmlFor="egn" className="text-sm font-semibold text-appwhite">
+                {r.egnLabel}
+              </label>
+              <input
+                id="egn"
+                name="egn"
+                type="text"
+                inputMode="numeric"
+                autoComplete="off"
+                maxLength={10}
+                value={egn}
+                placeholder={r.egnPlaceholder}
+                aria-invalid={egnError ? true : undefined}
+                onChange={(e) => {
+                  // Digits only; never store formatted or partial non-numeric.
+                  setEgn(e.target.value.replace(/\D/g, "").slice(0, 10));
+                  if (egnError) setEgnError(null);
+                }}
+                className="mt-2 w-full rounded-xl border border-appborder bg-appsurface px-4 py-3 font-display text-lg tracking-wide text-appwhite tabular-nums outline-none focus:border-mint"
+              />
+              {egnError && (
+                <p role="alert" className="mt-2 text-sm font-semibold text-red-400">
+                  {egnError}
+                </p>
+              )}
+
+              {/* Privacy notice for the EGN + link to the Privacy Notice. */}
+              <div className="mt-4 rounded-xl border border-appborder bg-appsurface/60 p-4">
+                <p className="text-sm leading-relaxed text-appmuted">{r.egnPrivacyNotice}</p>
+                <Link
+                  href="/privacy"
+                  className="mt-2 inline-block text-sm font-medium text-mint-400 underline underline-offset-4 hover:text-mint"
+                >
+                  {r.privacyLink}
+                </Link>
+              </div>
+            </div>
+
+            <div className="mt-8 flex items-center justify-between gap-3">
+              <button
+                type="button"
+                className="a-btn-ghost"
+                disabled={submitting}
+                onClick={() => setPhase("browse")}
+              >
+                {r.back}
+              </button>
+              <button
+                type="button"
+                className="btn-mint"
+                disabled={submitting || egn.length !== 10}
+                onClick={submitIdentity}
+              >
+                {submitting ? r.processing : r.egnContinue}
+                <span aria-hidden>→</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </AppShell>
+    );
+  }
+
+  // ----- Final confirmation — which partners receive the data -----
+  if (phase === "confirm") {
+    return (
+      <AppShell current="results">
+        <div className="mx-auto w-full max-w-xl pt-10 sm:pt-16">
+          <div className="reveal">
+            <h1 className="text-[1.9rem] font-bold leading-[1.1] tracking-tight text-appwhite sm:text-[2.3rem]">
+              {r.confirmMultiTitle}
+            </h1>
+            <p className="mt-3 text-appmuted">
+              {chosen.length === 1
+                ? `${r.confirmSinglePrefix}${chosen[0].partner}.`
+                : r.confirmMultiInfo}
+            </p>
+
+            <div className="mt-6">
+              <p className="text-xs uppercase tracking-[0.14em] text-appmuted">
+                {r.recipientsTitle}
+              </p>
+              <div className="mt-3 space-y-2">
+                {chosen.map((c) => (
+                  <div
+                    key={c.product_id}
+                    className="flex items-center gap-3 rounded-xl border border-appborder bg-appsurface p-4"
+                  >
+                    <span className="grid h-5 w-5 place-items-center rounded-full bg-mint/15 text-xs text-mint-400">
+                      ✓
+                    </span>
+                    <span className="font-display text-base font-bold text-appwhite">
+                      {c.partner}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-5">
+              <Link
+                href="/privacy"
+                className="text-sm font-medium text-mint-400 underline underline-offset-4 hover:text-mint"
+              >
+                {r.privacyLink}
+              </Link>
+            </div>
+
+            <CreditWarning tone="dark" className="mt-6" />
+            <p className="mt-4 text-xs leading-relaxed text-appmuted">{r.successDisclaimer}</p>
+
+            {error && (
+              <p role="alert" className="mt-4 rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-300">
+                {error}
+              </p>
+            )}
+
+            <div className="mt-8 flex items-center justify-between gap-3">
+              <button
+                type="button"
+                className="a-btn-ghost"
+                disabled={submitting}
+                onClick={() => setPhase(egnNeeded ? "egn" : "browse")}
+              >
+                {r.back}
+              </button>
+              <button
+                type="button"
+                className="btn-mint"
+                disabled={submitting}
+                onClick={confirmAndSubmit}
+              >
+                {submitting ? r.processing : r.confirmSubmit}
+                <span aria-hidden>→</span>
+              </button>
+            </div>
           </div>
         </div>
       </AppShell>
@@ -410,8 +619,9 @@ function ResultsInner() {
         )}
       </div>
 
-      {/* Sticky action bar — continue with all selected partners. */}
-      {matches && matches.length > 0 && selected.size > 0 && !confirming && (
+      {/* Sticky action bar — continue with all selected partners. Selection is
+          persisted here; EGN (if required) and final confirmation follow. */}
+      {matches && matches.length > 0 && selected.size > 0 && (
         <div className="fixed inset-x-0 bottom-0 z-40 border-t border-appborder bg-appsurface/95 backdrop-blur">
           <div className="mx-auto flex max-w-2xl items-center justify-between gap-4 px-5 py-4">
             <span className="text-sm text-appmuted">
@@ -421,50 +631,12 @@ function ResultsInner() {
             <button
               type="button"
               className="btn-mint"
-              onClick={() => setConfirming(true)}
+              disabled={submitting}
+              onClick={beginContinue}
             >
-              {r.continueSelected}
+              {submitting ? r.processing : r.continueSelected}
               <span aria-hidden>→</span>
             </button>
-          </div>
-        </div>
-      )}
-
-      {/* Confirmation — referrals are created only after explicit confirmation. */}
-      {confirming && (
-        <div
-          className="fixed inset-0 z-50 grid place-items-center bg-midnight/80 p-4 backdrop-blur-sm"
-          role="dialog"
-          aria-modal="true"
-          onClick={() => !submitting && setConfirming(false)}
-        >
-          <div
-            className="w-full max-w-md rounded-2xl border border-appborder bg-appsurface p-6 sm:p-7"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h2 className="font-display text-xl font-bold text-appwhite">
-              {r.confirmMultiTitle}
-            </h2>
-            <p className="mt-3 text-sm leading-relaxed text-appmuted">{r.confirmMultiBody}</p>
-            <div className="mt-7 flex flex-col-reverse gap-3 sm:flex-row">
-              <button
-                type="button"
-                className="a-btn-ghost w-full sm:w-auto"
-                disabled={submitting}
-                onClick={() => setConfirming(false)}
-              >
-                {r.back}
-              </button>
-              <button
-                type="button"
-                className="btn-mint w-full flex-1 justify-center"
-                disabled={submitting}
-                onClick={confirmSelection}
-              >
-                {submitting ? r.processing : r.confirmMultiCta}
-                <span aria-hidden>→</span>
-              </button>
-            </div>
           </div>
         </div>
       )}

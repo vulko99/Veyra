@@ -194,6 +194,10 @@ def _serialize(
     return {
         "partner": product.lender.public_name,
         "partner_slug": product.lender.slug,
+        # Whether this partner needs the applicant's EGN to proceed. Drives the
+        # post-selection identity step. Partner-specific, never global.
+        "egn_required": product.lender.egn_required,
+        "is_demo": product.lender.is_demo,
         "product": product.name,
         "product_id": str(product.id),
         "product_type": product.product_type,

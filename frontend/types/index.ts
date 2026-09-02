@@ -80,6 +80,9 @@ export interface Phase2Match {
   match: boolean;
   ranking: number;
   priority: number;
+  /** Whether this partner requires the applicant's EGN to proceed. */
+  egn_required?: boolean;
+  is_demo?: boolean;
   /** Compatibility score (0–100) against published criteria. NOT an approval probability. */
   compatibility_score?: number;
   reasons: ReasonPayload[];
@@ -96,4 +99,39 @@ export interface ReferralResponse {
   product: string;
   referral_status: string;
   outbound_url: string;
+}
+
+export interface SelectionPartner {
+  lender_id: string;
+  partner: string;
+  product: string;
+  egn_required: boolean;
+  is_demo: boolean;
+}
+
+export interface SelectionResponse {
+  application_id: string;
+  selected_partners: SelectionPartner[];
+  egn_required: boolean;
+  egn_provided: boolean;
+  egn_masked: string;
+  privacy_notice_version: string;
+}
+
+export interface IdentityResponse {
+  application_id: string;
+  egn_provided: boolean;
+  egn_masked: string;
+}
+
+export interface SubmissionResult {
+  partner: string;
+  status: string;
+  external_application_id: string;
+  demo: boolean;
+}
+
+export interface SubmitResponse {
+  application_id: string;
+  submissions: SubmissionResult[];
 }
